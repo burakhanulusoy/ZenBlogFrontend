@@ -1,4 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
+
+declare const alertify:any;
 
 @Component({
   selector: 'app-root',
@@ -6,6 +8,15 @@ import { Component, signal } from '@angular/core';
   standalone: false,
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('ZenBlogFrontend');
+
+  ngOnInit(): void {
+
+
+     alertify.set('notifier','position','top-right')
+  }
+
+
+
 }

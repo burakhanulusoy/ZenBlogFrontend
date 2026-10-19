@@ -8,6 +8,7 @@ import { AdminLayout } from './_layouts/admin-layout/admin-layout';
 import { MainLayout } from './_layouts/main-layout/main-layout';
 import { Home } from './_main-components/home/home';
 import { Category } from './_admin-components/category/category';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { Category } from './_admin-components/category/category';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule   // <router-outlet>'i tanıtan modül
+    AppRoutingModule,   // <router-outlet>'i tanıtan modül,
+    FormsModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

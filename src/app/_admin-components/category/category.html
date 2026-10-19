@@ -1,5 +1,64 @@
-<h1>Tüm Kategoriler</h1>
 
-<ul>
-  <li *ngFor="let item of categories">{{ item.name }} -- {{ item.id }}</li>
-</ul>
+<table class="table table-hover table-bordered">
+
+<tr>
+   <th>#</th>
+   <th>Kategori Adı</th>
+   <th>İşlemler</th>
+</tr>
+
+<tr *ngFor="let item of categories; let i = index;">
+
+  <td>{{i+1}}</td>
+  <td>{{item.name}}</td>
+  <td>
+     <button href="#" class="btn btn-danger">Sil</button>
+     <button href="#" class="btn btn-info" >Güncelle</button>
+     <button href="#" class="btn btn-primary">Kategoriye Ait Blogları Gör</button>
+  </td>
+
+
+</tr>
+
+</table>
+
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+  Yeni Kategori Ekle
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+          <form #createForm="ngForm" (ngSubmit)="createCategory()" >
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createModalLabel">Yeni Kategori Oluşturun</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+
+             <div class="form-group">
+  <label>Kategori Adı</label>
+  <input type="text" class="form-control" name="name" [(ngModel)]="newCategory.name" required="">
+
+  <ng-container *ngFor="let error of errors">
+    <span class="text-danger" *ngIf="error.propertyName === 'Name'">{{ error.errorMessage }}</span>
+  </ng-container>
+</div>
+
+
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+        <button  type="submit"  class="btn btn-primary" [disabled]="createForm.invalid" >Kaydet</button>
+      </div>
+    </div>
+          </form>
+  </div>
+</div>

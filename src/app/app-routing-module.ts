@@ -23,9 +23,6 @@ const routes: Routes = [
          children:[
 
           {path:'category',component:Category}
-
-
-
          ]
 
     }
