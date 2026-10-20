@@ -1,64 +1,290 @@
+<!-- =====================================================================
+     SAYFA (TEMPLATE): component'teki verileri ekrana çizer
+     =====================================================================
+     Angular'ın dört bağlama türü bu sayfada kullanılıyor:
+       {{ }}   Interpolation    → TS'deki değeri ekrana yaz          {{ item.name }}
+       [ ]     Property binding → TS'deki değeri bir özelliğe ver    [disabled]="createForm.invalid"
+       ( )     Event binding    → ekrandaki olayda TS metodunu çalıştır  (click)="delete(item.id)"
+       [( )]   Two-way binding  → iki yönlü bağla                    [(ngModel)]="newCategory.name"
 
-<table class="table table-hover table-bordered">
+     TASARIM: Bütün sınıflar Bootstrap 5'e ait; ayrıca CSS yazmaya gerek yok.
+       card            → kenarlıklı, gölgeli bir kutu
+       d-flex          → içindekileri yan yana dizer
+       justify-content-between → elemanları iki uca yaslar
+       align-items-center      → dikeyde ortalar
+       mb-0, mt-1, gap-2 ...   → boşluk ayarları (m: margin, p: padding, gap: elemanlar arası)
 
-<tr>
-   <th>#</th>
-   <th>Kategori Adı</th>
-   <th>İşlemler</th>
-</tr>
+     İKONLAR: Font Awesome 4.7 → <i class="fa fa-ikon-adi"></i>
+       fa-tags   : kategoriler      fa-plus   : ekle        fa-pencil : güncelle
+       fa-trash  : sil              fa-list   : listele     fa-tag    : tek kategori
+       fa-inbox  : boş liste        fa-check  : kaydet      fa-times  : kapat
+       me-1 / me-2: ikon ile yazı arasında sağ boşluk (margin-end)
+       aria-hidden="true": ekran okuyucular ikonu okumasın (sadece görsel)
+-->
 
-<tr *ngFor="let item of categories; let i = index;">
+<div class="container-fluid py-3">
 
-  <td>{{i+1}}</td>
-  <td>{{item.name}}</td>
-  <td>
-     <button href="#" class="btn btn-danger">Sil</button>
-     <button href="#" class="btn btn-info" >Güncelle</button>
-     <button href="#" class="btn btn-primary">Kategoriye Ait Blogları Gör</button>
-  </td>
+  <!-- SAYFA BAŞLIĞI: solda yuvarlak ikon + başlık ve açıklama -->
+  <div class="d-flex align-items-center mb-4">
 
+    <!-- Açık mavi zemin üzerinde yuvarlak ikon kutusu
+         bg-primary bg-opacity-10: ana rengin %10 opaklıkta hali (soluk mavi)
+         rounded-circle: tam yuvarlak -->
+    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary me-3"
+         style="width: 48px; height: 48px;">
+      <i class="fa fa-tags fa-lg" aria-hidden="true"></i>
+    </div>
 
-</tr>
+    <div>
+      <h1 class="h3 mb-0">Kategoriler</h1>
+      <p class="text-muted mb-0">Blog kategorilerini buradan ekleyebilir, güncelleyebilir ve silebilirsiniz.</p>
+    </div>
 
-</table>
+  </div>
 
+  <!-- Tablonun bulunduğu kart -->
+  <div class="card shadow-sm border-0">
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-  Yeni Kategori Ekle
-</button>
+    <!-- Kartın üst kısmı: solda başlık + kategori sayısı, sağda ekleme butonu -->
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
 
-<!-- Modal -->
-<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-          <form #createForm="ngForm" (ngSubmit)="createCategory()" >
+      <h2 class="h5 mb-0">
+        <i class="fa fa-list text-muted me-2" aria-hidden="true"></i>
+        Tüm Kategoriler
+        <!-- categories?.length: kategori sayısı.
+             ?. (optional chaining): categories henüz gelmediyse (undefined) hata vermesin diye.
+             rounded-pill: kenarları tamamen yuvarlak rozet -->
+        <span class="badge rounded-pill bg-primary ms-2">{{ categories?.length }}</span>
+      </h2>
 
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createModalLabel">Yeni Kategori Oluşturun</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <!-- Bootstrap: id'si "createModal" olan pencereyi açar -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
+        <i class="fa fa-plus me-1" aria-hidden="true"></i> Yeni Kategori Ekle
+      </button>
+
+    </div>
+
+    <!-- p-0: kart içindeki boşluğu kaldırır, tablo kartın kenarlarına kadar uzanır -->
+    <div class="card-body p-0">
+
+      <!-- table-responsive: dar ekranlarda tablo taşarsa yatay kaydırma çıkar -->
+      <div class="table-responsive">
+
+        <!-- table-hover: üzerine gelinen satır renklenir
+             align-middle: hücre içerikleri dikeyde ortalanır -->
+        <table class="table table-hover align-middle mb-0">
+
+          <!-- table-light: başlık satırını açık gri yapar
+               small text-uppercase text-muted: başlıkları küçük, büyük harf ve soluk yapar -->
+          <thead class="table-light small text-uppercase text-muted">
+            <tr>
+              <th class="ps-4" style="width: 70px;">#</th>
+              <th>Kategori Adı</th>
+              <th class="text-end pe-4" style="width: 340px;">İşlemler</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <!-- *ngFor: categories listesindeki HER kategori için bir satır oluşturur (Razor'daki @foreach).
+                 let i = index: kaçıncı satırda olduğu (0'dan başlar); i + 1 ile 1'den başlayan sıra no. -->
+            <tr *ngFor="let item of categories; let i = index;">
+
+              <td class="ps-4 text-muted">{{ i + 1 }}</td>
+
+              <!-- {{ }}: değeri ekrana yazdırır (Razor'daki @item.Name) -->
+              <td>
+                <i class="fa fa-tag text-primary me-2" aria-hidden="true"></i>
+                <span class="fw-semibold">{{ item.name }}</span>
+              </td>
+
+              <td class="text-end pe-4">
+                <!-- d-inline-flex gap-2: butonları yan yana, aralarında boşlukla dizer
+                     btn-sm: küçük buton, btn-outline-*: sadece kenarlıklı (daha sade)
+                     title: üzerine gelince çıkan küçük açıklama -->
+                <div class="d-inline-flex gap-2">
+
+                  <!-- Blog sayfası yapılınca bağlanacak -->
+                  <button class="btn btn-sm btn-outline-secondary" title="Bu kategorideki blogları gör">
+                    <i class="fa fa-newspaper-o me-1" aria-hidden="true"></i> Bloglar
+                  </button>
+
+                  <!-- Burada İKİ şey birden oluyor:
+                       (click)="onSelected(item)" → Angular: kategorinin kopyasını güncelleme formuna aktarır
+                       data-bs-toggle / data-bs-target → Bootstrap: id'si "updateModal" olan pencereyi açar
+                       data-bs-... özellikleri Angular'la ilgili değil; Bootstrap'in JS'i bunları okur. -->
+                  <button (click)="onSelected(item)" class="btn btn-sm btn-outline-primary"
+                          data-bs-toggle="modal" data-bs-target="#updateModal" title="Kategoriyi güncelle">
+                    <i class="fa fa-pencil me-1" aria-hidden="true"></i> Güncelle
+                  </button>
+
+                  <!-- (click): butona tıklanınca component'teki delete metodunu, o satırın id'siyle çağırır -->
+                  <button (click)="delete(item.id)" class="btn btn-sm btn-outline-danger" title="Kategoriyi sil">
+                    <i class="fa fa-trash me-1" aria-hidden="true"></i> Sil
+                  </button>
+
+                </div>
+              </td>
+
+            </tr>
+
+            <!-- BOŞ LİSTE DURUMU: liste yüklendi ama içinde hiç kategori yoksa bu satır görünür.
+                 categories?.length === 0: liste GELDİ ve BOŞ (henüz gelmediyse undefined olur, bu satır görünmez).
+                 colspan="3": tek hücre, üç sütunun genişliğini kaplar.
+                 fa-3x: ikonu 3 kat büyütür -->
+            <tr *ngIf="categories?.length === 0">
+              <td colspan="3" class="text-center text-muted py-5">
+                <i class="fa fa-inbox fa-3x mb-3 d-block opacity-50" aria-hidden="true"></i>
+                <p class="mb-1 fw-semibold">Henüz kategori eklenmemiş</p>
+                <p class="small mb-0">"Yeni Kategori Ekle" ile ilk kategorini oluşturabilirsin.</p>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
       </div>
-      <div class="modal-body">
+    </div>
+  </div>
 
-
-             <div class="form-group">
-  <label>Kategori Adı</label>
-  <input type="text" class="form-control" name="name" [(ngModel)]="newCategory.name" required="">
-
-  <ng-container *ngFor="let error of errors">
-    <span class="text-danger" *ngIf="error.propertyName === 'Name'">{{ error.errorMessage }}</span>
-  </ng-container>
 </div>
 
 
+<!-- =====================================================================
+     EKLEME MODALI
+     ===================================================================== -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
 
+    <!-- #createForm="ngForm": forma "createForm" adıyla erişmeyi sağlar
+                               (aşağıda "form geçerli mi?" diye sormak için).
+         (ngSubmit): form gönderilince (Kaydet'e basınca) createCategory() çalışır.
+         w-100: form, modalın tüm genişliğini kaplasın. -->
+    <form #createForm="ngForm" (ngSubmit)="createCategory()" class="w-100">
 
+      <!-- border-0 shadow: kenarlıksız, gölgeli pencere -->
+      <div class="modal-content border-0 shadow">
+
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="createModalLabel">
+            <i class="fa fa-plus-circle text-primary me-2" aria-hidden="true"></i>
+            Yeni Kategori Oluşturun
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- mb-3: alt boşluk. form-label: Bootstrap'in form etiketi stili -->
+          <div class="mb-3">
+            <label for="createName" class="form-label fw-semibold">Kategori Adı</label>
+
+            <!-- input-group: inputun soluna ikon kutusu ekler -->
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa fa-tag" aria-hidden="true"></i></span>
+
+              <!-- [(ngModel)]: TWO-WAY BINDING.
+                     Kullanıcı yazdıkça newCategory.name güncellenir (ekran → TS),
+                     TS'de değişirse input da değişir (TS → ekran).
+                   name="name": form içinde ngModel kullanan her inputun bir name'i olması ZORUNLU.
+                   required: alan boşsa form "geçersiz" sayılır.
+                   id="createName": üstteki label'ın for="createName"'i ile eşleşir;
+                                    etikete tıklayınca imleç inputa gelir.
+                   placeholder: input boşken görünen soluk örnek yazı. -->
+              <input type="text" id="createName" class="form-control" name="name"
+                     [(ngModel)]="newCategory.name" required="" placeholder="Örn: Yazılım">
+            </div>
+
+            <!-- API'den gelen hata listesinde döner; propertyName'i "Name" olanları kırmızıyla yazar.
+                 "Name", backend'deki validator'ın RuleFor(x => x.Name) kuralından gelir.
+                 ng-container: sayfaya ekstra etiket eklemeyen görünmez bir kap.
+                 *ngFor ve *ngIf aynı etikette kullanılamadığı için gerekli.
+                 invalid-feedback d-block: Bootstrap'in kendi hata yazısı stili (küçük, kırmızı). -->
+            <ng-container *ngFor="let error of errors">
+              <div class="invalid-feedback d-block" *ngIf="error.propertyName === 'Name'">
+                <i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i>{{ error.errorMessage }}
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <!-- type="button": formu GÖNDERMEZ, sadece modalı kapatır (data-bs-dismiss) -->
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+            <i class="fa fa-times me-1" aria-hidden="true"></i> Kapat
+          </button>
+
+          <!-- type="submit": formu gönderir → (ngSubmit) tetiklenir.
+               [disabled]: PROPERTY BINDING. Form geçersizse (input boşsa) buton pasif olur.
+               data-bs-dismiss YOK: hata olursa modal kapanmasın, mesaj görünsün diye. -->
+          <button type="submit" class="btn btn-primary" [disabled]="createForm.invalid">
+            <i class="fa fa-check me-1" aria-hidden="true"></i> Kaydet
+          </button>
+        </div>
 
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-        <button  type="submit"  class="btn btn-primary" [disabled]="createForm.invalid" >Kaydet</button>
+
+    </form>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     GÜNCELLEME MODALI
+     =====================================================================
+     Ekleme modalının aynısı; üç fark var:
+       id="updateModal"       → Güncelle butonundaki data-bs-target="#updateModal" ile eşleşir
+       #updateForm → update() → ayrı form, ayrı metot
+       editCategory.name      → input yeni kategoriye değil, SEÇİLEN kategoriye bağlı
+-->
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form #updateForm="ngForm" (ngSubmit)="update()" class="w-100">
+
+      <div class="modal-content border-0 shadow">
+
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="updateModalLabel">
+            <i class="fa fa-pencil-square-o text-primary me-2" aria-hidden="true"></i>
+            Kategoriyi Güncelleyin
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label for="editName" class="form-label fw-semibold">Kategori Adı</label>
+
+            <div class="input-group">
+              <span class="input-group-text"><i class="fa fa-tag" aria-hidden="true"></i></span>
+
+              <!-- onSelected() editCategory'yi doldurduğu için modal mevcut isimle dolu açılır -->
+              <input type="text" id="editName" class="form-control" name="editName"
+                     [(ngModel)]="editCategory.name" required="" placeholder="Kategori adı">
+            </div>
+
+            <ng-container *ngFor="let error of errors">
+              <div class="invalid-feedback d-block" *ngIf="error.propertyName === 'Name'">
+                <i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i>{{ error.errorMessage }}
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+            <i class="fa fa-times me-1" aria-hidden="true"></i> Kapat
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="updateForm.invalid">
+            <i class="fa fa-check me-1" aria-hidden="true"></i> Güncelle
+          </button>
+        </div>
+
       </div>
-    </div>
-          </form>
+
+    </form>
   </div>
 </div>
