@@ -22,3 +22,22 @@
 .input-group-text {
   color: #6c757d;
 }
+
+/* YENİ: "——— veya ———" ayıracı: iki yanda çizgi, ortada yazı */
+.divider {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.divider span {
+  padding: 0 0.75rem;
+}

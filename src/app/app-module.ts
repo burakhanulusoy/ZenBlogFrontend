@@ -13,6 +13,7 @@ import { Login } from './_main-components/login/login';
 import { TokenInterceptor } from './_interceptors/token-interceptor';
 import { Register } from './_main-components/register/register';
 import { VerifyEmail } from './_main-components/verify-email/verify-email';
+import { ForgotPassword } from './_main-components/forgot-password/forgot-password';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { VerifyEmail } from './_main-components/verify-email/verify-email';
     Category,
     Login,
     Register,
-    VerifyEmail
+    VerifyEmail,
+    ForgotPassword
   ],
   imports: [
     BrowserModule,

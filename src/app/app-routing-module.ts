@@ -8,6 +8,7 @@ import { Login } from './_main-components/login/login';
 import { AuthGuard } from './_guards/auth-guard';
 import { Register } from './_main-components/register/register';
 import { VerifyEmail } from './_main-components/verify-email/verify-email';
+import { ForgotPassword } from './_main-components/forgot-password/forgot-password';
 
 const routes: Routes = [
 
@@ -16,6 +17,7 @@ const routes: Routes = [
 
   { path: 'register', component: Register },
   { path: 'verify-email', component: VerifyEmail },
+  { path: 'forgot-password', component: ForgotPassword },
 
   // ZİYARETÇİ SİTESİ: navbar + içerik
   {

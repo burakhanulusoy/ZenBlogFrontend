@@ -12,7 +12,7 @@ export class AuthService {
   constructor(private http: HttpClient,
               private router: Router) { }
 
-  // Kullanıcı işlemlerinin ortak adresi (login, register, confirm-email...)
+  // Kullanıcı işlemlerinin ortak adresi
   baseUrl = "https://localhost:7200/api/users/";
 
   decodedToken: any;
@@ -26,19 +26,34 @@ export class AuthService {
     return this.http.post<any>(this.baseUrl + "login", model);
   }
 
+  // POST /api/users/google-login   Body: { idToken }
+  googleLogin(idToken: string) {
+    return this.http.post<any>(this.baseUrl + "google-login", { idToken });
+  }
+
   // POST /api/users/register
   register(model: RegisterDto) {
     return this.http.post<any>(this.baseUrl + "register", model);
   }
 
-  // YENİ: POST /api/users/confirm-email   Body: { email, code }
+  // POST /api/users/confirm-email   Body: { email, code }
   confirmEmail(email: string, code: string) {
     return this.http.post<any>(this.baseUrl + "confirm-email", { email, code });
   }
 
-  // YENİ: POST /api/users/resend-confirmation   Body: { email }
+  // POST /api/users/resend-confirmation   Body: { email }
   resendConfirmation(email: string) {
     return this.http.post<any>(this.baseUrl + "resend-confirmation", { email });
+  }
+
+  // YENİ: POST /api/users/forgot-password   Body: { email }
+  forgotPassword(email: string) {
+    return this.http.post<any>(this.baseUrl + "forgot-password", { email });
+  }
+
+  // YENİ: POST /api/users/reset-password   Body: { email, code, newPassword, confirmPassword }
+  resetPassword(email: string, code: string, newPassword: string, confirmPassword: string) {
+    return this.http.post<any>(this.baseUrl + "reset-password", { email, code, newPassword, confirmPassword });
   }
 
   decodeToken() {
@@ -65,7 +80,6 @@ export class AuthService {
     const roles = this.jwtHelper.decodeToken(token)?.[this.roleClaim];
     if (!roles) return [];
 
-    // Tek rol varsa metin, birden fazlaysa dizi gelir; ikisini de diziye çeviriyoruz
     return Array.isArray(roles) ? roles : [roles];
   }
 
