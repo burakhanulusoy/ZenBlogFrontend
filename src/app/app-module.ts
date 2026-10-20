@@ -9,6 +9,7 @@ import { MainLayout } from './_layouts/main-layout/main-layout';
 import { Home } from './_main-components/home/home';
 import { Category } from './_admin-components/category/category';
 import { FormsModule } from '@angular/forms';
+import { Login } from './_main-components/login/login';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { FormsModule } from '@angular/forms';
     AdminLayout,   // <router-outlet> kullandığı için burada olmalı
     MainLayout,    // <router-outlet> kullandığı için burada olmalı
     Home,
-    Category
+    Category,
+    Login
   ],
   imports: [
     BrowserModule,

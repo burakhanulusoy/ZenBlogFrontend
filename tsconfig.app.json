@@ -8,7 +8,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/_models/loginDto"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

@@ -227,7 +227,7 @@
               >
                 <use xlink:href="#table"></use>
               </svg>
-              Blog Yazıları
+              <div *ngIf="loggedIn()">{{getFullName()}}</div>
             </a>
           </li>
           <li>
@@ -279,7 +279,7 @@
             <li><a class="dropdown-item" href="#">Settings</a></li>
             <li><a class="dropdown-item" href="#">Profile</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
+            <li><button class="dropdown-item" (click)="logout()">Çıkış Yap</button></li>
           </ul>
         </div>
       </div>

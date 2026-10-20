@@ -4,6 +4,8 @@ import { MainLayout } from './_layouts/main-layout/main-layout';
 import { Home } from './_main-components/home/home';
 import { AdminLayout } from './_layouts/admin-layout/admin-layout';
 import { Category } from './_admin-components/category/category';
+import { Login } from './_main-components/login/login';
+import { AuthGuard } from './_guards/auth-guard';
 
 const routes: Routes = [
 
@@ -12,7 +14,8 @@ const routes: Routes = [
    {path:'',component : MainLayout,
 
     children:[
-     {path:'',component:Home}
+     {path:'',component:Home},
+     {path:'login',component:Login} // localhost:7200/api/login
     ]
    },
 
@@ -20,9 +23,11 @@ const routes: Routes = [
     //Admin Routes  http://localhost:4200/admin/category
 
     {path:'admin',component:AdminLayout,
+         canActivate:[AuthGuard],//bunu yaptıgımız an kormaya gecıyor
          children:[
 
-          {path:'category',component:Category}
+          {path:'category',component:Category,canActivate:[AuthGuard]},
+
          ]
 
     }
