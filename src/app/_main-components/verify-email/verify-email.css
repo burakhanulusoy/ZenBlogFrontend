@@ -1,0 +1,28 @@
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 1rem;
+}
+
+.auth-logo {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+}
+
+.input-group-text {
+  color: #6c757d;
+}
+
+/* Kod kutusu: büyük, harfler arası geniş (kodu okumak ve yazmak kolay olsun) */
+.code-input {
+  font-size: 1.75rem;
+  letter-spacing: 0.75rem;
+  font-weight: 600;
+  padding: 0.75rem;
+}

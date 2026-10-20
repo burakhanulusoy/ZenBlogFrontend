@@ -1,6 +1,6 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
@@ -10,6 +10,10 @@ import { Home } from './_main-components/home/home';
 import { Category } from './_admin-components/category/category';
 import { FormsModule } from '@angular/forms';
 import { Login } from './_main-components/login/login';
+import { TokenInterceptor } from './_interceptors/token-interceptor';
+import { Register } from './_main-components/register/register';
+import { VerifyEmail } from './_main-components/verify-email/verify-email';
+
 
 @NgModule({
   declarations: [
@@ -18,7 +22,9 @@ import { Login } from './_main-components/login/login';
     MainLayout,    // <router-outlet> kullandığı için burada olmalı
     Home,
     Category,
-    Login
+    Login,
+    Register,
+    VerifyEmail
   ],
   imports: [
     BrowserModule,
@@ -27,7 +33,9 @@ import { Login } from './_main-components/login/login';
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptorsFromDi()),
+      { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+
   ],
   bootstrap: [App]
 })

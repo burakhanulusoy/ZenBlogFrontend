@@ -1,0 +1,162 @@
+<!-- Tam ekran, ortalanmış kayıt sayfası (login ile aynı tasarım) -->
+<div class="auth-page d-flex align-items-center justify-content-center px-3 py-5">
+
+  <div class="card auth-card border-0 shadow-lg">
+    <div class="card-body p-4 p-md-5">
+
+      <!-- LOGO VE BAŞLIK -->
+      <div class="text-center mb-4">
+        <div class="auth-logo d-inline-flex align-items-center justify-content-center rounded-circle text-white mb-3">
+          <i class="fa fa-user-plus fa-2x" aria-hidden="true"></i>
+        </div>
+        <h1 class="h4 fw-bold mb-1">Hesap Oluştur</h1>
+        <p class="text-muted mb-0">ZenBlog'a katılmak birkaç saniye sürüyor</p>
+      </div>
+
+      <!-- GENEL HATALAR: sunucuya ulaşılamadı ya da hiçbir alana ait olmayan hatalar -->
+      <div class="alert alert-danger py-2" role="alert" *ngIf="generalError || otherErrors.length">
+        <div *ngIf="generalError"><i class="fa fa-exclamation-circle me-2" aria-hidden="true"></i>{{ generalError }}</div>
+        <div *ngFor="let error of otherErrors"><i class="fa fa-exclamation-circle me-2" aria-hidden="true"></i>{{ error }}</div>
+      </div>
+
+      <form #registerForm="ngForm" (ngSubmit)="register()" novalidate>
+
+        <!-- AD - SOYAD (geniş ekranda yan yana, dar ekranda alt alta) -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="name" class="form-label fw-semibold">Ad</label>
+            <input type="text" id="name" name="name" class="form-control" placeholder="Adın"
+                   [(ngModel)]="registerDto.name" #name="ngModel" required maxlength="50"
+                   [class.is-invalid]="(name.invalid && name.touched) || errorsFor('Name').length">
+            <div class="text-danger small mt-1" *ngIf="name.invalid && name.touched">Ad zorunludur.</div>
+            <div class="text-danger small mt-1" *ngFor="let e of errorsFor('Name')">{{ e }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="surname" class="form-label fw-semibold">Soyad</label>
+            <input type="text" id="surname" name="surname" class="form-control" placeholder="Soyadın"
+                   [(ngModel)]="registerDto.surname" #surname="ngModel" required maxlength="50"
+                   [class.is-invalid]="(surname.invalid && surname.touched) || errorsFor('Surname').length">
+            <div class="text-danger small mt-1" *ngIf="surname.invalid && surname.touched">Soyad zorunludur.</div>
+            <div class="text-danger small mt-1" *ngFor="let e of errorsFor('Surname')">{{ e }}</div>
+          </div>
+        </div>
+
+        <!-- KULLANICI ADI -->
+        <div class="mb-3">
+          <label for="userName" class="form-label fw-semibold">Kullanıcı Adı</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa fa-at" aria-hidden="true"></i></span>
+            <input type="text" id="userName" name="userName" class="form-control" placeholder="kullaniciadi"
+                   [(ngModel)]="registerDto.userName" #userName="ngModel" required
+                   [class.is-invalid]="(userName.invalid && userName.touched) || errorsFor('UserName').length">
+          </div>
+          <div class="text-danger small mt-1" *ngIf="userName.invalid && userName.touched">Kullanıcı adı zorunludur.</div>
+          <div class="text-danger small mt-1" *ngFor="let e of errorsFor('UserName')">{{ e }}</div>
+        </div>
+
+        <!-- E-POSTA -->
+        <div class="mb-3">
+          <label for="email" class="form-label fw-semibold">E-posta</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa fa-envelope-o" aria-hidden="true"></i></span>
+            <input type="email" id="email" name="email" class="form-control" placeholder="ornek@mail.com"
+                   [(ngModel)]="registerDto.email" #email="ngModel" required email
+                   [class.is-invalid]="(email.invalid && email.touched) || errorsFor('Email').length">
+          </div>
+          <div class="text-danger small mt-1" *ngIf="email.invalid && email.touched">
+            <span *ngIf="email.errors?.['required']">E-posta zorunludur.</span>
+            <span *ngIf="email.errors?.['email']">Geçerli bir e-posta adresi giriniz.</span>
+          </div>
+          <div class="text-danger small mt-1" *ngFor="let e of errorsFor('Email')">{{ e }}</div>
+        </div>
+
+        <!-- TELEFON (isteğe bağlı) -->
+        <div class="mb-3">
+          <label for="phoneNumber" class="form-label fw-semibold">
+            Telefon <span class="text-muted fw-normal small">(isteğe bağlı)</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa fa-phone" aria-hidden="true"></i></span>
+            <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="05xx xxx xx xx"
+                   [(ngModel)]="registerDto.phoneNumber"
+                   [class.is-invalid]="errorsFor('PhoneNumber').length">
+          </div>
+          <div class="text-danger small mt-1" *ngFor="let e of errorsFor('PhoneNumber')">{{ e }}</div>
+        </div>
+
+        <!-- ŞİFRE -->
+        <div class="mb-2">
+          <label for="password" class="form-label fw-semibold">Şifre</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa fa-lock" aria-hidden="true"></i></span>
+            <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" class="form-control"
+                   placeholder="Güçlü bir şifre oluştur"
+                   [(ngModel)]="registerDto.password" #password="ngModel" required
+                   [class.is-invalid]="errorsFor('Password').length">
+            <button type="button" class="btn btn-outline-secondary" (click)="showPassword = !showPassword"
+                    [title]="showPassword ? 'Şifreyi gizle' : 'Şifreyi göster'">
+              <i class="fa" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="text-danger small mt-1" *ngFor="let e of errorsFor('Password')">{{ e }}</div>
+        </div>
+
+        <!-- CANLI ŞİFRE KURALLARI: kullanıcı yazdıkça yeşile döner
+             [class.text-success]: kural sağlanıyorsa yeşil, sağlanmıyorsa gri -->
+        <ul class="list-unstyled small mb-3 password-rules">
+          <li [class.text-success]="hasMinLength">
+            <i class="fa" [class.fa-check-circle]="hasMinLength" [class.fa-circle-o]="!hasMinLength"></i> En az 8 karakter
+          </li>
+          <li [class.text-success]="hasUpper">
+            <i class="fa" [class.fa-check-circle]="hasUpper" [class.fa-circle-o]="!hasUpper"></i> En az bir büyük harf
+          </li>
+          <li [class.text-success]="hasLower">
+            <i class="fa" [class.fa-check-circle]="hasLower" [class.fa-circle-o]="!hasLower"></i> En az bir küçük harf
+          </li>
+          <li [class.text-success]="hasDigit">
+            <i class="fa" [class.fa-check-circle]="hasDigit" [class.fa-circle-o]="!hasDigit"></i> En az bir rakam
+          </li>
+          <li [class.text-success]="hasSpecial">
+            <i class="fa" [class.fa-check-circle]="hasSpecial" [class.fa-circle-o]="!hasSpecial"></i> En az bir özel karakter (! &#64; # ? vb.)
+          </li>
+        </ul>
+
+        <!-- ŞİFRE TEKRARI -->
+        <div class="mb-4">
+          <label for="confirmPassword" class="form-label fw-semibold">Şifre Tekrarı</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="fa fa-lock" aria-hidden="true"></i></span>
+            <input [type]="showPassword ? 'text' : 'password'" id="confirmPassword" name="confirmPassword" class="form-control"
+                   placeholder="Şifreni tekrar gir"
+                   [(ngModel)]="registerDto.confirmPassword" required
+                   [class.is-invalid]="passwordsMismatch || errorsFor('ConfirmPassword').length">
+          </div>
+          <div class="text-danger small mt-1" *ngIf="passwordsMismatch">Şifreler eşleşmiyor.</div>
+          <div class="text-danger small mt-1" *ngFor="let e of errorsFor('ConfirmPassword')">{{ e }}</div>
+        </div>
+
+        <!-- KAYIT BUTONU: form geçersizse, şifre kurallara uymuyorsa, şifreler eşleşmiyorsa
+             ya da istek sürüyorsa pasif -->
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold"
+                [disabled]="registerForm.invalid || !passwordValid || passwordsMismatch || isLoading">
+          <span *ngIf="!isLoading"><i class="fa fa-user-plus me-1" aria-hidden="true"></i> Kayıt Ol</span>
+          <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-2"></span> Hesap oluşturuluyor...</span>
+        </button>
+
+      </form>
+
+      <!-- ALT BAĞLANTILAR -->
+      <p class="text-center text-muted mt-4 mb-2">
+        Zaten hesabın var mı? <a routerLink="/login" class="fw-semibold text-decoration-none">Giriş yap</a>
+      </p>
+      <p class="text-center mb-0">
+        <a routerLink="/" class="small text-muted text-decoration-none">
+          <i class="fa fa-arrow-left me-1" aria-hidden="true"></i> Ana sayfaya dön
+        </a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

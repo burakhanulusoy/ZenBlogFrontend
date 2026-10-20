@@ -1,0 +1,36 @@
+/* Tüm ekranı kaplayan, hafif renk geçişli arka plan (login ile aynı) */
+.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%);
+}
+
+/* Kayıt formu daha uzun olduğu için kart biraz daha geniş */
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 1rem;
+}
+
+.auth-logo {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+}
+
+.input-group-text {
+  color: #6c757d;
+}
+
+/* Şifre kuralları: varsayılan gri, sağlananlar yeşil (text-success) */
+.password-rules li {
+  color: #6c757d;
+  margin-bottom: 2px;
+}
+
+.password-rules li.text-success {
+  color: #198754 !important;
+}
+
+.password-rules .fa {
+  width: 16px;
+}

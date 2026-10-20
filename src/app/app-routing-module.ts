@@ -6,35 +6,38 @@ import { AdminLayout } from './_layouts/admin-layout/admin-layout';
 import { Category } from './_admin-components/category/category';
 import { Login } from './_main-components/login/login';
 import { AuthGuard } from './_guards/auth-guard';
+import { Register } from './_main-components/register/register';
+import { VerifyEmail } from './_main-components/verify-email/verify-email';
 
 const routes: Routes = [
 
-     //Main Routes  http://localhost:4200 buysa direk home   http://localhost:4200/category mesela lategıroşer ıle bloglar gelelcek
+  // GİRİŞ: kendi başına tam ekran sayfa (MainLayout'un navbar'ı görünmesin)
+  { path: 'login', component: Login },
 
-   {path:'',component : MainLayout,
+  { path: 'register', component: Register },
+  { path: 'verify-email', component: VerifyEmail },
 
-    children:[
-     {path:'',component:Home},
-     {path:'login',component:Login} // localhost:7200/api/login
+  // ZİYARETÇİ SİTESİ: navbar + içerik
+  {
+    path: '', component: MainLayout,
+    children: [
+      { path: '', component: Home }
     ]
-   },
+  },
 
+  // ADMİN PANELİ: giriş yapmamış biri giremez
+  {
+    path: 'admin', component: AdminLayout,
+    canActivate: [AuthGuard],
+    children: [
+      // /admin'e girilince doğrudan kategori sayfasına git (boş sayfa görünmesin)
+      { path: '', redirectTo: 'category', pathMatch: 'full' },
+      { path: 'category', component: Category, canActivate: [AuthGuard] }
+    ]
+  },
 
-    //Admin Routes  http://localhost:4200/admin/category
-
-    {path:'admin',component:AdminLayout,
-         canActivate:[AuthGuard],//bunu yaptıgımız an kormaya gecıyor
-         children:[
-
-          {path:'category',component:Category,canActivate:[AuthGuard]},
-
-         ]
-
-    }
-
-
-
-
+  // Var olmayan bir adrese girilirse ana sayfaya dön
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({

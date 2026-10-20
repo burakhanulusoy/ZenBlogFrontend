@@ -1,40 +1,54 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Navbar</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+  <div class="container">
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" routerLink="" routerLinkActive="active" href="#">Ana Sayfa <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink="login" routerLinkActive="active" href="#">Giriş Yap</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
-    </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
+    <a class="navbar-brand fw-bold" routerLink="/">
+      <i class="fa fa-pencil-square-o text-primary me-1" aria-hidden="true"></i> ZenBlog
+    </a>
+
+    <!-- Mobilde menüyü açıp kapatan buton (Bootstrap 5: data-bs-...) -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Menüyü aç/kapat">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <!-- exact: true → sadece tam olarak "/" adresindeyken "aktif" görünsün -->
+          <a class="nav-link" routerLink="/" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: true }">Ana Sayfa</a>
+        </li>
+      </ul>
+
+      <div class="d-flex gap-2">
+
+        <!-- Giriş yapılmamışsa: Giriş Yap + Kayıt Ol
+             else loggedInMenu: giriş yapılmışsa aşağıdaki ng-template gösterilir -->
+        <ng-container *ngIf="!authService.loggedIn(); else loggedInMenu">
+          <a routerLink="/login" class="btn btn-outline-primary">
+            <i class="fa fa-sign-in me-1" aria-hidden="true"></i> Giriş Yap
+          </a>
+          <a routerLink="/register" class="btn btn-primary">
+            <i class="fa fa-user-plus me-1" aria-hidden="true"></i> Kayıt Ol
+          </a>
+        </ng-container>
+
+        <!-- Giriş yapılmışsa: Panel (sadece Admin) + Çıkış -->
+        <ng-template #loggedInMenu>
+          <!-- DEĞİŞTİ: *ngIf ile sadece Admin'e gösteriliyor -->
+          <a routerLink="/admin" class="btn btn-outline-primary" *ngIf="authService.isAdmin()">
+            <i class="fa fa-tachometer me-1" aria-hidden="true"></i> Panel
+          </a>
+          <button type="button" class="btn btn-outline-danger" (click)="authService.logout()">
+            <i class="fa fa-sign-out me-1" aria-hidden="true"></i> Çıkış
+          </button>
+        </ng-template>
+
+      </div>
+    </div>
+
   </div>
 </nav>
-
-
-
 
 <router-outlet></router-outlet>
