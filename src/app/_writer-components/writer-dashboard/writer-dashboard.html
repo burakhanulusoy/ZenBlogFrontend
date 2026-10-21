@@ -1,0 +1,120 @@
+<!-- KARŞILAMA -->
+<div class="welcome-card card border-0 shadow-sm mb-4 text-white">
+  <div class="card-body p-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+    <div>
+      <h1 class="h4 fw-bold mb-1">{{ greeting }}, {{ fullName || 'Yazar' }} ✍️</h1>
+      <p class="mb-0 opacity-75">Bugün ne yazmak istersin? Yazılarını buradan yönetebilirsin.</p>
+    </div>
+    <button class="btn btn-light fw-semibold" disabled>
+      <i class="fa fa-plus me-1" aria-hidden="true"></i> Yeni Blog Yaz (yakında)
+    </button>
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="alert alert-warning d-flex align-items-start" *ngIf="errorMessage">
+  <i class="fa fa-exclamation-triangle me-2 mt-1" aria-hidden="true"></i>
+  <div>{{ errorMessage }}</div>
+</div>
+
+<!-- İSTATİSTİKLER -->
+<div class="row g-3 mb-4">
+
+  <div class="col-sm-6 col-xl-4">
+    <div class="card stat-card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="stat-icon bg-success bg-opacity-10 text-success me-3">
+          <i class="fa fa-newspaper-o" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="text-muted small">Toplam Blogum</div>
+          <div class="h4 fw-bold mb-0" *ngIf="!isLoading">{{ myBlogs.length }}</div>
+          <div class="spinner-border spinner-border-sm text-success" *ngIf="isLoading"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-4">
+    <div class="card stat-card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+          <i class="fa fa-calendar" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="text-muted small">Bu Ay Yazdıklarım</div>
+          <div class="h4 fw-bold mb-0" *ngIf="!isLoading">{{ thisMonthCount }}</div>
+          <div class="spinner-border spinner-border-sm text-primary" *ngIf="isLoading"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-4">
+    <div class="card stat-card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center">
+        <span class="stat-icon bg-warning bg-opacity-10 text-warning me-3">
+          <i class="fa fa-comments-o" aria-hidden="true"></i>
+        </span>
+        <div>
+          <div class="text-muted small">Bloglarıma Gelen Yorumlar</div>
+          <div class="h4 fw-bold mb-0 text-muted">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SON BLOGLARIM -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <h2 class="h6 fw-bold mb-0">
+      <i class="fa fa-clock-o text-muted me-2" aria-hidden="true"></i>Son Bloglarım
+    </h2>
+  </div>
+
+  <div class="card-body p-0">
+
+    <!-- Yükleniyor -->
+    <div class="text-center py-5" *ngIf="isLoading">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <!-- Hiç blog yok (hata da yoksa) -->
+    <div class="text-center text-muted py-5" *ngIf="!isLoading && !errorMessage && myBlogs.length === 0">
+      <i class="fa fa-pencil fa-3x mb-3 d-block opacity-50" aria-hidden="true"></i>
+      <p class="fw-semibold mb-1">Henüz blog yazmadın</p>
+      <p class="small mb-0">İlk yazını yazmaya hazır olduğunda "Yeni Blog Yaz" butonunu kullanabilirsin.</p>
+    </div>
+
+    <!-- Liste -->
+    <div class="table-responsive" *ngIf="!isLoading && myBlogs.length > 0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light small text-uppercase text-muted">
+          <tr>
+            <th class="ps-4">Blog</th>
+            <th>Kategori</th>
+            <th class="pe-4">Tarih</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let blog of recentBlogs">
+            <td class="ps-4">
+              <div class="d-flex align-items-center">
+                <img [src]="blog.coverImage" alt="" class="blog-thumb rounded me-3">
+                <span class="fw-semibold">{{ blog.mainTitle }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="badge bg-primary bg-opacity-10 text-primary">{{ blog.category?.name }}</span>
+            </td>
+            <!-- date pipe: tarihi biçimlendirir (C#'taki ToString("dd.MM.yyyy") gibi) -->
+            <td class="pe-4 text-muted small">{{ blog.createdAt | date:'dd.MM.yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

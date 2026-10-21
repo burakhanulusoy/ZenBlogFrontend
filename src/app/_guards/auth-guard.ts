@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, GuardResult, MaybeAsync, Router, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../_services/auth-service';
 
-declare const alertify: any;   // YENİ: yetkisiz girişte bildirim göstermek için
+declare const alertify: any;
 
 @Injectable({
   providedIn: 'root',
@@ -21,14 +21,18 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    // DEĞİŞTİ / YENİ: 2) Giriş yapılmış ama Admin değil → ana sayfaya
-    if (!this.authService.isAdmin()) {
-      alertify.error("Bu sayfaya erişim yetkiniz yok.");
-      this.router.navigate(["/"]);
-      return false;
+    // 2) DEĞİŞTİ: Rotanın izin verdiği roller (app-routing-module'de data: { roles: [...] })
+    //    Rotada rol yazılmamışsa giriş yapmış olmak yeterli.
+    const allowedRoles: string[] = route.data?.['roles'] ?? [];
+
+    if (allowedRoles.length === 0 || this.authService.hasAnyRole(allowedRoles)) {
+      return true;
     }
 
-    return true;
+    // 3) Yetkisi yok → kendi paneline gönder (örn. User'ı /admin'den /account'a)
+    alertify.error("Bu sayfaya erişim yetkiniz yok.");
+    this.router.navigate([this.authService.getHomeRoute()]);
+    return false;
   }
 
 }

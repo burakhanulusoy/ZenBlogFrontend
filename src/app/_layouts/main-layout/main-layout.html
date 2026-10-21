@@ -37,9 +37,10 @@
         <!-- Giriş yapılmışsa: Panel (sadece Admin) + Çıkış -->
         <ng-template #loggedInMenu>
           <!-- DEĞİŞTİ: *ngIf ile sadece Admin'e gösteriliyor -->
-          <a routerLink="/admin" class="btn btn-outline-primary" *ngIf="authService.isAdmin()">
-            <i class="fa fa-tachometer me-1" aria-hidden="true"></i> Panel
-          </a>
+          <a [routerLink]="authService.getHomeRoute()" class="btn btn-outline-primary"
+   *ngIf="authService.hasAnyRole(['Admin', 'Writer'])">
+  <i class="fa fa-tachometer me-1" aria-hidden="true"></i> Panel
+</a>
           <button type="button" class="btn btn-outline-danger" (click)="authService.logout()">
             <i class="fa fa-sign-out me-1" aria-hidden="true"></i> Çıkış
           </button>

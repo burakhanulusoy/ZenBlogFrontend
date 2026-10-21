@@ -38,7 +38,7 @@ export class Login implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     if (this.authService.loggedIn()) {
-      this.router.navigate([this.authService.isAdmin() ? "/admin" : "/"]);
+      this.router.navigate([this.authService.getHomeRoute()]);
       return;
     }
 
@@ -155,8 +155,8 @@ export class Login implements OnInit, AfterViewInit {
 
   // İki giriş türünün de ortak başarı adımı
   private onLoginSuccess(token: string) {
-    localStorage.setItem("token", token);
-    alertify.success("Giriş başarılı, hoş geldin!");
-    this.router.navigate([this.authService.isAdmin() ? "/admin" : "/"]);
-  }
+  localStorage.setItem("token", token);
+  alertify.success("Giriş başarılı, hoş geldin!");
+  this.router.navigate([this.authService.getHomeRoute()]);   // DEĞİŞTİ
+}
 }

@@ -34,11 +34,11 @@ export class Register implements OnInit {
   private readonly formFields = ['Name', 'Surname', 'UserName', 'Email', 'PhoneNumber', 'Password', 'ConfirmPassword'];
 
   ngOnInit(): void {
-    if (this.authService.loggedIn()) {
-      this.router.navigate([this.authService.isAdmin() ? "/admin" : "/"]);
-    }
-  }
-
+  if (this.authService.loggedIn()) {
+  this.router.navigate([this.authService.getHomeRoute()]);
+  return;
+}
+}
   // ---------------------------------------------------------------
   // CANLI ŞİFRE KURALLARI (backend'deki Identity ayarlarıyla aynı)
   // ---------------------------------------------------------------
