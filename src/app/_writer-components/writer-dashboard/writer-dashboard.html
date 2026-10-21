@@ -5,9 +5,10 @@
       <h1 class="h4 fw-bold mb-1">{{ greeting }}, {{ fullName || 'Yazar' }} ✍️</h1>
       <p class="mb-0 opacity-75">Bugün ne yazmak istersin? Yazılarını buradan yönetebilirsin.</p>
     </div>
-    <button class="btn btn-light fw-semibold" disabled>
-      <i class="fa fa-plus me-1" aria-hidden="true"></i> Yeni Blog Yaz (yakında)
-    </button>
+    <!-- DEĞİŞTİ: aktif oldu -->
+    <a routerLink="/writer/new-blog" class="btn btn-light fw-semibold">
+      <i class="fa fa-plus me-1" aria-hidden="true"></i> Yeni Blog Yaz
+    </a>
   </div>
 </div>
 

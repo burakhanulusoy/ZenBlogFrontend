@@ -1,0 +1,578 @@
+/* =====================================================================
+   BLOG DETAYI
+   ===================================================================== */
+
+/* ---------------------------------------------------------------
+   OKUMA ÇUBUĞU
+   Ekrana sabit: üst çubuğun (64px) hemen altında, menünün (264px) sağında
+   --------------------------------------------------------------- */
+.zb-progress {
+  position: fixed;
+  top: 64px;
+    left: var(--zb-sidebar-w, 264px);   /* DEĞİŞTİ: menü daraltılınca da doğru yerden başlasın */
+  right: 0;
+  z-index: 19;
+  height: 3px;
+  background-color: transparent;
+}
+
+/* Mobilde sol menü gizli → çubuk soldan başlasın */
+@media (max-width: 991.98px) {
+  .zb-progress {
+    left: 0;
+  }
+}
+
+.zb-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--p-primary-500);
+  transition: width 0.1s linear;
+}
+
+/* ---------------------------------------------------------------
+   ÜST ÇUBUK + HATA
+   --------------------------------------------------------------- */
+.zb-detail-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.zb-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+/* ---------------------------------------------------------------
+   DÜZEN: solda yazı, sağda bilgi kolonu
+   --------------------------------------------------------------- */
+.zb-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  align-items: start;
+  gap: 1.75rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------------------------------------------------------------
+   YAZI KARTI
+   overflow: hidden → kapak resmi kartın yuvarlak köşelerinden taşmasın
+   --------------------------------------------------------------- */
+.zb-article {
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 1.25rem;
+  background-color: var(--zb-surface);
+}
+
+/* ---------------------------------------------------------------
+   KAPAK: resim + koyu gölge + üstünde başlık
+   --------------------------------------------------------------- */
+.zb-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(320px, 52vh, 520px);
+  background-color: var(--zb-ink);
+}
+
+/* Resim arka planı tamamen kaplar */
+.zb-hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Aşağı doğru koyulaşan gölge → beyaz yazı her resimde okunabilsin */
+.zb-hero-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(12, 20, 16, 0) 25%,
+    rgba(12, 20, 16, 0.55) 60%,
+    rgba(12, 20, 16, 0.88) 100%);
+}
+
+.zb-hero-content {
+  position: relative;      /* gölgenin üstünde dursun */
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem clamp(1.25rem, 5vw, 3.5rem);
+  color: #fff;
+}
+
+/* Kategori rozeti: buzlu cam */
+.zb-hero-chip {
+  display: inline-flex;
+  margin-bottom: 1rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(6px);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.zb-hero-title {
+  margin: 0 0 1.25rem;
+  color: #fff;
+  font-family: var(--zb-serif);
+  font-size: clamp(1.9rem, 4vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+.zb-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+}
+
+.zb-hero-author {
+  color: #fff;
+  font-weight: 700;
+}
+
+:host ::ng-deep .zb-hero-avatar {
+  background-color: var(--p-primary-500);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.zb-meta-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.6;
+}
+
+/* ---------------------------------------------------------------
+   GÖVDE
+   --------------------------------------------------------------- */
+.zb-article-body {
+  padding: 3rem clamp(1.25rem, 5vw, 3.5rem) 2.5rem;
+}
+
+/* Okunabilir satır uzunluğu: ~70 karakter */
+.zb-article-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* GİRİŞ PARAGRAFI
+   white-space: pre-line → yazarın Enter ile verdiği satır boşlukları korunsun */
+.zb-lead {
+  margin: 0;
+  padding-bottom: 2.25rem;
+  border-bottom: 1px solid var(--zb-line);
+  color: var(--zb-ink);
+  font-family: var(--zb-serif);
+  font-size: 1.3rem;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* İlk harf büyük (dergilerdeki "drop cap") */
+.zb-lead::first-letter {
+  float: left;
+  padding: 0.35rem 0.65rem 0 0;
+  color: var(--p-primary-700);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 0.85;
+}
+
+/* BÖLÜMLER
+   scroll-margin-top: içindekilerden kaydırınca başlık üst çubuğun altında kalmasın */
+.zb-section {
+  margin-top: 3rem;
+  scroll-margin-top: 90px;
+}
+
+/* Büyük, açık yeşil bölüm numarası */
+.zb-section-no {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--p-primary-200);
+  font-family: var(--zb-serif);
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.zb-section h2 {
+  margin: 0 0 1.1rem;
+  color: var(--zb-ink);
+  font-family: var(--zb-serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.zb-section p {
+  margin: 0 0 1.4rem;
+  color: #2a332e;
+  font-family: var(--zb-serif);
+  font-size: 1.125rem;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
+/* Bölüm resimleri: yazı sütunundan biraz taşar (dergi düzeni) */
+.zb-figure {
+  margin: 2.25rem -1.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .zb-figure {
+    margin: 2rem 0;
+  }
+}
+
+.zb-figure img {
+  display: block;
+  width: 100%;
+  max-height: 540px;
+  border-radius: 1rem;
+  background-color: var(--zb-hover);
+  object-fit: cover;
+  box-shadow: 0 18px 40px -24px rgba(12, 20, 16, 0.45);
+}
+
+/* YAZININ SONU */
+.zb-article-end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 3.5rem;
+}
+
+/* İki yanında çizgi, ortada yaprak */
+.zb-end-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.zb-end-line::before,
+.zb-end-line::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--zb-line);
+}
+
+.zb-end-line img {
+  width: 30px;
+  height: 30px;
+}
+
+.zb-end-text {
+  margin: 0;
+  color: var(--zb-muted);
+  font-family: var(--zb-serif);
+  font-style: italic;
+}
+
+/* ---------------------------------------------------------------
+   SAĞ KOLON (geniş ekranda kaydırırken yerinde durur)
+   --------------------------------------------------------------- */
+.zb-detail-aside {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-detail-aside {
+    position: static;
+  }
+}
+
+.zb-info-card {
+  padding: 1.25rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-info-title {
+  margin: 0 0 0.9rem;
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* YAZAR KARTI */
+.zb-author-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: linear-gradient(135deg, var(--p-primary-50), var(--zb-surface) 70%);
+}
+
+:host ::ng-deep .zb-author-avatar {
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-weight: 700;
+}
+
+.zb-author-name {
+  color: var(--zb-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.zb-author-role {
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+}
+
+/* BİLGİ LİSTESİ: ikon · etiket · değer */
+.zb-info-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zb-info-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.zb-info-list i {
+  width: 1rem;
+  color: var(--p-primary-600);
+  text-align: center;
+}
+
+.zb-info-label {
+  color: var(--zb-muted);
+}
+
+.zb-info-value {
+  margin-left: auto;
+  color: var(--zb-ink);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* İÇİNDEKİLER: solda ince çizgi, aktif bölümde yeşil */
+.zb-toc {
+  display: flex;
+  flex-direction: column;
+  border-left: 2px solid var(--zb-line);
+}
+
+.zb-toc-link {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  width: 100%;
+  margin-left: -2px;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--zb-ink-soft);
+  font-family: var(--zb-font);
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+
+.zb-toc-link:hover {
+  background-color: var(--zb-hover);
+  color: var(--zb-ink);
+}
+
+.zb-toc-link.is-active {
+  border-left-color: var(--p-primary-600);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-weight: 600;
+}
+
+.zb-toc-link:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 1px;
+}
+
+.zb-toc-no {
+  flex-shrink: 0;
+  color: var(--p-primary-600);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.zb-toc-title {
+  min-width: 0;
+}
+
+/* Hareket hassasiyeti olanlarda geçiş efektlerini kapat */
+@media (prefers-reduced-motion: reduce) {
+  .zb-progress-fill,
+  .zb-toc-link {
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   PİKSEL GÖRÜNÜM (yazar paneli)
+   Yazının metni okunabilirlik için Lora'da kalıyor; çerçeve ve süsler piksel.
+   ===================================================================== */
+:host-context(.zb-pixel) .zb-article,
+:host-context(.zb-pixel) .zb-info-card {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: var(--px-shadow);
+}
+
+:host-context(.zb-pixel) .zb-hero {
+  border-bottom: 3px solid var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-hero-chip {
+  border: 2px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  backdrop-filter: none;
+  box-shadow: 2px 2px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+  line-height: 1.4;
+}
+
+:host-context(.zb-pixel) .zb-hero-title {
+  font-family: var(--px-font);
+}
+
+/* Okuma çubuğu: kalın, çizgili piksel bar */
+:host-context(.zb-pixel) .zb-progress {
+  height: 6px;
+}
+
+:host-context(.zb-pixel) .zb-progress-fill {
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg,
+    var(--px-green) 0 8px,
+    var(--px-green-dark) 8px 16px);
+}
+
+:host-context(.zb-pixel) .zb-lead::first-letter {
+  padding-top: 0.5rem;
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 2.4rem;
+}
+
+/* Bölüm numarası: yeşil, siyah gölgeli piksel rakam */
+:host-context(.zb-pixel) .zb-section-no {
+  color: var(--px-green);
+  font-family: var(--px-display);
+  font-size: 1.5rem;
+  text-shadow: 3px 3px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-figure img {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-author-card {
+  background: var(--px-green);
+}
+
+:host-context(.zb-pixel) .zb-author-role {
+  color: var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-info-title {
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+}
+
+:host-context(.zb-pixel) .zb-info-list i {
+  color: var(--px-green-dark);
+}
+
+:host-context(.zb-pixel) .zb-toc {
+  border-left: 3px solid var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-toc-link {
+  margin-left: -3px;
+  border-left-width: 3px;
+  font-family: var(--px-font);
+  font-size: 1rem;
+}
+
+:host-context(.zb-pixel) .zb-toc-link.is-active {
+  border-left-color: var(--px-ink);
+  background-color: var(--px-yellow);
+  color: var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-toc-no {
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+}
+
+:host-context(.zb-pixel) .zb-end-text {
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+  font-style: normal;
+}

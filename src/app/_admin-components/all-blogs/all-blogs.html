@@ -1,0 +1,166 @@
+<!-- =====================================================================
+     TÜM BLOGLAR
+     ===================================================================== -->
+
+<!-- SAYFA BAŞLIĞI -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">Tüm bloglar</h1>
+    <p class="zb-page-sub">Sitedeki bütün yazılar. Okumak için bir satıra tıkla.</p>
+  </div>
+</div>
+
+<!-- ÖZET KARTLARI -->
+<!-- ÖZET KARTLARI (DEĞİŞTİ): toplam vurgulu, yanında tarih aralıkları -->
+<div class="zb-stats">
+  <div class="zb-stat zb-stat-main">
+    <span class="zb-stat-icon"><i class="pi pi-book" aria-hidden="true"></i></span>
+    <div>
+      <div class="zb-stat-value">{{ isLoading ? '–' : blogs.length }}</div>
+      <div class="zb-stat-label">Toplam blog</div>
+    </div>
+  </div>
+  <div class="zb-stat">
+    <span class="zb-stat-icon"><i class="pi pi-sun" aria-hidden="true"></i></span>
+    <div>
+      <div class="zb-stat-value">{{ isLoading ? '–' : todayCount }}</div>
+      <div class="zb-stat-label">Bugün</div>
+    </div>
+  </div>
+  <div class="zb-stat">
+    <span class="zb-stat-icon"><i class="pi pi-calendar-plus" aria-hidden="true"></i></span>
+    <div>
+      <div class="zb-stat-value">{{ isLoading ? '–' : weekCount }}</div>
+      <div class="zb-stat-label">Bu hafta</div>
+    </div>
+  </div>
+  <div class="zb-stat">
+    <span class="zb-stat-icon"><i class="pi pi-calendar" aria-hidden="true"></i></span>
+    <div>
+      <div class="zb-stat-value">{{ isLoading ? '–' : monthCount }}</div>
+      <div class="zb-stat-label">Bu ay</div>
+    </div>
+  </div>
+  <div class="zb-stat">
+    <span class="zb-stat-icon"><i class="pi pi-history" aria-hidden="true"></i></span>
+    <div>
+      <div class="zb-stat-value">{{ isLoading ? '–' : last3MonthsCount }}</div>
+      <div class="zb-stat-label">Son 3 ay</div>
+    </div>
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadBlogs()" />
+</div>
+
+<!-- TABLO KARTI -->
+<div class="zb-card">
+
+  <!-- ARAÇ ÇUBUĞU: arama + kategori -->
+  <div class="zb-toolbar">
+
+    <!-- p-iconfield: içinde ikon olan input kutusu -->
+    <p-iconfield class="zb-search">
+      <p-inputicon styleClass="pi pi-search" />
+      <!-- [ngModel] + (ngModelChange): değer değişince hem değişkeni güncelle hem filtrele -->
+      <input pInputText type="text" class="zb-search-input" placeholder="Başlık ya da yazar ara"
+             [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" />
+    </p-iconfield>
+
+    <!-- p-select: açılır liste. optionLabel: görünen alan, optionValue: seçilince alınan alan
+         showClear: sağda × çıkar, basınca seçim temizlenir (null olur) -->
+    <p-select class="zb-filter" [options]="categories" optionLabel="name" optionValue="id"
+              placeholder="Tüm kategoriler" [showClear]="true" appendTo="body"
+              [style]="{ width: '100%' }"
+              [ngModel]="selectedCategoryId" (ngModelChange)="onCategoryChange($event)" />
+
+    <p-button *ngIf="hasActiveFilter" label="Filtreleri temizle" icon="pi pi-filter-slash"
+              [text]="true" severity="secondary" (onClick)="clearFilters()" />
+
+    <span class="zb-result-count" *ngIf="!isLoading">{{ filteredBlogs.length }} blog</span>
+  </div>
+
+  <!-- p-table: PrimeNG tablosu
+       [value]: satırlar · [paginator]: sayfalama · sortField/sortOrder: varsayılan sıralama (en yeni üstte)
+       [tableStyle] min-width: dar ekranda tablo sıkışmasın, yana kaydırılsın -->
+  <p-table [value]="filteredBlogs" dataKey="id" [loading]="isLoading" [rowHover]="true"
+           [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
+           [showCurrentPageReport]="true" currentPageReportTemplate="{first}–{last} / {totalRecords}"
+           sortField="createdAt" [sortOrder]="-1"
+           styleClass="zb-table" [tableStyle]="{ 'min-width': '56rem' }">
+
+    <!-- BAŞLIK SATIRI
+         pSortableColumn: başlığa tıklayınca o alana göre sıralar; p-sortIcon: ok ikonu -->
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="mainTitle">Blog <p-sortIcon field="mainTitle" /></th>
+        <th>Kategori</th>
+        <th>Yazar</th>
+        <th pSortableColumn="createdAt" class="zb-col-date">Tarih <p-sortIcon field="createdAt" /></th>
+        <th class="zb-col-actions"><span class="zb-sr-only">İşlemler</span></th>
+      </tr>
+    </ng-template>
+
+    <!-- HER SATIR: let-blog → o satırın verisi "blog" adıyla -->
+    <ng-template #body let-blog>
+      <tr class="zb-row" (click)="view(blog)">
+        <td>
+          <div class="zb-blog-cell">
+            <img [src]="blog.coverImage" alt="" class="zb-thumb" loading="lazy">
+            <div class="zb-blog-text">
+              <span class="zb-blog-title" [title]="blog.mainTitle">{{ blog.mainTitle }}</span>
+              <span class="zb-blog-desc">{{ blog.mainDescription }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td><span class="zb-chip">{{ blog.category?.name }}</span></td>
+
+        <td>
+          <div class="zb-author">
+            <!-- Yazarın resmi varsa resim, yoksa baş harfleri -->
+            <p-avatar *ngIf="blog.appUser?.imageUrl" [image]="blog.appUser.imageUrl" shape="circle" styleClass="zb-author-avatar" />
+            <p-avatar *ngIf="!blog.appUser?.imageUrl" [label]="authorInitials(blog)" shape="circle" styleClass="zb-author-avatar" />
+            <span>{{ authorName(blog) }}</span>
+          </div>
+        </td>
+
+        <td class="zb-date">{{ blog.createdAt | date:'dd.MM.yyyy' }}</td>
+
+        <!-- İŞLEMLER
+             $event.stopPropagation(): butona basınca satırın tıklaması da çalışıp detaya gitmesin -->
+        <td>
+                   <div class="zb-actions">
+            <p-button icon="pi pi-eye" [rounded]="true" [text]="true" severity="secondary"
+                      pTooltip="Görüntüle" tooltipPosition="top" ariaLabel="Görüntüle"
+                      (onClick)="$event.stopPropagation(); view(blog)" />
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                      pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil"
+                      (onClick)="$event.stopPropagation(); deleteBlog(blog)" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- HİÇ SATIR YOKSA -->
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5">
+          <div class="zb-empty">
+            <i class="pi" [class.pi-search]="hasActiveFilter" [class.pi-book]="!hasActiveFilter" aria-hidden="true"></i>
+            <p class="zb-empty-title">{{ hasActiveFilter ? 'Aramana uygun blog bulunamadı' : 'Henüz hiç blog yok' }}</p>
+            <p-button *ngIf="hasActiveFilter" label="Filtreleri temizle" [outlined]="true" size="small"
+                      (onClick)="clearFilters()" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>
+
+

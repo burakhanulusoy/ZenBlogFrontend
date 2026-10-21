@@ -1,1 +1,546 @@
 /* You can add global styles to this file, and also import other style files */
+/* =====================================================================
+   GENEL STİLLER (bütün uygulamada geçerli)
+   ===================================================================== */
+
+/* PrimeNG'nin ikon seti: <i class="pi pi-home"></i> */
+@import "primeicons/primeicons.css";
+
+/* ZenBlog renk kutusu: panel sayfaları bu değişkenleri kullanıyor.
+   Bir rengi değiştirmek için sadece burayı değiştirmek yetiyor. */
+:root {
+  --zb-page-bg: #f5f6f3;       /* sayfa zemini: taş grisi, hafif sıcak */
+  --zb-surface: #ffffff;       /* kartlar, menü */
+  --zb-line: #e4e7e1;          /* ince çizgiler */
+  --zb-hover: #eef0ec;         /* üzerine gelince zemin */
+  --zb-ink: #1c2420;           /* ana yazı rengi (mürekkep) */
+  --zb-ink-soft: #3c4741;      /* menü yazıları */
+  --zb-muted: #7a847e;         /* soluk yazılar */
+
+  /* Yazı tipi: index.html'de Google Fonts'tan yükleniyor.
+     Bootstrap da kendi değişkeninden okuduğu için onun sayfaları da aynı fontu kullanır. */
+  --zb-font: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --bs-body-font-family: var(--zb-font);
+
+    /* YENİ: Blog yazılarının okuma fontu (detay sayfası) */
+  --zb-serif: 'Lora', Georgia, 'Times New Roman', serif;
+}
+
+body {
+  font-family: var(--zb-font);
+  color: var(--zb-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+
+/* =====================================================================
+   SWEETALERT2: ZenBlog görünümü
+   (SweetAlert pencereleri body'ye eklendiği için stilleri burada, global dosyada)
+   ===================================================================== */
+.zb-swal {
+  border-radius: 1rem !important;
+  padding: 1.75rem 1.5rem 1.5rem !important;
+  font-family: var(--zb-font) !important;
+}
+
+.zb-swal .swal2-title {
+  color: var(--zb-ink);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.zb-swal .swal2-html-container {
+  color: var(--zb-muted);
+  font-size: 0.95rem;
+}
+
+.zb-swal-actions {
+  gap: 0.5rem;
+}
+
+.zb-swal-btn {
+  border: 0;
+  border-radius: 0.6rem;
+  padding: 0.65rem 1.2rem;
+  font-family: var(--zb-font);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.zb-swal-btn:focus-visible {
+  outline: 2px solid var(--p-primary-400);
+  outline-offset: 2px;
+}
+
+/* Onay (yeşil) */
+.zb-swal-confirm {
+  background-color: var(--p-primary-600);
+  color: #fff;
+}
+
+.zb-swal-confirm:hover {
+  background-color: var(--p-primary-700);
+}
+
+/* Silme gibi tehlikeli işlemler (kırmızı) */
+.zb-swal-danger {
+  background-color: #dc2626;
+  color: #fff;
+}
+
+.zb-swal-danger:hover {
+  background-color: #b91c1c;
+}
+
+/* Vazgeç (gri) */
+.zb-swal-cancel {
+  background-color: var(--zb-hover);
+  color: var(--zb-ink);
+}
+
+.zb-swal-cancel:hover {
+  background-color: var(--zb-line);
+}
+
+/* Sağ üstte kendiliğinden kapanan küçük bildirim */
+.zb-swal-toast {
+  border-radius: 0.8rem !important;
+  font-family: var(--zb-font) !important;
+}
+
+
+/* =====================================================================
+   PİKSEL TEMA (Yazar paneli)
+   Writer layout en dış kutuya "zb-pixel" sınıfı veriyor.
+   Aşağıdaki kurallar sadece o kutunun içindeki PrimeNG bileşenlerini etkiler.
+   ===================================================================== */
+:root {
+  --px-ink: #14201a;          /* koyu mürekkep: çerçeveler, gölgeler */
+  --px-paper: #eef4ee;        /* sayfa zemini */
+  --px-green: #10b981;
+  --px-green-dark: #047857;
+  --px-yellow: #facc15;       /* vurgu */
+  --px-shadow: 4px 4px 0 var(--px-ink);   /* sert, bulanıksız piksel gölge */
+  --px-font: 'Pixelify Sans', var(--zb-font);
+  --px-display: 'Press Start 2P', monospace;
+}
+
+.zb-pixel {
+  font-family: var(--px-font);
+}
+
+/* Butonlar: köşesiz, kalın çerçeve, sert gölge; basınca "içeri göçer" */
+.zb-pixel .p-button {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--px-ink);
+  font-family: var(--px-font);
+  font-weight: 600;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.zb-pixel .p-button:not(:disabled):active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--px-ink);
+}
+
+/* Yazı butonları (text) çerçevesiz kalsın */
+.zb-pixel .p-button.p-button-text {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.zb-pixel .p-button.p-button-text:not(:disabled):active {
+  transform: none;
+}
+
+/* Input ve açılır liste */
+.zb-pixel .p-inputtext,
+.zb-pixel .p-select {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--px-font);
+}
+
+.zb-pixel .p-inputtext:enabled:focus,
+.zb-pixel .p-select.p-focus {
+  border-color: var(--px-green-dark);
+  box-shadow: 3px 3px 0 var(--px-green);
+}
+
+.zb-pixel .p-select-overlay {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: var(--px-shadow);
+  font-family: var(--px-font);
+}
+
+/* Avatar ve iskelet: kare */
+.zb-pixel .p-avatar,
+.zb-pixel .p-skeleton {
+  border-radius: 0 !important;
+}
+
+/* Body'ye eklenen açılır menüler (kullanıcı menüsü) için */
+.zb-pixel-overlay {
+  border: 3px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  box-shadow: var(--px-shadow) !important;
+  font-family: var(--px-font) !important;
+}
+
+.zb-pixel-overlay .p-menu-item-content {
+  border-radius: 0 !important;
+}
+
+
+/* =====================================================================
+   KİMLİK DOĞRULAMA SAYFALARI (giriş, kayıt, doğrulama, şifremi unuttum)
+   Çerçeve: auth-shell. Buradakiler formun içindeki ortak parçalar.
+   ===================================================================== */
+.zb-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.zb-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.zb-label {
+  margin-bottom: 0.45rem;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.zb-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+/* İki sütun (Ad + Soyad); telefonda alt alta */
+.zb-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .zb-row-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Input'lar tam genişlik ve biraz daha yüksek */
+.zb-auth .p-iconfield,
+.zb-auth .p-password {
+  display: block;
+  width: 100%;
+}
+
+.zb-auth .p-inputtext {
+  width: 100%;
+  padding-top: 0.78rem;
+  padding-bottom: 0.78rem;
+  border-radius: 0.7rem;
+  font-size: 0.95rem;
+}
+
+/* Hatalı alan: kırmızı çerçeve */
+.zb-auth .zb-invalid.p-inputtext,
+.zb-auth .zb-invalid .p-inputtext {
+  border-color: #dc2626;
+}
+
+.zb-error {
+  margin-top: 0.4rem;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Bilgi / hata kutusu */
+.zb-auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.zb-auth-alert i {
+  margin-top: 0.15rem;
+}
+
+.zb-auth-alert.is-error {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.zb-auth-alert.is-success {
+  border-color: var(--p-primary-200);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+}
+
+/* Ana buton: tam genişlik, iri */
+.zb-submit,
+.zb-submit .zb-submit-btn {
+  width: 100%;
+}
+
+.zb-auth .zb-submit-btn {
+  justify-content: center;
+  padding: 0.85rem 1rem;
+  border-radius: 0.7rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  box-shadow: 0 10px 24px -14px rgba(5, 150, 105, 0.8);
+}
+
+/* "ya da e-postayla" ayıracı */
+.zb-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 1.4rem 0;
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+}
+
+.zb-divider::before,
+.zb-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--zb-line);
+}
+
+/* Google butonu ve Turnstile kutucuğu ortalı */
+.zb-google,
+.zb-turnstile {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+/* Küçük bağlantılar */
+.zb-link-sm {
+  color: var(--p-primary-700);
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.zb-link-sm:hover {
+  text-decoration: underline;
+}
+
+/* Bağlantı gibi görünen buton ("Tekrar gönder", "Değiştir") */
+.zb-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-primary-700);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zb-link-btn:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.zb-link-btn:disabled {
+  color: var(--zb-muted);
+  font-weight: 600;
+  cursor: default;
+}
+
+/* Alttaki "Hesabın yok mu? Kayıt ol" */
+.zb-auth-switch {
+  margin: 1.75rem 0 0;
+  color: var(--zb-muted);
+  text-align: center;
+}
+
+.zb-auth-switch a {
+  color: var(--p-primary-700);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.zb-auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* Şifre kuralları: karşılandıkça yeşil tik */
+.zb-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0.65rem 0 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.7rem;
+  background-color: #f7f8f6;
+  list-style: none;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 575.98px) {
+  .zb-rules {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zb-rules li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--zb-muted);
+  transition: color 0.15s;
+}
+
+.zb-rules li i {
+  font-size: 0.75rem;
+}
+
+.zb-rules li.is-ok {
+  color: var(--p-primary-700);
+  font-weight: 600;
+}
+
+/* 6 haneli kod kutuları (p-inputotp) */
+.zb-auth .p-inputotp {
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.zb-auth .p-inputotp .p-inputtext {
+  width: 3.1rem;
+  height: 3.5rem;
+  padding: 0;
+  border-radius: 0.75rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (max-width: 400px) {
+  .zb-auth .p-inputotp .p-inputtext {
+    width: 2.6rem;
+    height: 3.1rem;
+    font-size: 1.2rem;
+  }
+}
+
+.zb-center {
+  text-align: center;
+}
+
+/* Kod gönderilen e-posta kutusu */
+.zb-sent-to {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.75rem;
+  background-color: #f7f8f6;
+  font-size: 0.88rem;
+}
+
+.zb-sent-to i {
+  color: var(--p-primary-600);
+}
+
+.zb-sent-to span {
+  flex-grow: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.zb-resend {
+  color: var(--zb-muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.zb-auth-lead {
+  margin: -0.75rem 0 1.5rem;
+  color: var(--zb-muted);
+  line-height: 1.6;
+}
+
+.zb-auth-lead strong {
+  color: var(--zb-ink);
+  overflow-wrap: anywhere;
+}
+
+/* Şifremi unuttum: 1 → 2 adım göstergesi */
+.zb-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.zb-step-dot {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--zb-line);
+  border-radius: 50%;
+  background-color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.zb-step.is-active {
+  color: var(--zb-ink);
+}
+
+.zb-step.is-active .zb-step-dot {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-600);
+  color: #fff;
+}
+
+.zb-step.is-done .zb-step-dot {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-step-line {
+  flex: 1;
+  height: 2px;
+  background-color: var(--zb-line);
+}
+
+.zb-step-line.is-done {
+  background-color: var(--p-primary-500);
+}

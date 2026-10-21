@@ -1,26 +1,35 @@
+// DEĞİŞTİ: interface → class, alanlara tip eklendi.
+// GET /api/blogs/{id} cevabındaki TEK blog (backend: GetBlogByIdQueryResult).
+// Blog formu (yeni / düzenle) da bu modeli kullanıyor; formdaki her input bir alana bağlı.
+// Alan adları API'nin döndüğü JSON ile birebir aynı (camelCase).
+export class BlogDto {
+  id: string;
 
-export interface BlogDto {
-  id;
-  mainTitle;
-  coverImage;
-  blogImage1;
-  title1;
-  description1;
-  mainDescription;
-  description2;
-  title2;
-  description3;
-  blogImage2;
-  title3;
-  description4;
+  // Giriş
+  mainTitle: string;
+  mainDescription: string;
+  coverImage: string;        // Azure'daki resmin adresi (URL)
 
+  // 1. bölüm
+  title1: string;
+  description1: string;
+  description2: string;
+  blogImage1: string;
 
+  // 2. bölüm
+  title2: string;
+  description3: string;
+  blogImage2: string;
 
-  categoryId;
-  //category?: Category;
+  // 3. bölüm
+  title3: string;
+  description4: string;
 
-  appUserId;
- // appUser?: AppUser;
+  // İlişkiler
+  categoryId: string;
+  category?: { id: string; name: string };
+  appUserId?: string;        // yazar: backend token'dan dolduruyor, formdan GÖNDERMİYORUZ
+  appUser?: any;
 
-//  comments?: Commen[]t;
+  createdAt?: string;
 }

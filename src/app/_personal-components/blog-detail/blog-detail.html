@@ -1,0 +1,180 @@
+<!-- =====================================================================
+     BLOG DETAYI
+     ===================================================================== -->
+
+<!-- OKUMA ÇUBUĞU: üst çubuğun hemen altında, kaydırdıkça dolar
+     [style.width.%]: genişliği yüzde olarak bağla → readingProgress 40 ise width: 40% -->
+<div class="zb-progress" *ngIf="blog && !isLoading" aria-hidden="true">
+  <span class="zb-progress-fill" [style.width.%]="readingProgress"></span>
+</div>
+
+<!-- ÜST ÇUBUK: geri + işlemler -->
+<div class="zb-detail-bar">
+  <p-button [label]="backLabel" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+
+  <div class="zb-detail-actions" *ngIf="blog">
+    <!-- Sadece kendi bloğunda görünür (rotada canEdit: true varsa) -->
+    <p-button *ngIf="canEdit" label="Düzenle" icon="pi pi-pencil" [outlined]="true" (onClick)="edit()" />
+    <p-button label="Sil" icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="deleteBlog()" />
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadBlog()" />
+</div>
+
+<!-- YÜKLENİYOR: yazının iskeleti -->
+<div class="zb-detail-layout" *ngIf="isLoading">
+  <article class="zb-article">
+    <p-skeleton width="100%" height="26rem" borderRadius="0" />
+    <div class="zb-article-body">
+      <div class="zb-article-inner">
+        <p-skeleton width="100%" height="1.1rem" styleClass="mb-2" />
+        <p-skeleton width="95%" height="1.1rem" styleClass="mb-2" />
+        <p-skeleton width="80%" height="1.1rem" styleClass="mb-5" />
+        <p-skeleton width="40%" height="1.8rem" styleClass="mb-3" />
+        <p-skeleton width="100%" height="1rem" styleClass="mb-2" />
+        <p-skeleton width="90%" height="1rem" />
+      </div>
+    </div>
+  </article>
+  <aside class="zb-detail-aside">
+    <p-skeleton width="100%" height="9rem" borderRadius="1rem" />
+    <p-skeleton width="100%" height="12rem" borderRadius="1rem" />
+  </aside>
+</div>
+
+<!-- YAZI -->
+<div class="zb-detail-layout" *ngIf="blog && !isLoading">
+
+  <!-- #articleEl: TypeScript'teki @ViewChild('articleEl') bu elemanı yakalıyor (okuma çubuğu için) -->
+  <article class="zb-article" #articleEl>
+
+    <!-- ============ KAPAK: resim + üstünde başlık ============ -->
+    <header class="zb-hero">
+      <img class="zb-hero-img" [src]="blog.coverImage" [alt]="blog.mainTitle">
+      <div class="zb-hero-shade" aria-hidden="true"></div>
+
+      <div class="zb-hero-content">
+        <span class="zb-hero-chip">{{ blog.category?.name }}</span>
+        <h1 class="zb-hero-title">{{ blog.mainTitle }}</h1>
+
+        <div class="zb-hero-meta">
+          <p-avatar *ngIf="blog.appUser?.imageUrl" [image]="blog.appUser.imageUrl" shape="circle" />
+          <p-avatar *ngIf="!blog.appUser?.imageUrl" [label]="authorInitials" shape="circle" styleClass="zb-hero-avatar" />
+          <span class="zb-hero-author">{{ authorName }}</span>
+          <span class="zb-meta-dot" aria-hidden="true"></span>
+          <span>{{ blog.createdAt | date:'dd.MM.yyyy' }}</span>
+          <span class="zb-meta-dot" aria-hidden="true"></span>
+          <span>{{ readingMinutes }} dk okuma</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ YAZININ GÖVDESİ ============ -->
+    <div class="zb-article-body">
+      <div class="zb-article-inner">
+
+        <!-- GİRİŞ (ilk harf büyük: dergi süslemesi) -->
+        <p class="zb-lead">{{ blog.mainDescription }}</p>
+
+        <!-- 1. BÖLÜM -->
+        <section class="zb-section" id="bolum-1">
+          <span class="zb-section-no" aria-hidden="true">01</span>
+          <h2>{{ blog.title1 }}</h2>
+          <p>{{ blog.description1 }}</p>
+          <figure class="zb-figure">
+            <img [src]="blog.blogImage1" [alt]="blog.title1" loading="lazy">
+          </figure>
+          <p>{{ blog.description2 }}</p>
+        </section>
+
+        <!-- 2. BÖLÜM -->
+        <section class="zb-section" id="bolum-2">
+          <span class="zb-section-no" aria-hidden="true">02</span>
+          <h2>{{ blog.title2 }}</h2>
+          <p>{{ blog.description3 }}</p>
+          <figure class="zb-figure">
+            <img [src]="blog.blogImage2" [alt]="blog.title2" loading="lazy">
+          </figure>
+        </section>
+
+        <!-- 3. BÖLÜM -->
+        <section class="zb-section" id="bolum-3">
+          <span class="zb-section-no" aria-hidden="true">03</span>
+          <h2>{{ blog.title3 }}</h2>
+          <p>{{ blog.description4 }}</p>
+        </section>
+
+        <!-- YAZININ SONU: çizgi + yaprak + başa dön -->
+        <footer class="zb-article-end">
+          <div class="zb-end-line">
+            <img src="zenblog-icon.png" alt="" aria-hidden="true">
+          </div>
+          <p class="zb-end-text">Yazının sonu</p>
+          <p-button label="Başa dön" icon="pi pi-arrow-up" [text]="true" size="small" (onClick)="scrollToTop()" />
+        </footer>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- ============ SAĞ KOLON ============ -->
+  <aside class="zb-detail-aside">
+
+    <!-- YAZAR KARTI -->
+    <div class="zb-info-card zb-author-card">
+      <p-avatar *ngIf="blog.appUser?.imageUrl" [image]="blog.appUser.imageUrl" shape="circle" size="xlarge" />
+      <p-avatar *ngIf="!blog.appUser?.imageUrl" [label]="authorInitials" shape="circle" size="xlarge" styleClass="zb-author-avatar" />
+      <div>
+        <div class="zb-author-name">{{ authorName }}</div>
+        <div class="zb-author-role">Yazar</div>
+      </div>
+    </div>
+
+    <!-- YAZI BİLGİLERİ -->
+    <div class="zb-info-card">
+      <h3 class="zb-info-title">Yazı bilgileri</h3>
+      <ul class="zb-info-list">
+        <li>
+          <i class="pi pi-tag" aria-hidden="true"></i>
+          <span class="zb-info-label">Kategori</span>
+          <span class="zb-info-value">{{ blog.category?.name }}</span>
+        </li>
+        <li>
+          <i class="pi pi-calendar" aria-hidden="true"></i>
+          <span class="zb-info-label">Yayın tarihi</span>
+          <span class="zb-info-value">{{ blog.createdAt | date:'dd.MM.yyyy' }}</span>
+        </li>
+        <li>
+          <i class="pi pi-clock" aria-hidden="true"></i>
+          <span class="zb-info-label">Okuma süresi</span>
+          <span class="zb-info-value">{{ readingMinutes }} dk</span>
+        </li>
+        <li>
+          <i class="pi pi-align-left" aria-hidden="true"></i>
+          <span class="zb-info-label">Kelime</span>
+          <span class="zb-info-value">{{ wordCount }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- İÇİNDEKİLER: o an ekrandaki bölüm yeşil yanar
+         [class.is-active]: koşul true ise is-active sınıfını ekle -->
+    <div class="zb-info-card">
+      <h3 class="zb-info-title">İçindekiler</h3>
+      <nav class="zb-toc" aria-label="İçindekiler">
+        <button type="button" class="zb-toc-link" *ngFor="let section of sections"
+                [class.is-active]="activeSectionId === section.id"
+                (click)="scrollTo(section.id)">
+          <span class="zb-toc-no">{{ section.no }}</span>
+          <span class="zb-toc-title">{{ section.title }}</span>
+        </button>
+      </nav>
+    </div>
+
+  </aside>
+</div>

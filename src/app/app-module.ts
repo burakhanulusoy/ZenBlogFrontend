@@ -3,6 +3,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
+// YENİ: PrimeNG
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { providePrimeNG } from 'primeng/config';
+import { ZenPreset } from './_theme/zen-preset';
+import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
+import { AvatarModule } from 'primeng/avatar';
+import { MenuModule } from 'primeng/menu';
+
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
 
@@ -24,12 +33,35 @@ import { Category } from './_admin-components/category/category';
 
 // Yazar paneli sayfaları
 import { WriterDashboard } from './_writer-components/writer-dashboard/writer-dashboard';
+
+// Ortak (kişisel) sayfalar: birden fazla panelde kullanılıyor
 import { MyBlogs } from './_personal-components/my-blogs/my-blogs';
+import { BlogForm } from './_personal-components/blog-form/blog-form';
+
 // Ortak component'ler
 import { Turnstile } from './_shared-components/turnstile/turnstile';
 
 // Interceptor
 import { TokenInterceptor } from './_interceptors/token-interceptor';
+import { AllBlogs } from './_admin-components/all-blogs/all-blogs';
+import { BlogDetail } from './_personal-components/blog-detail/blog-detail';
+
+
+// YENİ: PrimeNG (tablo, açılır liste, input, ipucu, iskelet)
+import { TableModule } from 'primeng/table';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { TooltipModule } from 'primeng/tooltip';
+import { SkeletonModule } from 'primeng/skeleton';
+import { AuthShell } from './_shared-components/auth-shell/auth-shell';
+
+
+import { PasswordModule } from 'primeng/password';     // YENİ: <p-password> (göster/gizle düğmeli şifre)
+import { InputOtpModule } from 'primeng/inputotp';     // YENİ: <p-inputotp> (6 kutulu kod girişi)
+import { ChartModule } from 'primeng/chart';   // YENİ: <p-chart> (chart.js tabanlı grafikler)
+import { DialogModule } from 'primeng/dialog';   // YENİ: <p-dialog> (açılır pencere)
 
 @NgModule({
   declarations: [
@@ -50,23 +82,60 @@ import { TokenInterceptor } from './_interceptors/token-interceptor';
     // Admin
     Dashboard,
     Category,
+    AllBlogs,
 
     // Yazar
     WriterDashboard,
 
     // Ortak
     Turnstile,
-    MyBlogs
+    MyBlogs,
+    BlogForm,
+    AllBlogs,
+    BlogDetail,
+    AuthShell
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,   // <router-outlet>, routerLink, routerLinkActive buradan geliyor
-    FormsModule         // ngModel, ngForm buradan geliyor
+    FormsModule,        // ngModel, ngForm buradan geliyor
+
+    // YENİ: PrimeNG bileşenleri (HTML'de kullanacağımız her bileşenin modülü burada olmalı)
+    ButtonModule,       // <p-button>
+    DrawerModule,       // <p-drawer>  (mobilde soldan açılan menü)
+    AvatarModule,       // <p-avatar>  (baş harfli yuvarlak)
+    MenuModule,          // <p-menu>    (kullanıcı açılır menüsü)
+
+    MenuModule,         // <p-menu>    (kullanıcı açılır menüsü)
+    TableModule,        // YENİ: <p-table>
+    SelectModule,       // YENİ: <p-select>  (açılır liste)
+    InputTextModule,    // YENİ: pInputText
+    IconFieldModule,    // YENİ: <p-iconfield> (ikonlu input)
+    InputIconModule,    // YENİ: <p-inputicon>
+    TooltipModule,      // YENİ: pTooltip (üzerine gelince ipucu)
+    SkeletonModule,      // YENİ: <p-skeleton> (yüklenirken gri kutular)
+    PasswordModule,
+    InputOtpModule,
+    ChartModule,
+        DialogModule        // YENİ: <p-dialog>
+
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+
+    // YENİ: PrimeNG bileşenlerinin açılma/kapanma animasyonları için
+    provideAnimationsAsync(),
+
+    // YENİ: PrimeNG'nin genel ayarı: hangi tema kullanılacak
+    // darkModeSelector: false → karanlık mod kapalı (Bootstrap sayfalarıyla uyumsuz görünmesin)
+    providePrimeNG({
+      theme: {
+        preset: ZenPreset,
+        options: { darkModeSelector: false }
+      }
+    })
   ],
   bootstrap: [App]
 })

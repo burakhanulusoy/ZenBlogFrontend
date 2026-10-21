@@ -1,0 +1,80 @@
+<div class="zb-auth">
+
+  <!-- =============================================================
+       SOL: MARKA PANELİ (geniş ekranda)
+       ============================================================= -->
+  <aside class="zb-auth-brand">
+    <!-- Arkada dev, soluk yaprak (süs) -->
+    <img src="zenblog-icon.png" class="zb-auth-watermark" alt="" aria-hidden="true">
+
+    <a routerLink="/" class="zb-auth-logo" aria-label="ZenBlog ana sayfa">
+      <img src="zenblog-logo.png" alt="ZenBlog">
+    </a>
+
+    <div class="zb-auth-pitch">
+      <span class="zb-auth-eyebrow">Sakin bir yazı alanı</span>
+      <h2 class="zb-auth-headline">Düşüncelerini <em>sade</em> ve <em>güvenle</em> paylaş.</h2>
+
+      <ul class="zb-auth-features">
+        <li>
+          <span class="zb-auth-feature-icon"><i class="pi pi-shield" aria-hidden="true"></i></span>
+          <div>
+            <strong>Cloudflare korumalı giriş</strong>
+            <span>Hesabın otomatik bot saldırılarına karşı korunur.</span>
+          </div>
+        </li>
+        <li>
+          <span class="zb-auth-feature-icon"><i class="pi pi-verified" aria-hidden="true"></i></span>
+          <div>
+            <strong>Doğrulanmış hesaplar</strong>
+            <span>Her hesap e-postaya gelen kodla onaylanır.</span>
+          </div>
+        </li>
+        <li>
+          <span class="zb-auth-feature-icon"><i class="pi pi-google" aria-hidden="true"></i></span>
+          <div>
+            <strong>Google ile tek adımda</strong>
+            <span>İstersen şifre yazmadan giriş yap.</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <p class="zb-auth-copy">© {{ year }} ZenBlog. Tüm hakları saklıdır.</p>
+  </aside>
+
+  <!-- =============================================================
+       SAĞ: FORM ALANI
+       ============================================================= -->
+  <main class="zb-auth-main">
+
+    <div class="zb-auth-top">
+      <!-- Mobilde sol panel gizli → logo burada görünür -->
+      <a routerLink="/" class="zb-auth-mobile-logo" aria-label="ZenBlog ana sayfa">
+        <img src="zenblog-logo.png" alt="ZenBlog">
+      </a>
+      <a routerLink="/" class="zb-auth-home">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i> Ana sayfa
+      </a>
+    </div>
+
+    <div class="zb-auth-center">
+      <!-- [class.is-wide]: wide input'u true ise daha geniş -->
+      <div class="zb-auth-panel" [class.is-wide]="wide">
+
+        <header class="zb-auth-head">
+          <div class="zb-auth-icon" *ngIf="icon">
+            <i [class]="icon" aria-hidden="true"></i>
+          </div>
+          <h1 class="zb-auth-title">{{ heading }}</h1>
+          <p class="zb-auth-subtitle" *ngIf="subheading">{{ subheading }}</p>
+        </header>
+
+        <!-- Sayfanın kendi içeriği (form) buraya yerleşir -->
+        <ng-content></ng-content>
+
+      </div>
+    </div>
+
+  </main>
+</div>

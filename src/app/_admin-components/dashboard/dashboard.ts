@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../_services/auth-service';
-import { CategoryService } from '../../_services/category-service';
 
+// =====================================================================
+// GENEL BAKIŞ (admin ana sayfa)
+// Şimdilik "yapım aşamasında" ekranı; istatistikler ve grafikler en sona bırakıldı.
+// =====================================================================
 @Component({
   selector: 'app-dashboard',
   standalone: false,
@@ -10,27 +13,18 @@ import { CategoryService } from '../../_services/category-service';
 })
 export class Dashboard implements OnInit {
 
-  constructor(private authService: AuthService,
-              private categoryService: CategoryService) {}
+  constructor(private authService: AuthService) {}
 
-  fullName = '';
-  categoryCount: number | null = null;   // null: henüz yüklenmedi
+  firstName = '';
+  greeting = '';
 
   ngOnInit(): void {
-    this.fullName = this.authService.getFullName();
+    this.firstName = this.authService.getFullName().split(' ')[0] || 'Admin';
 
-    // Şimdilik sadece kategori sayısını çekebiliyoruz; diğer modüller yapıldıkça eklenecek
-    this.categoryService.getCategories().subscribe({
-      next: result => this.categoryCount = result.data?.length ?? 0,
-      error: () => this.categoryCount = 0
-    });
-  }
-
-  // Saate göre selamlama
-  get greeting(): string {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Günaydın';
-    if (hour < 18) return 'İyi günler';
-    return 'İyi akşamlar';
+    this.greeting = hour < 6 ? 'İyi geceler'
+                  : hour < 12 ? 'Günaydın'
+                  : hour < 18 ? 'İyi günler'
+                  : 'İyi akşamlar';
   }
 }

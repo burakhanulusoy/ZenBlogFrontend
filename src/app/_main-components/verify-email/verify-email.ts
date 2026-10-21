@@ -18,7 +18,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
 
   email = '';
   code = '';
-
+  emailLocked = false;
   isLoading = false;      // "Doğrula" isteği sürerken
   isResending = false;    // "Kodu tekrar gönder" isteği sürerken
   errorMessage = '';
@@ -31,6 +31,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
     const params = this.route.snapshot.queryParamMap;
 
     this.email = params.get('email') ?? '';
+    this.emailLocked = !!this.email;   // YENİ
 
     // Kayıttan geliyorsak kod AZ ÖNCE gönderildi; hemen tekrar göndermesin diye 60 sn beklet
     if (params.get('sent') === 'true') {

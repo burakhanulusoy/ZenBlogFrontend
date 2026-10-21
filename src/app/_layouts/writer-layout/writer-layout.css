@@ -1,0 +1,417 @@
+/* =====================================================================
+   YAZAR PANELİ ÇERÇEVESİ (piksel tasarım)
+   Renk ve fontlar: styles.css → PİKSEL TEMA (--px-...)
+   ===================================================================== */
+
+/* Sayfa zemini: milimetrik kağıt gibi ince kare ızgara */
+.px-shell {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--px-paper);
+  background-image:
+    linear-gradient(rgba(20, 32, 26, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 32, 26, 0.05) 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: var(--px-ink);
+}
+
+/* ---------------------------------------------------------------
+   SOL MENÜ (koyu)
+   --------------------------------------------------------------- */
+.px-sidebar {
+  position: sticky;
+  top: 0;
+  width: 264px;
+  height: 100vh;
+  flex-shrink: 0;
+  border-right: 3px solid var(--px-ink);
+}
+
+@media (max-width: 991.98px) {
+  .px-sidebar {
+    display: none;
+  }
+}
+
+.px-sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem 1rem;
+  background-color: var(--px-ink);
+  /* koyu zeminde de çok hafif piksel ızgara */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 8px 8px;
+  color: #fff;
+}
+
+/* LOGO */
+.px-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.px-brand-tile {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 3px solid #fff;
+  background-color: var(--px-paper);
+  box-shadow: 3px 3px 0 var(--px-green);
+}
+
+.px-brand-tile img {
+  width: 26px;
+  height: 26px;
+}
+
+.px-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.px-brand-name {
+  font-family: var(--px-display);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+.px-brand-tag {
+  align-self: flex-start;
+  padding: 0.2rem 0.4rem;
+  background-color: var(--px-yellow);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.5rem;
+}
+
+/* MENÜ */
+.px-nav {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.px-nav-group + .px-nav-group {
+  margin-top: 1.5rem;
+}
+
+.px-nav-title {
+  margin: 0 0 0.65rem 0.25rem;
+  color: var(--px-yellow);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.04em;
+}
+
+.px-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+  padding: 0.6rem 0.75rem;
+  border: 3px solid transparent;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform 0.08s, background-color 0.08s;
+}
+
+.px-nav-link i {
+  width: 1.1rem;
+  text-align: center;
+}
+
+.px-nav-link:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+/* Seçili sayfa: yeşil blok + siyah sert gölge */
+.px-nav-link.is-active {
+  border-color: #fff;
+  background-color: var(--px-green);
+  box-shadow: 4px 4px 0 #000;
+  color: var(--px-ink);
+  font-weight: 700;
+}
+
+.px-nav-link:focus-visible,
+.px-brand:focus-visible,
+.px-cta-btn:focus-visible {
+  outline: 3px solid var(--px-yellow);
+  outline-offset: 2px;
+}
+
+/* ÇAĞRI KARTI */
+.px-cta {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 3px solid #fff;
+  background-color: #1f2f27;
+  box-shadow: 4px 4px 0 var(--px-green);
+}
+
+.px-cta-title {
+  margin: 0 0 0.5rem;
+  color: var(--px-yellow);
+  font-family: var(--px-display);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+
+.px-cta-text {
+  margin: 0 0 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.px-cta-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.75rem;
+  border: 3px solid var(--px-ink);
+  background-color: var(--px-yellow);
+  box-shadow: 3px 3px 0 #000;
+  color: var(--px-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.px-cta-btn:hover {
+  color: var(--px-ink);
+}
+
+.px-cta-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #000;
+}
+
+/* ---------------------------------------------------------------
+   SAĞ TARAF
+   --------------------------------------------------------------- */
+.px-main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+/* ÜST ÇUBUK */
+.px-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 64px;
+  padding: 0 1.5rem;
+  border-bottom: 3px solid var(--px-ink);
+  background-color: var(--px-paper);
+}
+
+.px-topbar-left,
+.px-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.px-icon-btn {
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+  cursor: pointer;
+}
+
+.px-icon-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+@media (max-width: 991.98px) {
+  .px-menu-toggle {
+    display: grid;
+  }
+}
+
+/* Konum: YAZAR ▶ Bloglarım */
+.px-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.px-crumb-root {
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.6rem;
+}
+
+.px-crumb-sep {
+  color: var(--px-green-dark);
+  font-size: 0.6rem;
+}
+
+.px-crumb-current {
+  overflow: hidden;
+  font-size: 1.1rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.px-site-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.7rem;
+  border: 3px solid transparent;
+  color: var(--px-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.px-site-link:hover {
+  border-color: var(--px-ink);
+  background-color: #fff;
+  color: var(--px-ink);
+}
+
+/* KULLANICI BUTONU */
+.px-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-font);
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.px-user:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.px-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--px-green);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+}
+
+.px-user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.px-user-name {
+  max-width: 150px;
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.px-user-role {
+  color: var(--px-green-dark);
+  font-size: 0.8rem;
+}
+
+.px-user-caret {
+  font-size: 0.7rem;
+}
+
+@media (max-width: 575.98px) {
+  .px-topbar {
+    padding: 0 0.75rem;
+  }
+
+  .px-site-link span,
+  .px-user-text,
+  .px-crumb-root,
+  .px-crumb-sep {
+    display: none;
+  }
+}
+
+/* Kullanıcı menüsünün başlığı (bizim şablonumuz → stil uygulanır) */
+.px-menu-head {
+  min-width: 220px;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 3px solid var(--px-ink);
+  background-color: var(--px-yellow);
+}
+
+.px-menu-name {
+  font-weight: 700;
+}
+
+.px-menu-email {
+  font-size: 0.85rem;
+}
+
+/* SAYFA İÇERİĞİ */
+.px-content {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 1400px;
+  padding: 1.75rem 1.5rem 2.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .px-content {
+    padding: 1.25rem 0.875rem 2rem;
+  }
+}
+
+/* Mobil menü: PrimeNG'nin başlık alanını gizle, iç boşluğu sıfırla */
+:host ::ng-deep .px-drawer .p-drawer-header {
+  display: none;
+}
+
+:host ::ng-deep .px-drawer .p-drawer-content {
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-nav-link,
+  .px-cta-btn,
+  .px-user {
+    transition: none;
+  }
+}

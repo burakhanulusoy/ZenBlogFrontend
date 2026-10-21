@@ -1,0 +1,307 @@
+/* ---------------------------------------------------------------
+   SAYFA BAŞLIĞI
+   --------------------------------------------------------------- */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+/* ---------------------------------------------------------------
+   ÖZET KARTLARI
+   --------------------------------------------------------------- */
+/* 5 kart yan yana */
+.zb-stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Tablette 3 kart yan yana */
+@media (max-width: 1199.98px) {
+  .zb-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Telefonda 2 kart yan yana; toplam kartı tam satır */
+@media (max-width: 575.98px) {
+  .zb-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zb-stat-main {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Normal kart (beyaz) */
+.zb-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.9rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 1.05rem;
+}
+
+.zb-stat-value {
+  color: var(--zb-ink);
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;   /* rakamlar eşit genişlikte, sayılar zıplamasın */
+}
+
+.zb-stat-label {
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+}
+
+/* DEĞİŞTİ: Toplam blog kartı (yeşil zemin)
+   1) Normal kart kurallarının ALTINDA duruyor → aynı güçteki kuralda sonra yazılan kazanır
+   2) ".zb-stat.zb-stat-main" iki sınıflı seçici → tek sınıflı ".zb-stat"tan zaten daha güçlü */
+.zb-stat.zb-stat-main {
+  border-color: var(--p-primary-700);
+  background-color: var(--p-primary-700);
+}
+
+.zb-stat.zb-stat-main .zb-stat-icon {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.zb-stat.zb-stat-main .zb-stat-value,
+.zb-stat.zb-stat-main .zb-stat-label {
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------
+   HATA KUTUSU
+   --------------------------------------------------------------- */
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+/* ---------------------------------------------------------------
+   TABLO KARTI
+   --------------------------------------------------------------- */
+.zb-card {
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--zb-line);
+}
+
+.zb-search {
+  display: block;
+  flex: 1 1 280px;
+}
+
+.zb-search-input {
+  width: 100%;
+}
+
+.zb-filter {
+  flex: 0 1 240px;
+  min-width: 200px;
+}
+
+.zb-result-count {
+  margin-left: auto;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* Tablonun başlık satırı (PrimeNG'nin kendi çizdiği elemanlar → ::ng-deep) */
+:host ::ng-deep .zb-table .p-datatable-thead > tr > th {
+  background-color: #fafbf9;
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+:host ::ng-deep .zb-table .p-datatable-tbody > tr > td {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
+.zb-col-date {
+  width: 9rem;
+}
+
+.zb-col-actions {
+  width: 6.5rem;   /* 2 buton: Görüntüle + Sil */
+}
+
+.zb-row {
+  cursor: pointer;
+}
+
+/* Blog hücresi: kapak + başlık + açıklama */
+.zb-blog-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.zb-thumb {
+  width: 68px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 0.55rem;
+  background-color: var(--zb-hover);
+  object-fit: cover;
+}
+
+.zb-blog-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 440px;
+}
+
+.zb-blog-title {
+  overflow: hidden;
+  color: var(--zb-ink);
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.zb-blog-desc {
+  overflow: hidden;
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Kategori rozeti */
+.zb-chip {
+  display: inline-flex;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Yazar */
+.zb-author {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .zb-author-avatar {
+  width: 28px;
+  height: 28px;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.zb-date {
+  color: var(--zb-muted);
+  font-size: 0.88rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.15rem;
+}
+
+/* Boş durum */
+.zb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  color: var(--zb-muted);
+  text-align: center;
+}
+
+.zb-empty i {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+.zb-empty-title {
+  margin: 0;
+  color: var(--zb-ink-soft);
+  font-weight: 600;
+}
+
+/* Ekranda görünmez, ekran okuyucu okur */
+.zb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

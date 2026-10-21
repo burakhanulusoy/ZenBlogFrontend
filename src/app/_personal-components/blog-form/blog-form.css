@@ -1,0 +1,79 @@
+/* Başlığın solundaki yuvarlak ikon (Bloglarım sayfasıyla aynı) */
+.page-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+/* Bölüm numarası: yazının sırasını gösteriyor (giriş → 1 → 2 → 3) */
+.section-no {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background-color: rgba(79, 70, 229, 0.1);
+  color: #4f46e5;
+  font-size: 0.8rem;
+}
+
+/* Geniş ekranda sağ kolon (kategori, kapak, kaydet) sayfa kaydırılırken yerinde dursun */
+@media (min-width: 1200px) {
+  .form-sidebar {
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------
+   RESİM KUTUSU
+   --------------------------------------------------------------- */
+.image-box {
+  position: relative;
+  height: 190px;
+  margin-bottom: 0;
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  background-color: #f8fafc;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.image-box:hover {
+  border-color: #4f46e5;
+  background-color: #eef2ff;
+}
+
+/* Resim seçilince kesikli çizgi yerine ince düz çerçeve */
+.image-box:has(img) {
+  border-style: solid;
+  border-width: 1px;
+}
+
+.image-box img {
+  object-fit: cover;   /* kutuya sığdır, oranı bozmadan kırp */
+}
+
+/* Hatalı: kırmızı çerçeve */
+.image-box.is-invalid {
+  border-color: #dc3545;
+}
+
+/* Klavyeyle (Tab) dosya inputuna gelince kutunun etrafında odak çizgisi */
+.image-input:focus-visible + .image-box {
+  outline: 3px solid rgba(79, 70, 229, 0.45);
+  outline-offset: 2px;
+}
+
+/* Resmin sağ altındaki "Değiştir" rozeti */
+.image-change {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background-color: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(4px);
+  font-weight: 500;
+}

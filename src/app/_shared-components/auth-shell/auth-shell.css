@@ -1,0 +1,281 @@
+/* =====================================================================
+   KİMLİK DOĞRULAMA ÇERÇEVESİ
+   Formun içindeki parçaların (input, buton, uyarı...) stilleri styles.css'te
+   ("KİMLİK DOĞRULAMA SAYFALARI" bölümü), çünkü o parçalar sayfaların
+   kendi şablonunda yazılıyor ve bu dosyanın stilleri onlara ulaşmıyor.
+   ===================================================================== */
+
+.zb-auth {
+  display: grid;
+  grid-template-columns: minmax(400px, 45%) 1fr;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+@media (max-width: 991.98px) {
+  .zb-auth {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------
+   SOL: MARKA PANELİ
+   --------------------------------------------------------------- */
+.zb-auth-brand {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  overflow: hidden;
+  padding: 2.75rem clamp(2rem, 4vw, 3.75rem);
+  color: #fff;
+  /* koyu zümrüt + sol üstte hafif ışık */
+  background:
+    radial-gradient(circle at 15% 10%, rgba(52, 211, 153, 0.22) 0%, transparent 45%),
+    linear-gradient(160deg, #065f46 0%, #053d2e 60%, #042a20 100%);
+}
+
+/* İnce nokta deseni (resmi bir doku) */
+.zb-auth-brand::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+  pointer-events: none;
+}
+
+@media (max-width: 991.98px) {
+  .zb-auth-brand {
+    display: none;
+  }
+}
+
+/* Dev, soluk yaprak filigranı.
+   filter: brightness(0) invert(1) → yeşil resmi beyaza çevirir */
+.zb-auth-watermark {
+  position: absolute;
+  right: -14%;
+  bottom: -12%;
+  width: 72%;
+  max-width: 560px;
+  filter: brightness(0) invert(1);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.zb-auth-logo {
+  position: relative;
+  align-self: flex-start;
+}
+
+.zb-auth-logo img {
+  display: block;
+  height: 38px;
+  filter: brightness(0) invert(1);   /* koyu zeminde beyaz logo */
+}
+
+.zb-auth-pitch {
+  position: relative;
+}
+
+.zb-auth-eyebrow {
+  display: inline-flex;
+  margin-bottom: 1.25rem;
+  padding: 0.32rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.zb-auth-headline {
+  max-width: 14ch;
+  margin: 0 0 2.25rem;
+  font-family: var(--zb-serif);
+  font-size: clamp(2.1rem, 3.2vw, 3rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.zb-auth-headline em {
+  color: #6ee7b7;
+  font-style: italic;
+}
+
+.zb-auth-features {
+  display: grid;
+  gap: 1.15rem;
+  max-width: 400px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zb-auth-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.zb-auth-features strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.zb-auth-features span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.86rem;
+}
+
+.zb-auth-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.8rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #6ee7b7;
+}
+
+.zb-auth-copy {
+  position: relative;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+}
+
+/* ---------------------------------------------------------------
+   SAĞ: FORM ALANI
+   --------------------------------------------------------------- */
+.zb-auth-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3rem);
+}
+
+.zb-auth-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Mobil logo: sadece dar ekranda */
+.zb-auth-mobile-logo {
+  display: none;
+}
+
+.zb-auth-mobile-logo img {
+  display: block;
+  height: 30px;
+}
+
+@media (max-width: 991.98px) {
+  .zb-auth-mobile-logo {
+    display: block;
+  }
+}
+
+.zb-auth-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.6rem;
+  color: var(--zb-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.zb-auth-home:hover {
+  background-color: var(--zb-hover);
+  color: var(--zb-ink);
+}
+
+.zb-auth-center {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+/* Form kutusu: açılırken hafifçe yukarı kayarak belirir */
+.zb-auth-panel {
+  width: 100%;
+  max-width: 420px;
+  animation: zb-auth-in 0.45s ease-out both;
+}
+
+.zb-auth-panel.is-wide {
+  max-width: 540px;
+}
+
+@keyframes zb-auth-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.zb-auth-head {
+  margin-bottom: 1.75rem;
+}
+
+.zb-auth-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.25rem;
+  border-radius: 1rem;
+  background-color: var(--p-primary-50);
+  box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.08);
+  color: var(--p-primary-700);
+  font-size: 1.4rem;
+}
+
+.zb-auth-title {
+  margin: 0 0 0.45rem;
+  color: var(--zb-ink);
+  font-size: clamp(1.7rem, 2.6vw, 2.05rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.zb-auth-subtitle {
+  margin: 0;
+  color: var(--zb-muted);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.zb-auth-home:focus-visible,
+.zb-auth-logo:focus-visible,
+.zb-auth-mobile-logo:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zb-auth-panel {
+    animation: none;
+  }
+}

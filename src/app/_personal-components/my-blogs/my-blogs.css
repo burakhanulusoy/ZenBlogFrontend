@@ -1,47 +1,398 @@
-/* Başlığın solundaki yuvarlak ikon */
-.page-icon {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
+/* =====================================================================
+   BLOGLARIM
+   Üst kısım: sade görünüm (admin)
+   Alt kısım: :host-context(.zb-pixel) → yazar panelinde piksel görünüm
+   ===================================================================== */
+
+/* ---------------------------------------------------------------
+   SAYFA BAŞLIĞI
+   --------------------------------------------------------------- */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Blog kartı: üzerine gelince hafif yukarı kalksın */
-.blog-card {
-  border-radius: 0.875rem;
+.zb-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+/* HATA */
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+/* ---------------------------------------------------------------
+   ARAÇ ÇUBUĞU
+   --------------------------------------------------------------- */
+.zb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-search {
+  display: block;
+  flex: 1 1 280px;
+}
+
+.zb-search-input {
+  width: 100%;
+}
+
+.zb-filter {
+  flex: 0 1 240px;
+  min-width: 200px;
+}
+
+/* ---------------------------------------------------------------
+   KART IZGARASI
+   auto-fill + minmax: ekran genişledikçe yan yana kart sayısı kendiliğinden artar
+   --------------------------------------------------------------- */
+.zb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.zb-blog-card {
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
 
-.blog-card:hover {
+.zb-blog-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08) !important;
+  border-color: var(--p-primary-200);
+  box-shadow: 0 16px 32px -20px rgba(12, 20, 16, 0.35);
 }
 
-/* Kapak resmi alanı: sabit yükseklik, resim kırpılarak sığdırılır */
-.blog-cover {
-  height: 180px;
-  background-color: #e5e7eb;
+.zb-blog-card:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
 }
 
-.blog-cover img {
+.zb-skeleton-card {
+  cursor: default;
+}
+
+.zb-skeleton-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* KAPAK */
+.zb-cover {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  background-color: var(--zb-hover);
+}
+
+.zb-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.3s;
 }
 
-/* Resmin sol üstündeki kategori rozeti */
-.category-badge {
-  top: 12px;
-  left: 12px;
-  background-color: rgba(17, 24, 39, 0.75);
-  backdrop-filter: blur(4px);
-  font-weight: 500;
+.zb-blog-card:hover .zb-cover img {
+  transform: scale(1.04);
 }
 
-/* Başlık en fazla 2 satır; fazlası "..." */
-.blog-title {
+.zb-chip {
+  display: inline-flex;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.92);
+  color: var(--p-primary-800);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.zb-cover-chip {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+/* GÖVDE */
+.zb-blog-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.zb-blog-date {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+}
+
+/* En fazla 2 satır; fazlası "..." */
+.zb-blog-title {
   display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 0.4rem;
+  color: var(--zb-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.35;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.zb-blog-desc {
+  display: -webkit-box;
   overflow: hidden;
+  margin: 0 0 1rem;
+  color: var(--zb-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* margin-top: auto → butonlar kartın en altına yaslanır (kartlar farklı uzunlukta olsa da hizalı) */
+.zb-blog-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.zb-edit-btn {
+  flex-grow: 1;
+}
+
+:host ::ng-deep .zb-edit-btn .p-button {
+  width: 100%;
+}
+
+/* BOŞ DURUM */
+.zb-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3.5rem 1.5rem;
+  border: 1px dashed var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+  text-align: center;
+}
+
+.zb-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.25rem;
+  border-radius: 1rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 1.4rem;
+}
+
+.zb-empty-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.zb-empty-text {
+  margin: 0 0 0.5rem;
+  color: var(--zb-muted);
+}
+
+/* =====================================================================
+   PİKSEL GÖRÜNÜM (yazar paneli)
+   :host-context(.zb-pixel): bu component "zb-pixel" sınıflı bir kutunun içindeyse uygula
+   ===================================================================== */
+:host-context(.zb-pixel) .zb-page-title {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+:host-context(.zb-pixel) .zb-count {
+  min-width: 2.2rem;
+  height: 2.2rem;
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.65rem;
+}
+
+:host-context(.zb-pixel) .zb-page-sub {
+  color: var(--px-green-dark);
+  font-size: 1.05rem;
+}
+
+:host-context(.zb-pixel) .zb-toolbar {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: #fff;
+  box-shadow: var(--px-shadow);
+}
+
+:host-context(.zb-pixel) .zb-grid {
+  gap: 1.5rem;
+}
+
+/* Kart: kalın çerçeve + sert gölge; üzerine gelince yukarı-sola zıplar, gölge büyür */
+:host-context(.zb-pixel) .zb-blog-card {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: #fff;
+  box-shadow: var(--px-shadow);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+:host-context(.zb-pixel) .zb-blog-card:hover {
+  transform: translate(-3px, -3px);
+  border-color: var(--px-ink);
+  box-shadow: 7px 7px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-blog-card:focus-visible {
+  outline: 3px solid var(--px-yellow);
+  outline-offset: 3px;
+}
+
+:host-context(.zb-pixel) .zb-skeleton-card:hover {
+  transform: none;
+  box-shadow: var(--px-shadow);
+}
+
+:host-context(.zb-pixel) .zb-cover {
+  border-bottom: 3px solid var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-blog-card:hover .zb-cover img {
+  transform: none;
+}
+
+/* Kategori: sarı piksel etiket */
+:host-context(.zb-pixel) .zb-chip {
+  border: 2px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  box-shadow: 2px 2px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.5rem;
   line-height: 1.4;
-  min-height: 2.8em;   /* tek satırlık başlıklarda da kartlar aynı hizada kalsın */
+}
+
+:host-context(.zb-pixel) .zb-blog-date {
+  color: var(--px-green-dark);
+  font-size: 0.9rem;
+}
+
+:host-context(.zb-pixel) .zb-blog-title {
+  color: var(--px-ink);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+:host-context(.zb-pixel) .zb-blog-desc {
+  color: #4a5a51;
+  font-size: 0.95rem;
+}
+
+:host-context(.zb-pixel) .zb-empty-card {
+  border: 3px dashed var(--px-ink);
+  border-radius: 0;
+  background-color: #fff;
+}
+
+:host-context(.zb-pixel) .zb-empty-icon {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-green);
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-empty-title {
+  font-family: var(--px-display);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+:host-context(.zb-pixel) .zb-alert {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--px-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zb-blog-card,
+  .zb-cover img {
+    transition: none;
+  }
 }
