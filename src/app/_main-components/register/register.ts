@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../_services/auth-service';
 import { RegisterDto } from '../../_models/registerDto';
+import { Turnstile } from '../../_shared-components/turnstile/turnstile';   // YENİ
 
 declare const alertify: any;
 
@@ -16,6 +17,9 @@ export class Register implements OnInit {
   constructor(private authService: AuthService,
               private router: Router) {}
 
+  // YENİ: HTML'deki <app-turnstile> → başarısız denemede reset() ile sıfırlamak için
+  @ViewChild(Turnstile) turnstile: Turnstile;
+
   registerDto: RegisterDto = new RegisterDto();
 
   showPassword = false;
@@ -23,6 +27,10 @@ export class Register implements OnInit {
   errors: any[] = [];
   generalError = '';
 
+  turnstileToken: string | null = null;   // YENİ: kutucuk doğrulanınca dolar
+
+  // Formda gösterdiğimiz alanlar. API hatası bunlardan birine aitse o alanın altında,
+  // değilse (örneğin "Turnstile" hatası) formun üstünde gösterilir.
   private readonly formFields = ['Name', 'Surname', 'UserName', 'Email', 'PhoneNumber', 'Password', 'ConfirmPassword'];
 
   ngOnInit(): void {
@@ -31,7 +39,9 @@ export class Register implements OnInit {
     }
   }
 
+  // ---------------------------------------------------------------
   // CANLI ŞİFRE KURALLARI (backend'deki Identity ayarlarıyla aynı)
+  // ---------------------------------------------------------------
   private get password(): string {
     return this.registerDto.password ?? '';
   }
@@ -50,7 +60,9 @@ export class Register implements OnInit {
     return !!this.registerDto.confirmPassword && this.registerDto.confirmPassword !== this.registerDto.password;
   }
 
+  // ---------------------------------------------------------------
   // API HATALARINI ALANLARA DAĞITMA
+  // ---------------------------------------------------------------
   private mapToField(propertyName: string): string {
     if (propertyName.startsWith('Password')) return 'Password';
     if (propertyName === 'DuplicateEmail' || propertyName === 'InvalidEmail') return 'Email';
@@ -70,21 +82,22 @@ export class Register implements OnInit {
       .map(e => e.errorMessage);
   }
 
+  // ---------------------------------------------------------------
   // KAYIT
+  // ---------------------------------------------------------------
   register() {
 
     this.isLoading = true;
     this.errors = [];
     this.generalError = '';
 
-    this.authService.register(this.registerDto).subscribe({
+    // DEĞİŞTİ: Turnstile token'ı da gönderiliyor
+    this.authService.register(this.registerDto, this.turnstileToken).subscribe({
 
       next: result => {
         alertify.success(result.data?.message ?? "Kayıt başarılı!");
 
-        // DEĞİŞTİ: Doğrulama sayfasına git.
-        // email: sayfada e-posta dolu gelsin
-        // sent: kod az önce gönderildi → "tekrar gönder" 60 sn beklesin
+        // Doğrulama sayfasına git (e-posta dolu gelsin, "tekrar gönder" 60 sn beklesin)
         this.router.navigate(["/verify-email"], {
           queryParams: { email: this.registerDto.email, sent: true }
         });
@@ -92,6 +105,9 @@ export class Register implements OnInit {
 
       error: err => {
         this.isLoading = false;
+
+        // YENİ: Token tek kullanımlık; yeni deneme için kutucuğu sıfırla
+        this.turnstile?.reset();
 
         if (err.status === 0) {
           this.generalError = "Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.";

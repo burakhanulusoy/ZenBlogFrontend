@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from 
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../_services/auth-service';
 import { LoginDto } from '../../_models/loginDto';
+import { Turnstile } from '../../_shared-components/turnstile/turnstile';   // YENİ
 import { GOOGLE_CLIENT_ID } from '../../../_constans/google';
 
 declare const alertify: any;
@@ -23,12 +24,17 @@ export class Login implements OnInit, AfterViewInit {
   // HTML'deki <div #googleButton> → Google butonu bu kutunun içine çizilecek
   @ViewChild('googleButton') googleButton: ElementRef;
 
+  // YENİ: HTML'deki <app-turnstile> → başarısız denemede reset() ile sıfırlamak için
+  @ViewChild(Turnstile) turnstile: Turnstile;
+
   loginDto: LoginDto = new LoginDto();
 
   showPassword = false;
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+
+  turnstileToken: string | null = null;   // YENİ: kutucuk doğrulanınca dolar
 
   ngOnInit(): void {
     if (this.authService.loggedIn()) {
@@ -48,7 +54,6 @@ export class Login implements OnInit, AfterViewInit {
       this.successMessage = "E-posta adresin doğrulandı. Şimdi giriş yapabilirsin.";
     }
 
-    // YENİ: şifre sıfırlamadan gelince
     if (params.get('reset') === 'true') {
       this.successMessage = "Şifren güncellendi. Yeni şifrenle giriş yapabilirsin.";
     }
@@ -68,12 +73,16 @@ export class Login implements OnInit, AfterViewInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.authService.login(this.loginDto).subscribe({
+    // DEĞİŞTİ: Turnstile token'ı da gönderiliyor (71. satırdaki hatanın çözümü)
+    this.authService.login(this.loginDto, this.turnstileToken).subscribe({
 
       next: result => this.onLoginSuccess(result.data.token),
 
       error: err => {
         this.isLoading = false;
+
+        // YENİ: Token tek kullanımlık; yeni deneme için kutucuğu sıfırla
+        this.turnstile?.reset();
 
         if (err.status === 0) {
           this.errorMessage = "Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.";

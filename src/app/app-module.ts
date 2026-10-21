@@ -14,6 +14,7 @@ import { TokenInterceptor } from './_interceptors/token-interceptor';
 import { Register } from './_main-components/register/register';
 import { VerifyEmail } from './_main-components/verify-email/verify-email';
 import { ForgotPassword } from './_main-components/forgot-password/forgot-password';
+import { Turnstile } from './_shared-components/turnstile/turnstile';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { ForgotPassword } from './_main-components/forgot-password/forgot-passwo
     Login,
     Register,
     VerifyEmail,
-    ForgotPassword
+    ForgotPassword,
+    Turnstile
   ],
   imports: [
     BrowserModule,

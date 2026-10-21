@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
@@ -21,9 +21,14 @@ export class AuthService {
   // Token'daki rol alanının adı (backend rolü ClaimTypes.Role ile ekliyor)
   private readonly roleClaim = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
 
-  // POST /api/users/login
-  login(model) {
-    return this.http.post<any>(this.baseUrl + "login", model);
+  // Turnstile token'ını backend'in beklediği başlığa koyar (TurnstileValidationFilter okuyor)
+  private turnstileHeaders(turnstileToken: string) {
+    return { headers: new HttpHeaders({ 'X-Turnstile-Token': turnstileToken }) };
+  }
+
+  // POST /api/users/login   (+ başlıkta X-Turnstile-Token)
+  login(model, turnstileToken: string) {
+    return this.http.post<any>(this.baseUrl + "login", model, this.turnstileHeaders(turnstileToken));
   }
 
   // POST /api/users/google-login   Body: { idToken }
@@ -31,9 +36,9 @@ export class AuthService {
     return this.http.post<any>(this.baseUrl + "google-login", { idToken });
   }
 
-  // POST /api/users/register
-  register(model: RegisterDto) {
-    return this.http.post<any>(this.baseUrl + "register", model);
+  // DEĞİŞTİ: POST /api/users/register   (+ başlıkta X-Turnstile-Token)
+  register(model: RegisterDto, turnstileToken: string) {
+    return this.http.post<any>(this.baseUrl + "register", model, this.turnstileHeaders(turnstileToken));
   }
 
   // POST /api/users/confirm-email   Body: { email, code }
@@ -46,12 +51,12 @@ export class AuthService {
     return this.http.post<any>(this.baseUrl + "resend-confirmation", { email });
   }
 
-  // YENİ: POST /api/users/forgot-password   Body: { email }
+  // POST /api/users/forgot-password   Body: { email }
   forgotPassword(email: string) {
     return this.http.post<any>(this.baseUrl + "forgot-password", { email });
   }
 
-  // YENİ: POST /api/users/reset-password   Body: { email, code, newPassword, confirmPassword }
+  // POST /api/users/reset-password   Body: { email, code, newPassword, confirmPassword }
   resetPassword(email: string, code: string, newPassword: string, confirmPassword: string) {
     return this.http.post<any>(this.baseUrl + "reset-password", { email, code, newPassword, confirmPassword });
   }

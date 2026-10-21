@@ -2,6 +2,9 @@
 <html lang="en">
   <!-- Google ile giriş kütüphanesi (Google Identity Services) -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- Cloudflare Turnstile (bot koruması).
+     render=explicit: kutucuğu sayfa açılınca kendisi çizmesin; biz component'ten çizeceğiz -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <head>
   <meta charset="utf-8">
   <title>ZenBlogFrontend</title>
