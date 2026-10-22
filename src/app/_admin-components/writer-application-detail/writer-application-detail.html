@@ -1,0 +1,151 @@
+<!-- =====================================================================
+     YAZARLIK BAŞVURUSU DETAYI
+     ===================================================================== -->
+<div class="zb-detail-bar">
+  <p-button label="Başvurular" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<div class="zb-layout" *ngIf="isLoading">
+  <div class="zb-main-col"><p-skeleton width="100%" height="26rem" borderRadius="1rem" /></div>
+  <div class="zb-side-col"><p-skeleton width="100%" height="16rem" borderRadius="1rem" /></div>
+</div>
+
+<div class="zb-layout" *ngIf="application && !isLoading">
+
+  <!-- ===================== SOL: BAŞVURU ===================== -->
+  <div class="zb-main-col">
+
+    <section class="zb-panel zb-head">
+      <div class="zb-head-top">
+        <span class="zb-status" [ngClass]="'is-' + application.status">{{ statusLabel(application.status) }}</span>
+        <span class="zb-muted">{{ application.submittedAt | date:'dd.MM.yyyy HH:mm' }} tarihinde gönderildi</span>
+      </div>
+      <h1 class="zb-head-title">Yazarlık başvurusu</h1>
+      <div class="zb-topics">
+        <span class="zb-topic" *ngFor="let t of topicList"><i class="pi pi-tag" aria-hidden="true"></i> {{ t }}</span>
+      </div>
+    </section>
+
+    <section class="zb-panel">
+      <h2 class="zb-q"><span>01</span> Neden yazar olmak istiyor?</h2>
+      <p class="zb-answer">{{ application.motivation }}</p>
+    </section>
+
+    <section class="zb-panel">
+      <h2 class="zb-q"><span>02</span> Yazı deneyimi</h2>
+      <p class="zb-answer" *ngIf="application.experience">{{ application.experience }}</p>
+      <p class="zb-muted" *ngIf="!application.experience">Belirtilmemiş.</p>
+    </section>
+
+    <section class="zb-panel">
+      <h2 class="zb-q"><span>03</span> Örnek çalışmalar</h2>
+      <p class="zb-muted" *ngIf="sampleLines.length === 0">Belirtilmemiş.</p>
+      <ul class="zb-links" *ngIf="sampleLines.length > 0">
+        <li *ngFor="let line of sampleLines">
+          <a *ngIf="line.isLink" [href]="line.text" target="_blank" rel="noopener noreferrer">
+            <i class="pi pi-external-link" aria-hidden="true"></i> {{ line.text }}
+          </a>
+          <span *ngIf="!line.isLink">{{ line.text }}</span>
+        </li>
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- ===================== SAĞ: BAŞVURAN + KARAR ===================== -->
+  <aside class="zb-side-col">
+
+    <section class="zb-panel zb-applicant">
+      <p-avatar *ngIf="application.imageUrl" [image]="application.imageUrl" shape="circle" size="xlarge" />
+      <p-avatar *ngIf="!application.imageUrl" [label]="initials" shape="circle" size="xlarge" styleClass="zb-applicant-avatar" />
+      <div class="zb-applicant-name">{{ application.fullName }}</div>
+      <div class="zb-muted">&#64;{{ application.userName }}</div>
+      <div class="zb-muted zb-small-text">{{ application.email }}</div>
+
+      <ul class="zb-facts">
+        <li>
+          <span>Önceki başvuru</span>
+          <strong>{{ application.previousApplicationCount }}</strong>
+        </li>
+        <li *ngIf="application.reviewedAt">
+          <span>İlk incelendi</span>
+          <strong>{{ application.reviewedAt | date:'dd.MM.yyyy' }}</strong>
+        </li>
+        <li *ngIf="application.accountStatus !== 'Active'">
+          <span>Hesap durumu</span>
+          <strong class="zb-danger-text">Aktif değil</strong>
+        </li>
+      </ul>
+
+      <p-button label="Kullanıcı detayına git" icon="pi pi-user" [outlined]="true" severity="secondary"
+                styleClass="zb-full-btn" (onClick)="openUser()" />
+    </section>
+
+    <!-- KARAR -->
+    <section class="zb-panel" *ngIf="isOpen">
+      <h2 class="zb-panel-title">Karar</h2>
+      <p class="zb-muted zb-small-text">Onaylarsan Yazar rolü verilir. Reddedersen gerekçe kullanıcıya iletilir ve 30 gün sonra tekrar başvurabilir.</p>
+      <div class="zb-decide">
+        <p-button label="Onayla" icon="pi pi-check" styleClass="zb-full-btn"
+                  [loading]="isApproving" [disabled]="isApproving || application.accountStatus !== 'Active'"
+                  (onClick)="approve()" />
+        <p-button label="Reddet" icon="pi pi-times" severity="danger" [outlined]="true" styleClass="zb-full-btn"
+                  [disabled]="isApproving" (onClick)="openRejectDialog()" />
+      </div>
+    </section>
+
+    <!-- SONUÇLANMIŞ -->
+    <section class="zb-panel zb-decision" *ngIf="!isOpen" [ngClass]="'is-' + application.status">
+      <h2 class="zb-panel-title">{{ application.status === 'Approved' ? 'Onaylandı' : 'Reddedildi' }}</h2>
+      <p class="zb-muted zb-small-text">
+        {{ application.decidedAt | date:'dd.MM.yyyy HH:mm' }} · {{ application.decidedByAdminName }}
+      </p>
+      <div class="zb-reason" *ngIf="application.rejectReason">
+        <span class="zb-muted zb-small-text">Gerekçe</span>
+        <p>{{ application.rejectReason }}</p>
+      </div>
+    </section>
+
+  </aside>
+</div>
+
+
+<!-- =====================================================================
+     REDDET PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="rejectDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="!isRejecting" [style]="{ width: '520px' }" [breakpoints]="{ '640px': '95vw' }"
+          styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon is-danger"><i class="pi pi-times" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">Başvuruyu reddet</h2>
+        <p class="zb-dialog-sub">{{ application?.fullName }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <label for="rejectReason" class="zb-label">Değerlendirme notu</label>
+  <textarea pTextarea id="rejectReason" rows="5" class="zb-textarea" name="rejectReason"
+            [attr.maxlength]="maxReason" [(ngModel)]="rejectReason"
+            placeholder="Kullanıcıya yapıcı bir geri bildirim yaz. Bu metin e-posta ile gönderilecek."></textarea>
+  <div class="zb-field-foot">
+    <small class="zb-error" *ngIf="rejectError">{{ rejectError }}</small>
+    <small class="zb-hint" *ngIf="!rejectError" [class.is-ok]="rejectValid">En az {{ minReason }} karakter</small>
+    <small class="zb-counter">{{ rejectReason.length }}/{{ maxReason }}</small>
+  </div>
+
+  <div class="zb-dialog-actions">
+    <p-button label="Vazgeç" severity="secondary" [text]="true" [disabled]="isRejecting" (onClick)="rejectDialogVisible = false" />
+    <p-button label="Reddet" icon="pi pi-times" severity="danger" [loading]="isRejecting"
+              [disabled]="!rejectValid || isRejecting" (onClick)="submitReject()" />
+  </div>
+</p-dialog>

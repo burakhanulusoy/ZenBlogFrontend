@@ -1,0 +1,246 @@
+/* =====================================================================
+   YAZARLIK BAŞVURULARI
+   ===================================================================== */
+.zb-page-head { margin-bottom: 1.25rem; }
+
+.zb-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: #dc2626;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span { flex-grow: 1; }
+
+/* SEKMELER */
+.zb-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.zb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 999px;
+  background-color: var(--zb-surface);
+  color: var(--zb-ink-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.zb-tab:hover { border-color: var(--p-primary-300); }
+
+.zb-tab.is-active {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-600);
+  color: #fff;
+}
+
+.zb-tab-count {
+  min-width: 1.5rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.zb-tab.is-active .zb-tab-count {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* TABLO */
+.zb-card {
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+:host ::ng-deep .zb-table .p-datatable-thead > tr > th {
+  background-color: #fafbf9;
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+:host ::ng-deep .zb-table .p-datatable-tbody > tr > td {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
+.zb-row { cursor: pointer; }
+
+/* Okunmamış satır: hafif yeşil zemin + kalın ad */
+:host ::ng-deep .zb-table .p-datatable-tbody > tr.is-unread > td {
+  background-color: #f6fdf9;
+}
+
+.is-unread .zb-user-name { font-weight: 800; }
+
+.zb-col-date { width: 8rem; color: var(--zb-muted); white-space: nowrap; }
+.zb-col-status { width: 9rem; }
+.zb-col-arrow { width: 3rem; color: var(--zb-muted); text-align: right; }
+
+.zb-user-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.zb-unread-dot {
+  position: absolute;
+  left: -0.7rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--p-primary-600);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+:host ::ng-deep .zb-user-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.zb-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.zb-user-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--zb-ink);
+  font-weight: 700;
+}
+
+.zb-new {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.zb-user-handle {
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+}
+
+.zb-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.zb-topic {
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Durum rozeti */
+.zb-status {
+  display: inline-flex;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.zb-status.is-Pending { background-color: #eff6ff; color: #1d4ed8; }
+.zb-status.is-Reviewed { background-color: #fff7ed; color: #c2410c; }
+.zb-status.is-Approved { background-color: var(--p-primary-50); color: var(--p-primary-700); }
+.zb-status.is-Rejected { background-color: #fef2f2; color: #b91c1c; }
+
+.zb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+}
+
+.zb-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 1rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 1.3rem;
+}
+
+.zb-empty-title {
+  margin: 0;
+  color: var(--zb-ink-soft);
+  font-weight: 700;
+}
+
+.zb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}

@@ -68,7 +68,11 @@ import { UserDetail } from './_admin-components/user-detail/user-detail';   // Y
 import { TextareaModule } from 'primeng/textarea';
 import { Profile } from './_personal-components/profile/profile';
 import { UserLayout } from './_layouts/user-layout/user-layout';
-import { ErrorPage } from './_main-components/error-page/error-page';   // YENİ: pTextarea
+import { ErrorPage } from './_main-components/error-page/error-page';
+import { Roles } from './_admin-components/roles/roles';
+import { BecomeWriter } from './_user-components/become-writer/become-writer';
+import { WriterApplications } from './_admin-components/writer-applications/writer-applications';
+import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';   // YENİ: pTextarea
 
 
 @NgModule({
@@ -107,7 +111,11 @@ import { ErrorPage } from './_main-components/error-page/error-page';   // YENİ
     UserDetail,
     Profile,
     UserLayout,
-    ErrorPage
+    ErrorPage,
+    Roles,
+    BecomeWriter,
+    WriterApplications,
+    WriterApplicationDetail
   ],
   imports: [
     BrowserModule,

@@ -459,3 +459,27 @@
     transition: none;
   }
 }
+
+
+/* YENİ: menüdeki sayı rozeti */
+.zb-nav-badge {
+  min-width: 1.35rem;
+  margin-left: auto;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background-color: #ef4444;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+/* Daraltılmış menüde: ikonun sağ üstünde küçük rozet */
+.zb-sidebar-inner.is-collapsed .zb-nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  min-width: 1.1rem;
+  padding: 0 0.3rem;
+  font-size: 0.65rem;
+}

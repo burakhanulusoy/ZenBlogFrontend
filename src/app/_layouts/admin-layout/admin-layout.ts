@@ -3,12 +3,14 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription, filter } from 'rxjs';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../_services/auth-service';
+import { WriterApplicationService } from '../../_services/writer-application-service';
 
 interface NavItem {
   label: string;
   icon: string;      // PrimeIcons sınıfı (pi pi-...)
   link: string;
   exact?: boolean;   // true → sadece tam bu adreste "seçili" görünsün
+  badge?: 'applications';   // YENİ: yanında sayı rozeti gösterilecek öğe
 }
 
 interface NavGroup {
@@ -28,13 +30,16 @@ interface NavGroup {
 })
 export class AdminLayout implements OnInit, OnDestroy {
 
-  constructor(public authService: AuthService,
+   constructor(public authService: AuthService,
+              private applicationService: WriterApplicationService,   // YENİ
               private router: Router,
               private route: ActivatedRoute) {}
+
 
   fullName = '';
   email = '';
     imageUrl = '';   // YENİ: sağ üstteki avatar
+      pendingApplications = 0;   // YENİ: okunmamış başvuru sayısı (menü rozeti)
   pageTitle = '';
   todayText = '';
 
@@ -57,7 +62,9 @@ export class AdminLayout implements OnInit, OnDestroy {
       items: [
         { label: 'Tüm bloglar', icon: 'pi pi-book', link: '/admin/blogs' },
         { label: 'Kategoriler', icon: 'pi pi-tags', link: '/admin/category' },
-        { label: 'Kullanıcılar', icon: 'pi pi-users', link: '/admin/users' }   // YENİ
+        { label: 'Kullanıcılar', icon: 'pi pi-users', link: '/admin/users' } ,  // YENİ
+        { label: 'Roller', icon: 'pi pi-shield', link: '/admin/roles' },   // YENİ
+        { label: 'Yazarlık başvuruları', icon: 'pi pi-inbox', link: '/admin/writer-applications', badge: 'applications' }   // YENİ
       ]
     }
   ];
@@ -109,12 +116,14 @@ export class AdminLayout implements OnInit, OnDestroy {
 
 
     this.updatePageTitle();
+    this.refreshPendingApplications();   // YENİ
 
     this.routerSubscription = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.mobileMenuVisible = false;
         this.updatePageTitle();
+                this.refreshPendingApplications();   // YENİ
       });
   }
 
@@ -141,6 +150,14 @@ export class AdminLayout implements OnInit, OnDestroy {
       current = current.firstChild;
     }
     this.pageTitle = current.snapshot.data?.['title'] ?? '';
+  }
+
+    // YENİ: okunmamış başvuru sayısını getir (hata olursa rozet sessizce gizli kalır)
+  private refreshPendingApplications() {
+    this.applicationService.getPendingCount().subscribe({
+      next: result => this.pendingApplications = result.data ?? 0,
+      error: () => this.pendingApplications = 0
+    });
   }
 
   get initials(): string {

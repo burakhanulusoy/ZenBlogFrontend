@@ -1,0 +1,332 @@
+/* =====================================================================
+   ROLLER
+   ===================================================================== */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+.zb-group-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.85rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.zb-group-title i {
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+}
+
+.zb-mt {
+  margin-top: 2rem;
+}
+
+.zb-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.8rem;
+  background-color: #f7f8f6;
+  color: var(--zb-ink-soft);
+  font-size: 0.88rem;
+}
+
+.zb-info i {
+  margin-top: 0.15rem;
+  color: var(--p-primary-600);
+}
+
+/* KART IZGARASI */
+.zb-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.zb-role-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1.25rem 1.3rem 1.1rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+/* Sistem rolleri: üstte renkli şerit */
+.zb-role-card.is-system::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background-color: var(--zb-muted);
+}
+
+.zb-role-card.is-Admin::before { background-color: var(--p-primary-700); }
+.zb-role-card.is-Writer::before { background-color: #0f766e; }
+.zb-role-card.is-User::before { background-color: #64748b; }
+
+.zb-role-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
+}
+
+.zb-role-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 0.8rem;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink-soft);
+  font-size: 1.05rem;
+}
+
+.is-Admin .zb-role-icon { background-color: var(--p-primary-50); color: var(--p-primary-700); }
+.is-Writer .zb-role-icon { background-color: #f0fdfa; color: #0f766e; }
+
+.zb-role-names {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.zb-role-label {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.zb-role-code {
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+}
+
+.zb-lock {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--zb-hover);
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+}
+
+.zb-role-desc {
+  flex-grow: 1;
+  margin: 0 0 1rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.zb-role-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--zb-line);
+}
+
+.zb-role-users {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--zb-muted);
+  font-size: 0.88rem;
+}
+
+.zb-role-users strong {
+  color: var(--zb-ink);
+  font-size: 1rem;
+}
+
+.zb-role-actions {
+  display: flex;
+  gap: 0.15rem;
+}
+
+/* BOŞ DURUM */
+.zb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 2.5rem 1rem;
+  border: 1px dashed var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+  text-align: center;
+}
+
+.zb-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 0.9rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-empty-title {
+  margin: 0;
+  color: var(--zb-ink-soft);
+  font-weight: 700;
+}
+
+/* PENCERE */
+::ng-deep .zb-dialog.p-dialog {
+  border: 0;
+  border-radius: 1.1rem;
+  box-shadow: 0 30px 60px -20px rgba(12, 20, 16, 0.35);
+  font-family: var(--zb-font);
+}
+
+::ng-deep .zb-dialog .p-dialog-header {
+  padding: 1.4rem 1.5rem 0.75rem;
+}
+
+::ng-deep .zb-dialog .p-dialog-content {
+  padding: 0.5rem 1.5rem 1.5rem;
+}
+
+.zb-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.zb-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 0.8rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-dialog-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.zb-dialog-sub {
+  margin: 0.15rem 0 0;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+}
+
+.zb-dialog-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #fecaca;
+  border-radius: 0.7rem;
+  background-color: #fef2f2;
+  color: #991b1b;
+  font-size: 0.88rem;
+}
+
+.zb-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.zb-input {
+  width: 100%;
+  border-radius: 0.7rem;
+}
+
+.zb-invalid {
+  border-color: #dc2626 !important;
+}
+
+.zb-error {
+  display: block;
+  margin-top: 0.4rem;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.zb-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}

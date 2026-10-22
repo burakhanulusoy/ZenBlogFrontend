@@ -723,3 +723,156 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
+
+
+/* ---------------------------------------------------------------
+   YENİ: ROLLER KARTI
+   --------------------------------------------------------------- */
+.zb-role-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.zb-role-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.75rem;
+  background-color: #fff;
+  color: var(--zb-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.zb-role-item:hover:not(:disabled) {
+  border-color: var(--p-primary-300);
+}
+
+.zb-role-item.is-on {
+  border-color: var(--p-primary-500);
+  background-color: var(--p-primary-50);
+}
+
+.zb-role-item.is-locked {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.zb-role-item:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
+}
+
+/* Kutucuk */
+.zb-role-check {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border: 2px solid var(--zb-line);
+  border-radius: 0.35rem;
+  background-color: #fff;
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.zb-role-item.is-on .zb-role-check {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-600);
+}
+
+.zb-role-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.zb-role-name {
+  font-weight: 700;
+}
+
+.zb-role-text small {
+  color: var(--zb-muted);
+  font-size: 0.75rem;
+}
+
+.zb-role-lock {
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+}
+
+.zb-role-save {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--zb-line);
+}
+
+.zb-role-save-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+/* ---------------------------------------------------------------
+   YENİ: ROL GEÇMİŞİ
+   --------------------------------------------------------------- */
+.zb-role-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zb-role-history li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.75rem;
+  background-color: #fafbf9;
+}
+
+.zb-rh-dot {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.7rem;
+}
+
+.zb-role-history li.is-added .zb-rh-dot {
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-rh-text {
+  flex-grow: 1;
+  color: var(--zb-ink-soft);
+  font-size: 0.9rem;
+}
+
+.zb-rh-meta {
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+}
+
+:host ::ng-deep .zb-password,
+:host ::ng-deep .zb-password .p-password-input {
+  width: 100%;
+}

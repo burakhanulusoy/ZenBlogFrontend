@@ -172,6 +172,25 @@
         </ol>
       </section>
 
+          <!-- YENİ: ROL GEÇMİŞİ -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Rol geçmişi</h2>
+        <p class="zb-muted" *ngIf="user.roleHistory.length === 0">Bu kullanıcının rolleri hiç değiştirilmedi.</p>
+
+        <ul class="zb-role-history" *ngIf="user.roleHistory.length > 0">
+          <li *ngFor="let log of user.roleHistory" [class.is-added]="log.isAdded">
+            <span class="zb-rh-dot">
+              <i class="pi" [class.pi-plus]="log.isAdded" [class.pi-minus]="!log.isAdded" aria-hidden="true"></i>
+            </span>
+            <span class="zb-rh-text">
+              <strong>{{ roleName(log.roleName) }}</strong> rolü {{ log.isAdded ? 'verildi' : 'alındı' }}
+            </span>
+            <span class="zb-rh-meta">{{ log.changedAt | date:'dd.MM.yyyy HH:mm' }} · {{ log.changedByAdminName }}</span>
+          </li>
+        </ul>
+      </section>
+
+
     </div>
 
     <!-- ===================== SAĞ ===================== -->
@@ -190,6 +209,45 @@
           </div>
         </div>
       </section>
+
+
+      <!-- YENİ: ROLLER -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Roller</h2>
+
+        <div class="zb-role-list">
+          <!-- button: tıklayınca rolü aç/kapa; kilitliyse pasif -->
+          <button type="button" class="zb-role-item" *ngFor="let role of allRoles"
+                  [class.is-on]="isRoleSelected(role)" [class.is-locked]="isRoleLocked(role)"
+                  [disabled]="isRoleLocked(role) || isSavingRoles"
+                  [pTooltip]="roleLockReason(role)" [tooltipDisabled]="!isRoleLocked(role)" tooltipPosition="left"
+                  (click)="toggleRole(role)">
+            <span class="zb-role-check">
+              <i class="pi" [class.pi-check]="isRoleSelected(role)" aria-hidden="true"></i>
+            </span>
+            <span class="zb-role-text">
+              <span class="zb-role-name">{{ roleName(role.name) }}</span>
+              <small *ngIf="role.name === 'Admin'">Yönetim paneli</small>
+              <small *ngIf="role.name === 'Writer'">Blog yazabilir</small>
+              <small *ngIf="role.name === 'User'">Temel rol</small>
+              <small *ngIf="!role.isSystem">Özel rol</small>
+            </span>
+            <i class="pi pi-lock zb-role-lock" *ngIf="isRoleLocked(role)" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- Değişiklik varsa -->
+        <div class="zb-role-save" *ngIf="rolesChanged">
+          <p class="zb-muted zb-small">Kaydedince kullanıcının oturumu kapanır ve e-posta ile bilgilendirilir.</p>
+          <div class="zb-role-save-actions">
+            <p-button label="Vazgeç" severity="secondary" [text]="true" size="small"
+                      [disabled]="isSavingRoles" (onClick)="resetRoles()" />
+            <p-button label="Rolleri kaydet" icon="pi pi-check" size="small"
+                      [loading]="isSavingRoles" [disabled]="isSavingRoles" (onClick)="saveRoles()" />
+          </div>
+        </div>
+      </section>
+
 
       <!-- YÖNETİM İŞLEMLERİ -->
       <section class="zb-panel">
@@ -341,4 +399,46 @@
     <p-button label="Blokeyi kaldır" icon="pi pi-unlock" [loading]="isUnblocking"
               [disabled]="!unblockFormValid || isUnblocking" (onClick)="submitUnblock()" />
   </div>
+</p-dialog>
+
+
+<!-- =====================================================================
+     YENİ: ADMİN ROLÜ VERME ŞİFRE PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="rolePasswordDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="!isSavingRoles" [style]="{ width: '460px' }" [breakpoints]="{ '575px': '95vw' }"
+          styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon"><i class="pi pi-shield" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">Yönetici yetkisi ver</h2>
+        <p class="zb-dialog-sub">{{ fullName }} · &#64;{{ user?.userName }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form (ngSubmit)="confirmRolePassword()" novalidate>
+    <div class="zb-consequences">
+      <p class="zb-consequences-title">Yönetici rolü çok geniş yetki verir:</p>
+      <ul>
+        <li>Kullanıcıları görebilir, bloke edebilir ve rollerini değiştirebilir.</li>
+        <li>Sitedeki bütün blogları ve kategorileri yönetebilir.</li>
+      </ul>
+    </div>
+
+    <label for="rolePassword" class="zb-label zb-mt">Onaylamak için şifren</label>
+    <p-password inputId="rolePassword" name="rolePassword" [(ngModel)]="rolePassword"
+                [toggleMask]="true" [feedback]="false" autocomplete="current-password"
+                placeholder="Kendi şifreni gir" styleClass="zb-password" />
+    <small class="zb-error" *ngIf="rolePasswordError">{{ rolePasswordError }}</small>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isSavingRoles"
+                (onClick)="rolePasswordDialogVisible = false" />
+      <p-button type="submit" label="Onayla ve ver" icon="pi pi-shield" [loading]="isSavingRoles"
+                [disabled]="!rolePassword || isSavingRoles" />
+    </div>
+  </form>
 </p-dialog>

@@ -31,6 +31,10 @@ import { BlogForm } from './_personal-components/blog-form/blog-form';
 import { BlogDetail } from './_personal-components/blog-detail/blog-detail';
 import { Profile } from './_personal-components/profile/profile';
 import { ErrorPage } from './_main-components/error-page/error-page';
+import { Roles } from './_admin-components/roles/roles';
+import { WriterApplications } from './_admin-components/writer-applications/writer-applications';
+import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';
+import { BecomeWriter } from './_user-components/become-writer/become-writer';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -81,7 +85,9 @@ const routes: Routes = [
       { path: 'category', component: Category, data: { title: 'Kategoriler' } },
       { path: 'users', component: Users, data: { title: 'Kullanıcılar' } },
       { path: 'users/:id', component: UserDetail, data: { title: 'Kullanıcı detayı' } },
-
+            { path: 'roles', component: Roles, data: { title: 'Roller' } },   // YENİ
+      { path: 'writer-applications', component: WriterApplications, data: { title: 'Yazarlık başvuruları' } },        // YENİ
+      { path: 'writer-applications/:id', component: WriterApplicationDetail, data: { title: 'Başvuru detayı' } },     // YENİ
       // SIZE ÖZEL (ortak sayfalar)
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
@@ -124,7 +130,8 @@ const routes: Routes = [
       // /account → doğrudan Profilim (şimdilik tek sayfa)
       // pathMatch 'full': sadece adres TAM OLARAK /account ise yönlendir
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
-      { path: 'profile', component: Profile, data: { title: 'Profilim' } }
+      { path: 'profile', component: Profile, data: { title: 'Profilim' } },
+      { path: 'become-writer', component: BecomeWriter, data: { title: 'Yazar ol' } }   // YENİ
     ]
   },
 

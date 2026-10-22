@@ -76,6 +76,7 @@ export class UserDetailDto {
   commentCount: number;
   recentBlogs: UserRecentBlogDto[];
   blockHistory: UserBlockHistoryDto[];
+  roleHistory: UserRoleChangeDto[];   // YENİ
 }
 
 // GET /api/users/me → Profilim (backend: GetMyProfileQueryResult)
@@ -110,3 +111,13 @@ export class CloseAccountResultDto {
   deletionDeadline: string;
 }
 
+
+
+// YENİ: Detaydaki rol geçmişi
+export class UserRoleChangeDto {
+  id: string;
+  roleName: string;
+  isAdded: boolean;          // true: verildi, false: alındı
+  changedAt: string;
+  changedByAdminName: string;
+}

@@ -1,0 +1,318 @@
+/* =====================================================================
+   YAZARLIK BAŞVURUSU DETAYI
+   ===================================================================== */
+.zb-detail-bar { margin-bottom: 1rem; }
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span { flex-grow: 1; }
+
+.zb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.zb-main-col,
+.zb-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zb-side-col {
+  position: sticky;
+  top: 88px;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-side-col { position: static; }
+}
+
+.zb-panel {
+  padding: 1.35rem 1.4rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-panel-title {
+  margin: 0 0 0.5rem;
+  color: var(--zb-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.zb-muted { margin: 0; color: var(--zb-muted); }
+.zb-small-text { font-size: 0.85rem; line-height: 1.5; }
+
+/* ÜST BAŞLIK */
+.zb-head {
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    var(--zb-surface);
+}
+
+.zb-head-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+}
+
+.zb-head-title {
+  margin: 0 0 0.85rem;
+  color: var(--zb-ink);
+  font-family: var(--zb-serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.zb-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.zb-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.zb-status {
+  display: inline-flex;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.zb-status.is-Pending { background-color: #eff6ff; color: #1d4ed8; }
+.zb-status.is-Reviewed { background-color: #fff7ed; color: #c2410c; }
+.zb-status.is-Approved { background-color: var(--p-primary-50); color: var(--p-primary-700); }
+.zb-status.is-Rejected { background-color: #fef2f2; color: #b91c1c; }
+
+/* SORU + CEVAP */
+.zb-q {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 0.75rem;
+  color: var(--zb-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.zb-q span {
+  color: var(--p-primary-400);
+  font-family: var(--zb-serif);
+  font-size: 1.3rem;
+}
+
+.zb-answer {
+  margin: 0;
+  color: var(--zb-ink-soft);
+  font-family: var(--zb-serif);
+  font-size: 1.05rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.zb-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+
+.zb-links a {
+  color: var(--p-primary-700);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.zb-links a:hover { text-decoration: underline; }
+
+/* BAŞVURAN */
+.zb-applicant {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+:host ::ng-deep .zb-applicant-avatar {
+  background: linear-gradient(135deg, var(--p-primary-500), var(--p-primary-800));
+  color: #fff;
+  font-weight: 800;
+}
+
+.zb-applicant-name {
+  margin-top: 0.75rem;
+  color: var(--zb-ink);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.zb-facts {
+  display: grid;
+  gap: 0.55rem;
+  width: 100%;
+  margin: 1rem 0;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--zb-line);
+  list-style: none;
+  font-size: 0.88rem;
+}
+
+.zb-facts li {
+  display: flex;
+  justify-content: space-between;
+  color: var(--zb-muted);
+}
+
+.zb-facts strong { color: var(--zb-ink); }
+.zb-danger-text { color: #b91c1c !important; }
+
+:host ::ng-deep .zb-full-btn {
+  width: 100%;
+  justify-content: center;
+  border-radius: 0.7rem;
+  font-weight: 700;
+}
+
+.zb-decide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* SONUÇ KARTI */
+.zb-decision.is-Approved { border-color: var(--p-primary-200); background-color: #f6fdf9; }
+.zb-decision.is-Rejected { border-color: #fecaca; background-color: #fffafa; }
+
+.zb-reason {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--zb-line);
+}
+
+.zb-reason p {
+  margin: 0.25rem 0 0;
+  color: var(--zb-ink-soft);
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+/* PENCERE */
+::ng-deep .zb-dialog.p-dialog {
+  border: 0;
+  border-radius: 1.1rem;
+  box-shadow: 0 30px 60px -20px rgba(12, 20, 16, 0.35);
+  font-family: var(--zb-font);
+}
+
+::ng-deep .zb-dialog .p-dialog-header { padding: 1.4rem 1.5rem 0.75rem; }
+::ng-deep .zb-dialog .p-dialog-content { padding: 0.5rem 1.5rem 1.5rem; }
+
+.zb-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.zb-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.8rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-dialog-icon.is-danger { background-color: #fee2e2; color: #b91c1c; }
+
+.zb-dialog-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.zb-dialog-sub {
+  margin: 0.15rem 0 0;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+}
+
+.zb-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.zb-textarea {
+  width: 100%;
+  border-radius: 0.7rem;
+  resize: vertical;
+}
+
+.zb-field-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.zb-hint { color: var(--zb-muted); font-size: 0.78rem; }
+.zb-hint.is-ok { color: var(--p-primary-700); font-weight: 600; }
+
+.zb-counter {
+  margin-left: auto;
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+}
+
+.zb-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.zb-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}

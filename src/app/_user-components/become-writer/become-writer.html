@@ -1,0 +1,270 @@
+<!-- =====================================================================
+     YAZAR OL (piksel)
+     ===================================================================== -->
+
+<!-- TANITIM BANDI -->
+<section class="bw-hero">
+  <div class="bw-hero-text">
+    <span class="bw-tag">▶ Yazarlık programı</span>
+    <h1 class="bw-title">Yazar ol</h1>
+    <p class="bw-sub">Fikirlerini ZenBlog okurlarıyla paylaş. Başvurunu ekibimiz inceler ve sonucu sana e-posta ile bildirir.</p>
+  </div>
+  <ul class="bw-perks">
+    <li><span class="bw-perk-icon"><i class="pi pi-th-large" aria-hidden="true"></i></span> Kendi yazar panelin</li>
+    <li><span class="bw-perk-icon"><i class="pi pi-pencil" aria-hidden="true"></i></span> Bölüm bölüm blog editörü</li>
+    <li><span class="bw-perk-icon"><i class="pi pi-users" aria-hidden="true"></i></span> Okurlarınla buluş</li>
+  </ul>
+</section>
+
+<!-- HATA -->
+<div class="bw-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <button type="button" class="bw-btn bw-btn-white bw-btn-sm" (click)="load()">Tekrar dene</button>
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="bw-card bw-loading" *ngIf="isLoading">
+  <span class="bw-dot"></span><span class="bw-dot"></span><span class="bw-dot"></span>
+</div>
+
+<ng-container *ngIf="!isLoading && status">
+
+  <!-- ============ ZATEN YAZAR ============ -->
+  <section class="bw-card bw-state is-ok" *ngIf="status.isWriter">
+    <span class="bw-state-icon"><i class="pi pi-check" aria-hidden="true"></i></span>
+    <h2 class="bw-state-title">Zaten yazarsın!</h2>
+    <p>Yazar paneline erişmek için çıkış yapıp tekrar giriş yapman yeterli.</p>
+  </section>
+
+  <!-- ============ BEKLEYEN BAŞVURU: TAKİP ============ -->
+  <section class="bw-card bw-state" *ngIf="!status.isWriter && isWaiting">
+    <h2 class="bw-state-title">Başvurun {{ latestStatus === 'Reviewed' ? 'inceleniyor' : 'alındı' }}</h2>
+    <p>{{ status.latest.submittedAt | date:'dd.MM.yyyy' }} tarihinde gönderdin. Sonuçlanınca e-posta ile haber vereceğiz.</p>
+
+    <!-- 3 adımlı ilerleme -->
+    <ol class="bw-steps">
+      <li [class.is-done]="currentStep >= 1" [class.is-current]="currentStep === 1">
+        <span class="bw-step-dot"><i class="pi pi-send" aria-hidden="true"></i></span>
+        <span>Gönderildi</span>
+      </li>
+      <li class="bw-step-line" [class.is-done]="currentStep >= 2" aria-hidden="true"></li>
+      <li [class.is-done]="currentStep >= 2" [class.is-current]="currentStep === 2">
+        <span class="bw-step-dot"><i class="pi pi-eye" aria-hidden="true"></i></span>
+        <span>İnceleniyor</span>
+      </li>
+      <li class="bw-step-line" [class.is-done]="currentStep >= 3" aria-hidden="true"></li>
+      <li [class.is-done]="currentStep >= 3">
+        <span class="bw-step-dot"><i class="pi pi-flag" aria-hidden="true"></i></span>
+        <span>Sonuç</span>
+      </li>
+    </ol>
+
+    <div class="bw-summary">
+      <span class="bw-label">Seçtiğin konular</span>
+      <span>{{ status.latest.topics }}</span>
+    </div>
+  </section>
+
+  <!-- ============ REDDEDİLDİ (30 gün dolmadı) ============ -->
+  <section class="bw-card bw-state is-rejected" *ngIf="!status.isWriter && isRejectedCooldown">
+    <span class="bw-state-icon"><i class="pi pi-times" aria-hidden="true"></i></span>
+    <h2 class="bw-state-title">Başvurun bu kez olumlu sonuçlanmadı</h2>
+    <div class="bw-reason" *ngIf="status.latest.rejectReason">
+      <span class="bw-label">Değerlendirme notu</span>
+      <p>{{ status.latest.rejectReason }}</p>
+    </div>
+    <div class="bw-reapply">
+      <span class="bw-label">Tekrar başvurabileceğin tarih</span>
+      <span class="bw-reapply-date">{{ status.canApplyAfter | date:'dd.MM.yyyy' }}</span>
+    </div>
+  </section>
+
+  <!-- ============ BAŞVURU FORMU ============ -->
+  <ng-container *ngIf="status.canApply">
+
+    <!-- Daha önce reddedilmiş ama süresi dolmuş -->
+    <div class="bw-alert is-info" *ngIf="latestStatus === 'Rejected'">
+      <i class="pi pi-info-circle" aria-hidden="true"></i>
+      <span>Önceki başvurun olumlu sonuçlanmamıştı; artık yeniden başvurabilirsin.</span>
+    </div>
+
+    <form class="bw-card bw-form" (ngSubmit)="submit()" novalidate>
+
+      <div class="bw-alert" *ngIf="generalErrors.length > 0">
+        <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+        <div><div *ngFor="let e of generalErrors">{{ e.errorMessage }}</div></div>
+      </div>
+
+      <!-- 1) KONULAR -->
+      <div class="bw-field">
+        <div class="bw-field-head">
+          <span class="bw-no">01</span>
+          <div>
+            <label class="bw-field-title">Hangi konularda yazmak istersin? <span class="bw-req">*</span></label>
+            <small class="bw-hint">En fazla {{ maxTopics }} konu seç · {{ selectedCategoryIds.length }}/{{ maxTopics }}</small>
+          </div>
+        </div>
+
+        <div class="bw-chips">
+          <button type="button" class="bw-chip" *ngFor="let c of categories"
+                  [class.is-on]="isSelected(c)"
+                  [disabled]="!isSelected(c) && selectedCategoryIds.length >= maxTopics"
+                  [attr.aria-pressed]="isSelected(c)" (click)="toggleCategory(c)">
+            <i class="pi" [class.pi-check]="isSelected(c)" [class.pi-plus]="!isSelected(c)" aria-hidden="true"></i>
+            {{ c.name }}
+          </button>
+        </div>
+        <small class="bw-error" *ngIf="(submitted && selectedCategoryIds.length === 0) || fieldError('CategoryIds')">
+          {{ fieldError('CategoryIds') || 'En az bir konu seç.' }}
+        </small>
+      </div>
+
+      <!-- 2) MOTİVASYON -->
+      <div class="bw-field">
+        <div class="bw-field-head">
+          <span class="bw-no">02</span>
+          <div>
+            <label for="motivation" class="bw-field-title">Neden yazar olmak istiyorsun? <span class="bw-req">*</span></label>
+            <small class="bw-hint">Kendinden, ilgi alanlarından ve ne tür yazılar yazmak istediğinden bahset.</small>
+          </div>
+        </div>
+        <textarea pTextarea id="motivation" name="motivation" rows="6" class="bw-textarea"
+                  [attr.maxlength]="maxMotivation" [(ngModel)]="form.motivation"
+                  [class.is-invalid]="(submitted && motivationLength < minMotivation) || fieldError('Motivation')"></textarea>
+        <div class="bw-foot">
+          <small class="bw-error" *ngIf="(submitted && motivationLength < minMotivation) || fieldError('Motivation')">
+            {{ fieldError('Motivation') || 'En az ' + minMotivation + ' karakter yaz.' }}
+          </small>
+          <small class="bw-counter" [class.is-ok]="motivationLength >= minMotivation">
+            {{ form.motivation.length }}/{{ maxMotivation }}
+          </small>
+        </div>
+      </div>
+
+      <!-- 3) DENEYİM -->
+      <div class="bw-field">
+        <div class="bw-field-head">
+          <span class="bw-no">03</span>
+          <div>
+            <label for="experience" class="bw-field-title">Yazı deneyimin</label>
+            <small class="bw-hint">İsteğe bağlı: daha önce nerelerde, ne yazdın?</small>
+          </div>
+        </div>
+        <textarea pTextarea id="experience" name="experience" rows="4" class="bw-textarea"
+                  [attr.maxlength]="maxOther" [(ngModel)]="form.experience"
+                  [class.is-invalid]="fieldError('Experience')"></textarea>
+        <small class="bw-error" *ngIf="fieldError('Experience')">{{ fieldError('Experience') }}</small>
+      </div>
+
+      <!-- 4) ÖRNEKLER -->
+      <div class="bw-field">
+        <div class="bw-field-head">
+          <span class="bw-no">04</span>
+          <div>
+            <label for="sampleLinks" class="bw-field-title">Örnek çalışmaların</label>
+            <small class="bw-hint">İsteğe bağlı: blog, portföy ya da sosyal medya bağlantıları (her satıra bir tane).</small>
+          </div>
+        </div>
+        <textarea pTextarea id="sampleLinks" name="sampleLinks" rows="3" class="bw-textarea"
+                  [attr.maxlength]="maxOther" placeholder="https://..." [(ngModel)]="form.sampleLinks"
+                  [class.is-invalid]="fieldError('SampleLinks')"></textarea>
+        <small class="bw-error" *ngIf="fieldError('SampleLinks')">{{ fieldError('SampleLinks') }}</small>
+      </div>
+
+      <!-- KURALLAR -->
+         <!-- DEĞİŞTİ: YAZARLIK KURALLARI VE TAAHHÜTNAMESİ -->
+      <div class="bw-rules">
+        <p class="bw-rules-title">Yazarlık kuralları ve taahhütnamesi</p>
+        <p class="bw-rules-intro">
+          Başvurumu göndererek, yazar olarak kabul edilmem hâlinde ZenBlog'da yayınlayacağım bütün içerikler için
+          aşağıdaki maddeleri okuduğumu, anladığımı ve eksiksiz uygulayacağımı kabul ve taahhüt ederim.
+        </p>
+
+        <!-- Uzun metin: kendi içinde kaydırılan kutu -->
+        <div class="bw-rules-box" tabindex="0" aria-label="Yazarlık kuralları metni">
+
+          <h3>1. İçerik sorumluluğu</h3>
+          <ol>
+            <li>Yayınladığım bütün yazı, görsel ve bağlantıların <strong>tek sorumlusu benim</strong>.</li>
+            <li>İçeriklerimden doğabilecek her türlü hukuki, cezai, idari ve maddi sorumluluğun tamamen bana ait olduğunu; ZenBlog'un ve yöneticilerinin bu konuda hiçbir sorumluluğu bulunmadığını kabul ederim.</li>
+            <li>Yazılarımda verdiğim bilgilerin doğruluğunu yayınlamadan önce kontrol edeceğim; kişisel görüşlerimi açıkça görüş olarak belirteceğim.</li>
+          </ol>
+
+          <h3>2. Özgünlük ve telif hakları</h3>
+          <ol>
+            <li>Yayınladığım içeriklerin bana ait ve özgün olduğunu taahhüt ederim.</li>
+            <li>Başkasına ait yazı, görsel, fotoğraf, video veya herhangi bir eseri, hak sahibinin izni olmadan ve kaynak göstermeden kullanmayacağım.</li>
+            <li>Alıntı yaptığımda kaynağı açıkça belirteceğim; alıntıyı yazının büyük bölümünü oluşturacak ölçüde kullanmayacağım.</li>
+            <li>İntihal (başkasının eserini kendi eseri gibi sunma) tespit edilirse içeriğin derhâl kaldırılacağını ve hesabımın bloke edilebileceğini kabul ederim.</li>
+          </ol>
+
+          <h3>3. Yasak içerikler</h3>
+          <p>Aşağıdaki içerikleri hiçbir şekilde yayınlamayacağım:</p>
+          <ol>
+            <li>Nefret söylemi; ırk, etnik köken, din, dil, cinsiyet, cinsel yönelim, engellilik veya herhangi bir özelliğe dayalı ayrımcılık.</li>
+            <li>Hakaret, küfür, tehdit, aşağılama, taciz veya bir kişiyi ya da grubu hedef gösterme.</li>
+            <li>Şiddeti, terörü, suçu veya kendine zarar vermeyi öven, özendiren ya da yönlendiren içerikler.</li>
+            <li>Müstehcen, cinsel içerikli veya çocukların istismarına yönelik her türlü içerik.</li>
+            <li>Bilerek yanlış, yanıltıcı veya manipülatif bilgi (dezenformasyon); sağlık, hukuk ve finans konularında gerçeğe aykırı yönlendirmeler.</li>
+            <li>Yürürlükteki yasalara aykırı olan veya yasa dışı bir faaliyeti kolaylaştıran içerikler.</li>
+          </ol>
+
+          <h3>4. Kişisel veriler ve gizlilik</h3>
+          <ol>
+            <li>Başkalarına ait kişisel verileri (ad soyad, adres, telefon, fotoğraf, kimlik bilgisi vb.) ilgili kişinin açık rızası olmadan paylaşmayacağım.</li>
+            <li>6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) başta olmak üzere ilgili mevzuata uyacağımı kabul ederim.</li>
+            <li>Kişilerin özel hayatını ihlal eden, gizli kalması gereken bilgileri ifşa eden içerik yayınlamayacağım.</li>
+          </ol>
+
+          <h3>5. Reklam, spam ve yapay zekâ</h3>
+          <ol>
+            <li>Gizli reklam yapmayacağım. Ücretli ya da sponsorlu bir içerik paylaşırsam bunu yazının başında açıkça belirteceğim.</li>
+            <li>Spam, tekrarlayan içerik, yanıltıcı bağlantı veya zararlı yazılım içeren bağlantı paylaşmayacağım.</li>
+            <li>Yapay zekâ araçlarından yararlanırsam içeriği kendim kontrol edip düzenleyeceğim; içeriğin doğruluğundan ve özgünlüğünden yine kendim sorumlu olacağım.</li>
+          </ol>
+
+          <h3>6. Denetim ve yaptırımlar</h3>
+          <ol>
+            <li>ZenBlog yönetiminin, bu kurallara aykırı gördüğü içerikleri <strong>önceden haber vermeksizin</strong> yayından kaldırma, düzenleme isteme veya gizleme hakkı olduğunu kabul ederim.</li>
+            <li>Kurallara aykırılık hâlinde yazarlık yetkimin geri alınabileceğini ve hesabımın <strong>bloke edilebileceğini</strong>; bloke edilmem durumunda aynı e-posta adresi ve kullanıcı adıyla tekrar kayıt olamayacağımı bilirim.</li>
+            <li>Yasalara aykırı bir içerik tespit edilmesi ve yetkili makamlarca talep edilmesi hâlinde, hesap ve içerik bilgilerimin ilgili mevzuat çerçevesinde yetkili mercilerle paylaşılabileceğini kabul ederim.</li>
+          </ol>
+
+          <h3>7. Hukuki sorumluluk ve tazmin</h3>
+          <ol>
+            <li>İçeriklerim nedeniyle üçüncü kişiler tarafından ZenBlog'a karşı ileri sürülebilecek her türlü talep, şikâyet veya davadan doğacak zararı, masrafı ve tazminatı karşılamayı kabul ve taahhüt ederim.</li>
+            <li>İçeriklerimin yayından kaldırılması, hesabımın bloke edilmesi veya yazarlık yetkimin geri alınması nedeniyle ZenBlog'dan herhangi bir hak veya tazminat talebinde bulunmayacağım.</li>
+          </ol>
+
+          <h3>8. Genel hükümler</h3>
+          <ol>
+            <li>Bu kuralların ZenBlog tarafından güncellenebileceğini; güncel kuralların yayınlandığı andan itibaren benim için de geçerli olacağını kabul ederim.</li>
+            <li>Başvurumda verdiğim bilgilerin doğru olduğunu beyan ederim. Gerçeğe aykırı bilgi verdiğim anlaşılırsa başvurumun reddedileceğini veya yazarlık yetkimin geri alınacağını kabul ederim.</li>
+          </ol>
+        </div>
+
+        <!-- ONAY -->
+        <label class="bw-check bw-check-strong">
+          <input type="checkbox" name="acceptedRules" [(ngModel)]="form.acceptedRules">
+          <span>
+            Yazarlık kuralları ve taahhütnamesinin <strong>tüm maddelerini okudum ve anladım</strong>.
+            Yayınlayacağım içeriklerden doğacak bütün sorumluluğun bana ait olduğunu
+            <strong>kabul ve taahhüt ediyorum</strong>.
+          </span>
+        </label>
+        <small class="bw-error" *ngIf="(submitted && !form.acceptedRules) || fieldError('AcceptedRules')">
+          {{ fieldError('AcceptedRules') || 'Başvurmak için taahhütnameyi kabul etmelisin.' }}
+        </small>
+      </div>
+
+      <div class="bw-actions">
+        <button type="submit" class="bw-btn bw-btn-yellow" [disabled]="isSubmitting">
+          <i class="pi" [class.pi-send]="!isSubmitting" [class.pi-spin]="isSubmitting" [class.pi-spinner]="isSubmitting" aria-hidden="true"></i>
+          {{ isSubmitting ? 'Gönderiliyor...' : 'Başvurumu gönder' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+
+</ng-container>

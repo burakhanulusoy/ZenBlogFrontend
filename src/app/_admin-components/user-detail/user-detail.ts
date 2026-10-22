@@ -5,6 +5,8 @@ import { AuthService } from '../../_services/auth-service';
 import { SweetAlert } from '../../_services/sweet-alert';
 import { ApiError } from '../../_models/result';
 import { AccountStatus, ROLE_LABELS, STATUS_LABELS, UserDetailDto, UserRecentBlogDto } from '../../_models/user';
+import { RoleService } from '../../_services/role-service';
+import { RoleDto } from '../../_models/role';
 
 // =====================================================================
 // KULLANICI DETAYI (sadece Admin)
@@ -19,7 +21,8 @@ import { AccountStatus, ROLE_LABELS, STATUS_LABELS, UserDetailDto, UserRecentBlo
 })
 export class UserDetail implements OnInit {
 
-  constructor(private userService: UserService,
+    constructor(private userService: UserService,
+              private roleService: RoleService,      // YENİ
               private authService: AuthService,
               private swal: SweetAlert,
               private route: ActivatedRoute,
@@ -58,10 +61,46 @@ export class UserDetail implements OnInit {
   unblockErrors: ApiError[] = [];
   isUnblocking = false;
 
-  ngOnInit(): void {
+    // ---------------------------------------------------------------
+  // YENİ: ROLLER
+  // ---------------------------------------------------------------
+  allRoles: RoleDto[] = [];
+  selectedRoleIds: string[] = [];          // kutucuklarda işaretli olanlar
+  private originalRoleIds: string[] = [];  // kullanıcının şu anki rolleri (karşılaştırma için)
+  isSavingRoles = false;
+
+  // Admin rolü verilirken açılan şifre penceresi
+  rolePasswordDialogVisible = false;
+  rolePassword = '';
+  rolePasswordError = '';
+
+
+   ngOnInit(): void {
     this.currentUserId = this.authService.getUserId();
+    this.loadRoles();   // YENİ
     this.loadUser();
   }
+
+  // YENİ: Bütün roller (kutucuklar için)
+  loadRoles() {
+    this.roleService.getAll().subscribe({
+      next: result => {
+        this.allRoles = (result.data ?? []).sort((a, b) =>
+          Number(b.isSystem) - Number(a.isSystem) || a.name.localeCompare(b.name));
+        this.syncRoleSelection();
+      },
+      error: () => this.swal.error('Roller yüklenemedi')
+    });
+  }
+
+  // YENİ: Kullanıcının rol adlarını → rol Id'lerine çevir (iki istek de bitince çalışır)
+  private syncRoleSelection() {
+    if (!this.user || this.allRoles.length === 0) return;
+    this.originalRoleIds = this.allRoles.filter(r => this.user.roles.includes(r.name)).map(r => r.id);
+    this.selectedRoleIds = [...this.originalRoleIds];
+  }
+
+
 
   loadUser() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -71,6 +110,7 @@ export class UserDetail implements OnInit {
     this.userService.getById(id).subscribe({
       next: result => {
         this.user = result.data;
+                this.syncRoleSelection();   // YENİ
         this.isLoading = false;
       },
       error: err => {
@@ -275,4 +315,114 @@ export class UserDetail implements OnInit {
   openBlog(blog: UserRecentBlogDto) {
     this.router.navigate(['blogs', blog.id], { relativeTo: this.route.parent });
   }
+
+
+  // ---------------------------------------------------------------
+  // YENİ: ROL ATAMA
+  // ---------------------------------------------------------------
+  isRoleSelected(role: RoleDto): boolean {
+    return this.selectedRoleIds.includes(role.id);
+  }
+
+  // Değiştirilemeyen kutucuklar:
+  //   User → herkeste kalır
+  //   Admin → kendi hesabındaysan kendi yönetici rolünü alamazsın
+  isRoleLocked(role: RoleDto): boolean {
+    return role.name === 'User' || (role.name === 'Admin' && this.isSelf);
+  }
+
+  roleLockReason(role: RoleDto): string {
+    if (role.name === 'User') return 'Temel rol, herkeste bulunur.';
+    if (role.name === 'Admin' && this.isSelf) return 'Kendi yönetici rolünü kaldıramazsın.';
+    return '';
+  }
+
+  toggleRole(role: RoleDto) {
+    if (this.isRoleLocked(role)) return;
+    this.selectedRoleIds = this.isRoleSelected(role)
+      ? this.selectedRoleIds.filter(id => id !== role.id)
+      : [...this.selectedRoleIds, role.id];
+  }
+
+  // Değişiklik var mı? (sıralamadan bağımsız karşılaştırma)
+  get rolesChanged(): boolean {
+    const a = [...this.selectedRoleIds].sort().join();
+    const b = [...this.originalRoleIds].sort().join();
+    return a !== b;
+  }
+
+  resetRoles() {
+    this.selectedRoleIds = [...this.originalRoleIds];
+  }
+
+  // Admin rolü YENİ mi veriliyor?
+  private get isGrantingAdmin(): boolean {
+    const admin = this.allRoles.find(r => r.name === 'Admin');
+    return !!admin && this.selectedRoleIds.includes(admin.id) && !this.originalRoleIds.includes(admin.id);
+  }
+
+  async saveRoles() {
+    if (!this.rolesChanged || !this.user) return;
+
+    // Admin veriliyorsa → şifre penceresi
+    if (this.isGrantingAdmin) {
+      this.rolePassword = '';
+      this.rolePasswordError = '';
+      this.rolePasswordDialogVisible = true;
+      return;
+    }
+
+    // Diğer değişiklikler → onay
+    const confirmed = await this.swal.confirm({
+      title: 'Roller güncellensin mi?',
+      text: this.isSelf
+        ? 'Kendi rollerini değiştiriyorsun. Kaydedince oturumun kapanacak, yeniden giriş yapman gerekecek.'
+        : 'Kullanıcının açık oturumu kapanacak ve bilgilendirme e-postası gönderilecek.',
+      confirmText: 'Evet, güncelle'
+    });
+    if (!confirmed) return;
+
+    this.assignRoles(null);
+  }
+
+  confirmRolePassword() {
+    if (!this.rolePassword) return;
+    this.assignRoles(this.rolePassword);
+  }
+
+  private assignRoles(adminPassword: string | null) {
+    this.isSavingRoles = true;
+    this.rolePasswordError = '';
+
+    this.roleService.assign(this.user.id, this.selectedRoleIds, adminPassword).subscribe({
+      next: () => {
+        this.isSavingRoles = false;
+        this.rolePasswordDialogVisible = false;
+        this.swal.success('Roller güncellendi', 'Kullanıcının oturumu kapatıldı.');
+        this.loadUser();
+        this.loadRoles();   // rol başına kullanıcı sayıları da değişti
+      },
+      error: err => {
+        this.isSavingRoles = false;
+        const errors: ApiError[] = err.error?.errors ?? [];
+
+        // Şifre hatası → pencerede göster
+        const passwordError = errors.find(e => e.propertyName === 'AdminPassword');
+        if (passwordError && this.rolePasswordDialogVisible) {
+          this.rolePasswordError = passwordError.errorMessage;
+          return;
+        }
+
+        this.rolePasswordDialogVisible = false;
+        this.swal.error('Roller güncellenemedi', errors[0]?.errorMessage ?? err.error?.errorMessage);
+        this.resetRoles();
+      }
+    });
+  }
+
+  // Rol adının Türkçesi (geçmişte de kullanılıyor)
+  roleName(name: string): string {
+    return ROLE_LABELS[name] ?? name;
+  }
+
 }

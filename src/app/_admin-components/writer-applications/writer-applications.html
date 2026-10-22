@@ -1,0 +1,87 @@
+<!-- =====================================================================
+     YAZARLIK BAŞVURULARI
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Yazarlık başvuruları
+      <span class="zb-count" *ngIf="!isLoading && counts.open > 0">{{ counts.open }}</span>
+    </h1>
+    <p class="zb-page-sub">Yazar olmak isteyen okurların başvuruları. İncelemek için bir başvuruya tıkla.</p>
+  </div>
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- SEKMELER -->
+<div class="zb-tabs" role="tablist">
+  <button type="button" role="tab" class="zb-tab" *ngFor="let t of tabs"
+          [class.is-active]="tab === t.value" [attr.aria-selected]="tab === t.value" (click)="setTab(t.value)">
+    <i [class]="t.icon" aria-hidden="true"></i>
+    <span>{{ t.label }}</span>
+    <span class="zb-tab-count">{{ isLoading ? '–' : counts[t.value] }}</span>
+  </button>
+</div>
+
+<div class="zb-card">
+
+  <p-table [value]="filtered" dataKey="id" [loading]="isLoading" [rowHover]="true"
+           [paginator]="filtered.length > 10" [rows]="10"
+           styleClass="zb-table" [tableStyle]="{ 'min-width': '52rem' }">
+
+    <ng-template #header>
+      <tr>
+        <th>Başvuran</th>
+        <th>Konular</th>
+        <th pSortableColumn="submittedAt" class="zb-col-date">Tarih <p-sortIcon field="submittedAt" /></th>
+        <th class="zb-col-status">Durum</th>
+        <th class="zb-col-arrow"><span class="zb-sr-only">Aç</span></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-app>
+      <!-- is-unread: admin henüz açmamış (Beklemede) -->
+      <tr class="zb-row" [class.is-unread]="app.status === 'Pending'" (click)="open(app)">
+        <td>
+          <div class="zb-user-cell">
+            <span class="zb-unread-dot" *ngIf="app.status === 'Pending'" aria-label="Okunmadı"></span>
+            <p-avatar *ngIf="app.imageUrl" [image]="app.imageUrl" shape="circle" styleClass="zb-user-avatar" />
+            <p-avatar *ngIf="!app.imageUrl" [label]="initials(app)" shape="circle" styleClass="zb-user-avatar" />
+            <div class="zb-user-text">
+              <span class="zb-user-name">
+                {{ app.fullName }}
+                <span class="zb-new" *ngIf="app.status === 'Pending'">Yeni</span>
+              </span>
+              <span class="zb-user-handle">&#64;{{ app.userName }}</span>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="zb-topics">
+            <span class="zb-topic" *ngFor="let t of topicList(app.topics)">{{ t }}</span>
+          </div>
+        </td>
+        <td class="zb-col-date">{{ app.submittedAt | date:'dd.MM.yyyy' }}</td>
+        <td class="zb-col-status">
+          <span class="zb-status" [ngClass]="'is-' + app.status">{{ statusLabel(app.status) }}</span>
+        </td>
+        <td class="zb-col-arrow"><i class="pi pi-angle-right" aria-hidden="true"></i></td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="5">
+          <div class="zb-empty">
+            <span class="zb-empty-icon"><i class="pi pi-inbox" aria-hidden="true"></i></span>
+            <p class="zb-empty-title">{{ tab === 'open' ? 'Karar bekleyen başvuru yok' : 'Bu sekmede başvuru yok' }}</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

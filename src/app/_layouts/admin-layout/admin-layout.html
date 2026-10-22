@@ -99,6 +99,10 @@
            [pTooltip]="item.label" tooltipPosition="right" [tooltipDisabled]="!isCollapsed">
           <i [class]="item.icon" aria-hidden="true"></i>
           <span class="zb-nav-label">{{ item.label }}</span>
+                    <!-- YENİ: sayı rozeti (okunmamış başvurular) -->
+          <span class="zb-nav-badge" *ngIf="item.badge === 'applications' && pendingApplications > 0">
+            {{ pendingApplications }}
+          </span>
         </a>
       </div>
 

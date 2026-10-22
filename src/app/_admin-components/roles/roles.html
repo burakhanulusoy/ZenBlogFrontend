@@ -1,0 +1,146 @@
+<!-- =====================================================================
+     ROLLER
+     ===================================================================== -->
+
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Roller
+      <span class="zb-count" *ngIf="!isLoading">{{ roles.length }}</span>
+    </h1>
+    <p class="zb-page-sub">Kullanıcıların sitede neler yapabileceğini belirleyen roller. Rol atamak için kullanıcı detayına git.</p>
+  </div>
+  <p-button label="Yeni rol" icon="pi pi-plus" (onClick)="openCreate()" />
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadRoles()" />
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="zb-role-grid" *ngIf="isLoading">
+  <p-skeleton *ngFor="let s of [1, 2, 3]" width="100%" height="11rem" borderRadius="1rem" />
+</div>
+
+<ng-container *ngIf="!isLoading && !errorMessage">
+
+  <!-- SİSTEM ROLLERİ -->
+  <h2 class="zb-group-title">
+    <i class="pi pi-lock" aria-hidden="true"></i> Sistem rolleri
+  </h2>
+  <div class="zb-role-grid">
+    <article class="zb-role-card is-system" *ngFor="let role of systemRoles" [ngClass]="'is-' + role.name">
+      <header class="zb-role-head">
+        <span class="zb-role-icon"><i [class]="icon(role)" aria-hidden="true"></i></span>
+        <div class="zb-role-names">
+          <h3 class="zb-role-label">{{ label(role) }}</h3>
+          <code class="zb-role-code">{{ role.name }}</code>
+        </div>
+        <span class="zb-lock" pTooltip="Sistem rolü: silinemez, adı değiştirilemez" tooltipPosition="top">
+          <i class="pi pi-lock" aria-hidden="true"></i>
+        </span>
+      </header>
+      <p class="zb-role-desc">{{ description(role) }}</p>
+      <footer class="zb-role-foot">
+        <span class="zb-role-users">
+          <i class="pi pi-users" aria-hidden="true"></i>
+          <strong>{{ role.userCount }}</strong> kullanıcı
+        </span>
+      </footer>
+    </article>
+  </div>
+
+  <!-- ÖZEL ROLLER -->
+  <h2 class="zb-group-title zb-mt">
+    <i class="pi pi-tags" aria-hidden="true"></i> Özel roller
+  </h2>
+
+  <div class="zb-info">
+    <i class="pi pi-info-circle" aria-hidden="true"></i>
+    <span>Özel roller kullanıcıları gruplamak için eklenebilir; ancak kodda karşılığı olmadığı sürece ek bir yetki vermezler.</span>
+  </div>
+
+  <div class="zb-empty" *ngIf="customRoles.length === 0">
+    <span class="zb-empty-icon"><i class="pi pi-tags" aria-hidden="true"></i></span>
+    <p class="zb-empty-title">Henüz özel rol yok</p>
+    <p-button label="Yeni rol ekle" icon="pi pi-plus" size="small" [outlined]="true" (onClick)="openCreate()" />
+  </div>
+
+  <div class="zb-role-grid" *ngIf="customRoles.length > 0">
+    <article class="zb-role-card" *ngFor="let role of customRoles">
+      <header class="zb-role-head">
+        <span class="zb-role-icon"><i [class]="icon(role)" aria-hidden="true"></i></span>
+        <div class="zb-role-names">
+          <h3 class="zb-role-label">{{ role.name }}</h3>
+          <code class="zb-role-code">özel rol</code>
+        </div>
+      </header>
+      <p class="zb-role-desc">{{ description(role) }}</p>
+      <footer class="zb-role-foot">
+        <span class="zb-role-users">
+          <i class="pi pi-users" aria-hidden="true"></i>
+          <strong>{{ role.userCount }}</strong> kullanıcı
+        </span>
+        <div class="zb-role-actions">
+          <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary"
+                    pTooltip="Düzenle" tooltipPosition="top" ariaLabel="Düzenle" (onClick)="openEdit(role)" />
+          <!-- İçinde kullanıcı olan rol silinemez (backend de engelliyor) -->
+          <span [pTooltip]="role.userCount > 0 ? 'Önce kullanıcıları bu rolden çıkar' : 'Sil'" tooltipPosition="top">
+            <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" ariaLabel="Sil"
+                      [disabled]="role.userCount > 0" (onClick)="deleteRole(role)" />
+          </span>
+        </div>
+      </footer>
+    </article>
+  </div>
+
+</ng-container>
+
+
+<!-- =====================================================================
+     EKLE / DÜZENLE PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="dialogVisible" [modal]="true" [dismissableMask]="true"
+          [draggable]="false" [resizable]="false" [closable]="!isSaving"
+          [style]="{ width: '460px' }" [breakpoints]="{ '575px': '95vw' }"
+          styleClass="zb-dialog" (onShow)="nameInput.focus()">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon">
+        <i class="pi" [class.pi-pencil]="isEditMode" [class.pi-plus]="!isEditMode" aria-hidden="true"></i>
+      </span>
+      <div>
+        <h2 class="zb-dialog-title">{{ isEditMode ? 'Rolü düzenle' : 'Yeni rol' }}</h2>
+        <p class="zb-dialog-sub">Rol adı İngilizce harflerden oluşmalı (örn. Editor).</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form #roleForm="ngForm" (ngSubmit)="save(roleForm)" novalidate>
+
+    <div class="zb-dialog-alert" *ngIf="otherErrors.length > 0">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <div><div *ngFor="let e of otherErrors">{{ e.errorMessage }}</div></div>
+    </div>
+
+    <label for="roleName" class="zb-label">Rol adı</label>
+    <input pInputText #nameInput #nameModel="ngModel" id="roleName" name="name" class="zb-input"
+           placeholder="Örn: Editor" autocomplete="off" maxlength="50"
+           [(ngModel)]="form.name" required pattern="^[a-zA-Z]+$"
+           [class.zb-invalid]="(nameModel.invalid && nameModel.touched) || nameError">
+    <small class="zb-error" *ngIf="nameModel.errors?.['required'] && nameModel.touched">Rol adı zorunludur.</small>
+    <small class="zb-error" *ngIf="nameModel.errors?.['pattern'] && nameModel.touched">Sadece İngilizce harf kullan (boşluk, rakam ve Türkçe karakter olmadan).</small>
+    <small class="zb-error" *ngIf="nameError">{{ nameError }}</small>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true"
+                [disabled]="isSaving" (onClick)="dialogVisible = false" />
+      <p-button type="submit" [label]="isEditMode ? 'Güncelle' : 'Kaydet'" icon="pi pi-check"
+                [loading]="isSaving" [disabled]="isSaving" />
+    </div>
+  </form>
+</p-dialog>

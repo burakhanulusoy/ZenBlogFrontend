@@ -1,0 +1,545 @@
+/* =====================================================================
+   YAZAR OL (piksel) · Renk ve fontlar: styles.css → PİKSEL TEMA
+   ===================================================================== */
+
+/* TANITIM BANDI */
+.bw-hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 2rem 2.25rem;
+  border: 3px solid var(--px-ink);
+  background-color: var(--px-green);
+  background-image:
+    linear-gradient(rgba(20, 32, 26, 0.12) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(20, 32, 26, 0.12) 2px, transparent 2px);
+  background-size: 24px 24px;
+  box-shadow: 6px 6px 0 var(--px-ink);
+  color: var(--px-ink);
+}
+
+.bw-tag {
+  display: inline-block;
+  margin-bottom: 0.85rem;
+  padding: 0.3rem 0.55rem;
+  border: 2px solid var(--px-ink);
+  background-color: var(--px-yellow);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+  line-height: 1.5;
+}
+
+.bw-title {
+  margin: 0 0 0.6rem;
+  font-family: var(--px-display);
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  line-height: 1.4;
+  text-shadow: 3px 3px 0 #fff;
+}
+
+.bw-sub {
+  max-width: 50ch;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.bw-perks {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 700;
+}
+
+.bw-perks li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.bw-perk-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+}
+
+/* KART + UYARI */
+.bw-card {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem 1.6rem;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+  box-shadow: var(--px-shadow);
+}
+
+.bw-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 3px solid var(--px-ink);
+  background-color: #fff1f1;
+  box-shadow: 3px 3px 0 var(--px-ink);
+}
+
+.bw-alert > span {
+  flex-grow: 1;
+}
+
+.bw-alert.is-info {
+  background-color: #fffbe6;
+}
+
+.bw-label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.5rem;
+  line-height: 1.6;
+}
+
+/* YÜKLENİYOR: zıplayan piksel noktalar */
+.bw-loading {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2.5rem;
+}
+
+.bw-dot {
+  width: 14px;
+  height: 14px;
+  background-color: var(--px-green);
+  box-shadow: 2px 2px 0 var(--px-ink);
+  animation: bw-bounce 0.9s steps(2) infinite;
+}
+
+.bw-dot:nth-child(2) { animation-delay: 0.15s; }
+.bw-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bw-bounce {
+  50% { transform: translateY(-8px); }
+}
+
+/* DURUM KARTLARI */
+.bw-state {
+  text-align: center;
+}
+
+.bw-state p {
+  margin: 0 auto 1rem;
+  max-width: 52ch;
+  font-size: 1.05rem;
+}
+
+.bw-state-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.9rem;
+  border: 3px solid var(--px-ink);
+  background-color: var(--px-green);
+  box-shadow: 3px 3px 0 var(--px-ink);
+  font-size: 1.4rem;
+}
+
+.bw-state.is-rejected .bw-state-icon {
+  background-color: #fca5a5;
+}
+
+.bw-state-title {
+  margin: 0 0 0.6rem;
+  font-family: var(--px-display);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* 3 adımlı takip */
+.bw-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bw-steps > li:not(.bw-step-line) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  opacity: 0.45;
+}
+
+.bw-steps > li.is-done {
+  opacity: 1;
+}
+
+.bw-step-dot {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+}
+
+.is-done .bw-step-dot {
+  background-color: var(--px-green);
+  box-shadow: 3px 3px 0 var(--px-ink);
+}
+
+.is-current .bw-step-dot {
+  background-color: var(--px-yellow);
+  animation: bw-pulse 1.2s steps(2) infinite;
+}
+
+@keyframes bw-pulse {
+  50% { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--px-ink); }
+}
+
+.bw-step-line {
+  flex: 0 1 70px;
+  height: 6px;
+  margin-bottom: 1.6rem;
+  background: repeating-linear-gradient(90deg, var(--px-ink) 0 6px, transparent 6px 12px);
+  opacity: 0.35;
+}
+
+.bw-step-line.is-done {
+  background: var(--px-green);
+  opacity: 1;
+}
+
+.bw-summary,
+.bw-reason,
+.bw-reapply {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0.85rem 1rem;
+  border: 3px dashed var(--px-ink);
+  background-color: var(--px-paper);
+  text-align: left;
+}
+
+.bw-reason p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.bw-reapply {
+  margin-top: 0.9rem;
+  border-style: solid;
+  background-color: var(--px-yellow);
+  text-align: center;
+}
+
+.bw-reapply-date {
+  font-family: var(--px-display);
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* FORM */
+.bw-field + .bw-field {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 3px dashed var(--px-ink);
+}
+
+.bw-field-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+.bw-no {
+  color: var(--px-green);
+  font-family: var(--px-display);
+  font-size: 1.1rem;
+  line-height: 1.2;
+  text-shadow: 3px 3px 0 var(--px-ink);
+}
+
+.bw-field-title {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.bw-req {
+  color: #dc2626;
+}
+
+.bw-hint {
+  color: var(--px-green-dark);
+  font-size: 0.95rem;
+}
+
+/* Konu etiketleri */
+.bw-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.bw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.8rem;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-font);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.bw-chip:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--px-ink);
+}
+
+.bw-chip.is-on {
+  background-color: var(--px-green);
+}
+
+.bw-chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bw-chip:focus-visible {
+  outline: 3px solid var(--px-yellow);
+  outline-offset: 2px;
+}
+
+.bw-textarea {
+  width: 100%;
+  border: 3px solid var(--px-ink) !important;
+  border-radius: 0 !important;
+  font-family: var(--px-font);
+  font-size: 1.05rem;
+  resize: vertical;
+}
+
+.bw-textarea.is-invalid {
+  border-color: #dc2626 !important;
+}
+
+.bw-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.bw-counter {
+  margin-top: 0.35rem;
+  margin-left: auto;
+  color: var(--px-green-dark);
+}
+
+.bw-counter.is-ok {
+  font-weight: 700;
+}
+
+.bw-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* Kurallar */
+.bw-rules {
+  margin-top: 1.75rem;
+  padding: 1rem 1.1rem;
+  border: 3px solid var(--px-ink);
+  background-color: #fffbe6;
+}
+
+.bw-rules-title {
+  margin: 0 0 0.5rem;
+  font-family: var(--px-display);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+
+.bw-rules ul {
+  margin: 0 0 0.85rem;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.bw-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bw-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--px-green-dark);
+}
+
+/* BUTONLAR */
+.bw-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.bw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.15rem;
+  border: 3px solid var(--px-ink);
+  box-shadow: 4px 4px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-font);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+.bw-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--px-ink);
+}
+
+.bw-btn:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.bw-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bw-btn-yellow { background-color: var(--px-yellow); }
+.bw-btn-white { background-color: #fff; }
+
+.bw-btn-sm {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.9rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bw-dot,
+  .is-current .bw-step-dot,
+  .bw-chip,
+  .bw-btn {
+    animation: none;
+    transition: none;
+  }
+}
+
+
+/* =====================================================================
+   DEĞİŞTİ: YAZARLIK TAAHHÜTNAMESİ
+   ===================================================================== */
+.bw-rules-intro {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* Uzun metin kendi içinde kayar (sayfa uzamasın) */
+.bw-rules-box {
+  max-height: 340px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  overflow-y: auto;
+  border: 3px solid var(--px-ink);
+  background-color: #fff;
+  box-shadow: inset 0 -12px 12px -12px rgba(20, 32, 26, 0.25);   /* altta "devamı var" gölgesi */
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.bw-rules-box:focus-visible {
+  outline: 3px solid var(--px-green);
+  outline-offset: 2px;
+}
+
+.bw-rules-box h3 {
+  margin: 1.1rem 0 0.4rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 2px dashed var(--px-ink);
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.55rem;
+  line-height: 1.7;
+}
+
+.bw-rules-box h3:first-child {
+  margin-top: 0;
+}
+
+.bw-rules-box p {
+  margin: 0 0 0.35rem;
+}
+
+.bw-rules-box ol {
+  margin: 0;
+  padding-left: 1.3rem;
+}
+
+.bw-rules-box li + li {
+  margin-top: 0.3rem;
+}
+
+/* Piksel kaydırma çubuğu */
+.bw-rules-box::-webkit-scrollbar {
+  width: 12px;
+}
+
+.bw-rules-box::-webkit-scrollbar-track {
+  background-color: var(--px-paper);
+}
+
+.bw-rules-box::-webkit-scrollbar-thumb {
+  border: 2px solid var(--px-ink);
+  background-color: var(--px-green);
+}
+
+/* Onay kutusu: daha vurgulu */
+.bw-check-strong {
+  align-items: flex-start;
+  padding: 0.85rem 1rem;
+  border: 3px solid var(--px-ink);
+  background-color: var(--px-yellow);
+  box-shadow: 3px 3px 0 var(--px-ink);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.bw-check-strong input {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
