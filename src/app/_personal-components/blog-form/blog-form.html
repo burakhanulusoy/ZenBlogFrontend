@@ -1,223 +1,244 @@
 <!-- =====================================================================
-     BLOG FORMU (yeni + düzenle)
-     Solda yazının kendisi (giriş + 3 bölüm), sağda yayın ayarları
-     (kategori, kapak görseli, kaydet). Geniş ekranda sağ kolon kaydırırken yerinde durur.
+     BLOG FORMU (yeni + düzenle) · ortak sayfa
+     Solda yazının kendisi (giriş + 3 bölüm), sağda yayın ayarları.
+     Görünüm: admin'de sade, writer'da piksel (CSS → :host-context(.zb-pixel))
      ===================================================================== -->
 
 <!-- SAYFA BAŞLIĞI -->
-<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-  <div class="d-flex align-items-center">
-    <div class="page-icon d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10 text-primary me-3">
-      <!-- Düzenlemede kalem, yeni blogda artı ikonu -->
-      <i class="fa fa-lg" [class.fa-pencil]="isEditMode" [class.fa-plus]="!isEditMode" aria-hidden="true"></i>
-    </div>
+<div class="zb-page-head">
+  <div class="zb-page-head-text">
+    <span class="zb-page-icon">
+      <i class="pi" [class.pi-pencil]="isEditMode" [class.pi-plus]="!isEditMode" aria-hidden="true"></i>
+    </span>
     <div>
-      <h1 class="h3 mb-0">{{ isEditMode ? 'Blogu Düzenle' : 'Yeni Blog Yaz' }}</h1>
-      <p class="text-muted mb-0">
+      <h1 class="zb-page-title">{{ isEditMode ? 'Blogu düzenle' : 'Yeni blog yaz' }}</h1>
+      <p class="zb-page-sub">
         {{ isEditMode ? 'Değiştirmek istediğin alanları güncelle ve kaydet.' : 'Yazını bölüm bölüm doldur, kategorisini seç ve yayınla.' }}
       </p>
     </div>
   </div>
-
-  <!-- type="button": form içinde olmasa da alışkanlık; form gönderme butonu sanılmasın -->
-  <button type="button" class="btn btn-outline-secondary" (click)="goBack()">
-        <i class="fa fa-arrow-left me-1" aria-hidden="true"></i> {{ backLabel }}
-  </button>
+  <p-button [label]="backLabel" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
 </div>
 
 <!-- DÜZENLEME: YÜKLENİYOR -->
-<div class="text-center py-5" *ngIf="isLoading">
-  <div class="spinner-border text-primary"></div>
-  <p class="text-muted mt-2 mb-0">Blog yükleniyor...</p>
+<div class="zb-layout" *ngIf="isLoading">
+  <div class="zb-main-col">
+    <p-skeleton width="100%" height="12rem" borderRadius="1rem" styleClass="mb-3" />
+    <p-skeleton width="100%" height="18rem" borderRadius="1rem" />
+  </div>
+  <div class="zb-side-col">
+    <p-skeleton width="100%" height="24rem" borderRadius="1rem" />
+  </div>
 </div>
 
 <!-- DÜZENLEME: BLOG GETİRİLEMEDİ -->
-<div class="alert alert-warning d-flex align-items-start" *ngIf="loadError">
-  <i class="fa fa-exclamation-triangle me-2 mt-1" aria-hidden="true"></i>
-  <div class="flex-grow-1">{{ loadError }}</div>
-  <button type="button" class="btn btn-sm btn-outline-warning ms-2" (click)="loadBlog()">Tekrar dene</button>
+<div class="zb-alert" *ngIf="loadError">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ loadError }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadBlog()" />
 </div>
 
 <!-- =====================================================================
      FORM
-     #blogForm="ngForm": formun tamamına isim veriyoruz (geçerli mi, dokunuldu mu bilgisi için)
-     (ngSubmit): "Yayınla"ya basınca ya da Enter'a basınca save() çalışır
-     novalidate: tarayıcının kendi baloncuk uyarıları çıkmasın, hataları biz gösteriyoruz
+     #blogForm="ngForm": formun tamamı (geçerli mi, dokunuldu mu)
+     (ngSubmit): "Yayınla"ya ya da Enter'a basınca save() çalışır
      ===================================================================== -->
 <form #blogForm="ngForm" (ngSubmit)="save(blogForm)" novalidate *ngIf="!isLoading && !loadError">
 
   <!-- Bir alana bağlı olmayan API hataları (örn. "Seçilen kategori bulunamadı.") -->
-  <div class="alert alert-danger" *ngIf="generalErrors.length > 0">
-    <div *ngFor="let e of generalErrors">
-      <i class="fa fa-exclamation-circle me-1" aria-hidden="true"></i> {{ e.errorMessage }}
-    </div>
+  <div class="zb-alert is-error" *ngIf="generalErrors.length > 0">
+    <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+    <div><div *ngFor="let e of generalErrors">{{ e.errorMessage }}</div></div>
   </div>
 
-  <div class="row g-4">
+  <div class="zb-layout">
 
     <!-- ===================== SOL: YAZININ KENDİSİ ===================== -->
-    <div class="col-xl-8">
+    <div class="zb-main-col">
 
       <!-- GİRİŞ -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h2 class="h6 fw-bold mb-3">Giriş</h2>
-
-          <!-- Ana başlık
-               #mainTitle="ngModel": bu inputa isim veriyoruz → mainTitle.invalid, mainTitle.touched
-               maxlength: tarayıcı 150'den fazla yazdırmaz (backend'deki kuralla aynı) -->
-          <div class="mb-3">
-            <label for="mainTitle" class="form-label fw-semibold">Ana başlık <span class="text-danger">*</span></label>
-            <input id="mainTitle" type="text" class="form-control form-control-lg" name="mainTitle"
-                   [(ngModel)]="model.mainTitle" #mainTitle="ngModel" required maxlength="150"
-                   placeholder="Yazının başlığı"
-                   [class.is-invalid]="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
-            <div class="d-flex justify-content-between">
-              <div class="invalid-feedback d-block" *ngIf="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
-                {{ getError('MainTitle') || 'Ana başlık boş olamaz.' }}
-              </div>
-              <!-- Karakter sayacı -->
-              <small class="text-muted ms-auto">{{ model.mainTitle?.length || 0 }}/150</small>
-            </div>
-          </div>
-
-          <!-- Ana açıklama
-               invalid-feedback: Bootstrap, hemen üstündeki input "is-invalid" olunca bunu gösterir -->
+      <section class="zb-panel">
+        <header class="zb-section-head">
+          <span class="zb-section-no">00</span>
           <div>
-            <label for="mainDescription" class="form-label fw-semibold">Ana açıklama <span class="text-danger">*</span></label>
-            <textarea id="mainDescription" class="form-control" rows="4" name="mainDescription"
-                      [(ngModel)]="model.mainDescription" #mainDescription="ngModel" required
-                      placeholder="Okuru yazına çeken kısa bir giriş"
-                      [class.is-invalid]="(mainDescription.invalid && mainDescription.touched) || getError('MainDescription')"></textarea>
-            <div class="invalid-feedback">{{ getError('MainDescription') || 'Ana açıklama boş olamaz.' }}</div>
+            <h2 class="zb-section-title">Giriş</h2>
+            <p class="zb-section-sub">Okurun ilk göreceği kısım: başlık ve kısa bir giriş.</p>
+          </div>
+        </header>
+
+        <div class="zb-field">
+          <label for="mainTitle" class="zb-label">Ana başlık <span class="zb-req">*</span></label>
+          <input pInputText id="mainTitle" name="mainTitle" class="zb-input zb-input-lg" maxlength="150"
+                 placeholder="Yazının başlığı" [(ngModel)]="model.mainTitle" #mainTitle="ngModel" required
+                 [class.zb-invalid]="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
+          <div class="zb-field-foot">
+            <small class="zb-error" *ngIf="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
+              {{ getError('MainTitle') || 'Ana başlık boş olamaz.' }}
+            </small>
+            <small class="zb-counter">{{ model.mainTitle?.length || 0 }}/150</small>
           </div>
         </div>
-      </div>
+
+        <div class="zb-field">
+          <label for="mainDescription" class="zb-label">Ana açıklama <span class="zb-req">*</span></label>
+          <textarea pTextarea id="mainDescription" name="mainDescription" rows="4" class="zb-textarea"
+                    placeholder="Okuru yazına çeken kısa bir giriş"
+                    [(ngModel)]="model.mainDescription" #mainDescription="ngModel" required
+                    [class.zb-invalid]="(mainDescription.invalid && mainDescription.touched) || getError('MainDescription')"></textarea>
+          <small class="zb-error" *ngIf="(mainDescription.invalid && mainDescription.touched) || getError('MainDescription')">
+            {{ getError('MainDescription') || 'Ana açıklama boş olamaz.' }}
+          </small>
+        </div>
+      </section>
 
       <!-- 1. BÖLÜM -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h2 class="h6 fw-bold mb-3"><span class="section-no">1</span> Birinci bölüm</h2>
-
-          <div class="mb-3">
-            <label for="title1" class="form-label fw-semibold">Başlık <span class="text-danger">*</span></label>
-            <input id="title1" type="text" class="form-control" name="title1"
-                   [(ngModel)]="model.title1" #title1="ngModel" required maxlength="150"
-                   [class.is-invalid]="(title1.invalid && title1.touched) || getError('Title1')">
-            <div class="invalid-feedback">{{ getError('Title1') || '1. başlık boş olamaz.' }}</div>
+      <section class="zb-panel">
+        <header class="zb-section-head">
+          <span class="zb-section-no">01</span>
+          <div>
+            <h2 class="zb-section-title">Birinci bölüm</h2>
+            <p class="zb-section-sub">Başlık, iki paragraf ve bir görsel.</p>
           </div>
+        </header>
 
-          <div class="mb-3">
-            <label for="description1" class="form-label fw-semibold">1. açıklama <span class="text-danger">*</span></label>
-            <textarea id="description1" class="form-control" rows="5" name="description1"
-                      [(ngModel)]="model.description1" #description1="ngModel" required
-                      [class.is-invalid]="(description1.invalid && description1.touched) || getError('Description1')"></textarea>
-            <div class="invalid-feedback">{{ getError('Description1') || '1. açıklama boş olamaz.' }}</div>
-          </div>
-
-          <div class="mb-3">
-            <label for="description2" class="form-label fw-semibold">2. açıklama <span class="text-danger">*</span></label>
-            <textarea id="description2" class="form-control" rows="5" name="description2"
-                      [(ngModel)]="model.description2" #description2="ngModel" required
-                      [class.is-invalid]="(description2.invalid && description2.touched) || getError('Description2')"></textarea>
-            <div class="invalid-feedback">{{ getError('Description2') || '2. açıklama boş olamaz.' }}</div>
-          </div>
-
-          <!-- Resim seçici: aşağıdaki #imagePicker şablonunu bu alan için çiziyoruz -->
-          <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'BlogImage1', label: '1. blog görseli' }"></ng-container>
+        <div class="zb-field">
+          <label for="title1" class="zb-label">Başlık <span class="zb-req">*</span></label>
+          <input pInputText id="title1" name="title1" class="zb-input" maxlength="150"
+                 [(ngModel)]="model.title1" #title1="ngModel" required
+                 [class.zb-invalid]="(title1.invalid && title1.touched) || getError('Title1')">
+          <small class="zb-error" *ngIf="(title1.invalid && title1.touched) || getError('Title1')">
+            {{ getError('Title1') || '1. başlık boş olamaz.' }}
+          </small>
         </div>
-      </div>
+
+        <div class="zb-field">
+          <label for="description1" class="zb-label">1. açıklama <span class="zb-req">*</span></label>
+          <textarea pTextarea id="description1" name="description1" rows="5" class="zb-textarea"
+                    [(ngModel)]="model.description1" #description1="ngModel" required
+                    [class.zb-invalid]="(description1.invalid && description1.touched) || getError('Description1')"></textarea>
+          <small class="zb-error" *ngIf="(description1.invalid && description1.touched) || getError('Description1')">
+            {{ getError('Description1') || '1. açıklama boş olamaz.' }}
+          </small>
+        </div>
+
+        <div class="zb-field">
+          <label for="description2" class="zb-label">2. açıklama <span class="zb-req">*</span></label>
+          <textarea pTextarea id="description2" name="description2" rows="5" class="zb-textarea"
+                    [(ngModel)]="model.description2" #description2="ngModel" required
+                    [class.zb-invalid]="(description2.invalid && description2.touched) || getError('Description2')"></textarea>
+          <small class="zb-error" *ngIf="(description2.invalid && description2.touched) || getError('Description2')">
+            {{ getError('Description2') || '2. açıklama boş olamaz.' }}
+          </small>
+        </div>
+
+        <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'BlogImage1', label: '1. blog görseli' }"></ng-container>
+      </section>
 
       <!-- 2. BÖLÜM -->
-      <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-4">
-          <h2 class="h6 fw-bold mb-3"><span class="section-no">2</span> İkinci bölüm</h2>
-
-          <div class="mb-3">
-            <label for="title2" class="form-label fw-semibold">Başlık <span class="text-danger">*</span></label>
-            <input id="title2" type="text" class="form-control" name="title2"
-                   [(ngModel)]="model.title2" #title2="ngModel" required maxlength="150"
-                   [class.is-invalid]="(title2.invalid && title2.touched) || getError('Title2')">
-            <div class="invalid-feedback">{{ getError('Title2') || '2. başlık boş olamaz.' }}</div>
+      <section class="zb-panel">
+        <header class="zb-section-head">
+          <span class="zb-section-no">02</span>
+          <div>
+            <h2 class="zb-section-title">İkinci bölüm</h2>
+            <p class="zb-section-sub">Başlık, bir paragraf ve bir görsel.</p>
           </div>
+        </header>
 
-          <div class="mb-3">
-            <label for="description3" class="form-label fw-semibold">3. açıklama <span class="text-danger">*</span></label>
-            <textarea id="description3" class="form-control" rows="5" name="description3"
-                      [(ngModel)]="model.description3" #description3="ngModel" required
-                      [class.is-invalid]="(description3.invalid && description3.touched) || getError('Description3')"></textarea>
-            <div class="invalid-feedback">{{ getError('Description3') || '3. açıklama boş olamaz.' }}</div>
-          </div>
-
-          <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'BlogImage2', label: '2. blog görseli' }"></ng-container>
+        <div class="zb-field">
+          <label for="title2" class="zb-label">Başlık <span class="zb-req">*</span></label>
+          <input pInputText id="title2" name="title2" class="zb-input" maxlength="150"
+                 [(ngModel)]="model.title2" #title2="ngModel" required
+                 [class.zb-invalid]="(title2.invalid && title2.touched) || getError('Title2')">
+          <small class="zb-error" *ngIf="(title2.invalid && title2.touched) || getError('Title2')">
+            {{ getError('Title2') || '2. başlık boş olamaz.' }}
+          </small>
         </div>
-      </div>
+
+        <div class="zb-field">
+          <label for="description3" class="zb-label">3. açıklama <span class="zb-req">*</span></label>
+          <textarea pTextarea id="description3" name="description3" rows="5" class="zb-textarea"
+                    [(ngModel)]="model.description3" #description3="ngModel" required
+                    [class.zb-invalid]="(description3.invalid && description3.touched) || getError('Description3')"></textarea>
+          <small class="zb-error" *ngIf="(description3.invalid && description3.touched) || getError('Description3')">
+            {{ getError('Description3') || '3. açıklama boş olamaz.' }}
+          </small>
+        </div>
+
+        <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'BlogImage2', label: '2. blog görseli' }"></ng-container>
+      </section>
 
       <!-- 3. BÖLÜM -->
-      <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-          <h2 class="h6 fw-bold mb-3"><span class="section-no">3</span> Üçüncü bölüm</h2>
-
-          <div class="mb-3">
-            <label for="title3" class="form-label fw-semibold">Başlık <span class="text-danger">*</span></label>
-            <input id="title3" type="text" class="form-control" name="title3"
-                   [(ngModel)]="model.title3" #title3="ngModel" required maxlength="150"
-                   [class.is-invalid]="(title3.invalid && title3.touched) || getError('Title3')">
-            <div class="invalid-feedback">{{ getError('Title3') || '3. başlık boş olamaz.' }}</div>
-          </div>
-
+      <section class="zb-panel">
+        <header class="zb-section-head">
+          <span class="zb-section-no">03</span>
           <div>
-            <label for="description4" class="form-label fw-semibold">4. açıklama <span class="text-danger">*</span></label>
-            <textarea id="description4" class="form-control" rows="5" name="description4"
-                      [(ngModel)]="model.description4" #description4="ngModel" required
-                      [class.is-invalid]="(description4.invalid && description4.touched) || getError('Description4')"></textarea>
-            <div class="invalid-feedback">{{ getError('Description4') || '4. açıklama boş olamaz.' }}</div>
+            <h2 class="zb-section-title">Üçüncü bölüm</h2>
+            <p class="zb-section-sub">Kapanış: başlık ve bir paragraf.</p>
           </div>
+        </header>
+
+        <div class="zb-field">
+          <label for="title3" class="zb-label">Başlık <span class="zb-req">*</span></label>
+          <input pInputText id="title3" name="title3" class="zb-input" maxlength="150"
+                 [(ngModel)]="model.title3" #title3="ngModel" required
+                 [class.zb-invalid]="(title3.invalid && title3.touched) || getError('Title3')">
+          <small class="zb-error" *ngIf="(title3.invalid && title3.touched) || getError('Title3')">
+            {{ getError('Title3') || '3. başlık boş olamaz.' }}
+          </small>
         </div>
-      </div>
+
+        <div class="zb-field">
+          <label for="description4" class="zb-label">4. açıklama <span class="zb-req">*</span></label>
+          <textarea pTextarea id="description4" name="description4" rows="5" class="zb-textarea"
+                    [(ngModel)]="model.description4" #description4="ngModel" required
+                    [class.zb-invalid]="(description4.invalid && description4.touched) || getError('Description4')"></textarea>
+          <small class="zb-error" *ngIf="(description4.invalid && description4.touched) || getError('Description4')">
+            {{ getError('Description4') || '4. açıklama boş olamaz.' }}
+          </small>
+        </div>
+      </section>
 
     </div>
 
     <!-- ===================== SAĞ: YAYIN AYARLARI ===================== -->
-    <div class="col-xl-4">
-      <div class="form-sidebar">
-        <div class="card border-0 shadow-sm">
-          <div class="card-body p-4">
-            <h2 class="h6 fw-bold mb-3">Yayın</h2>
+    <aside class="zb-side-col">
+      <section class="zb-panel zb-publish">
+        <h2 class="zb-panel-title">Yayın</h2>
 
-            <!-- Kategori: value="" seçeneği "seçilmedi" demek; required onu geçersiz sayar -->
-            <div class="mb-4">
-              <label for="categoryId" class="form-label fw-semibold">Kategori <span class="text-danger">*</span></label>
-              <select id="categoryId" class="form-select" name="categoryId"
-                      [(ngModel)]="model.categoryId" #categoryId="ngModel" required
-                      [class.is-invalid]="(categoryId.invalid && categoryId.touched) || getError('CategoryId')">
-                <option value="" disabled>Kategori seç</option>
-                <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
-              </select>
-              <div class="invalid-feedback">{{ getError('CategoryId') || 'Kategori seçmelisin.' }}</div>
-            </div>
-
-            <div class="mb-4">
-              <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'CoverImage', label: 'Kapak görseli' }"></ng-container>
-            </div>
-
-            <!-- KAYDET: istek sürerken kilitli (iki kez basılıp iki blog oluşmasın) -->
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary" [disabled]="isSaving">
-                <span class="spinner-border spinner-border-sm me-1" *ngIf="isSaving"></span>
-                <i class="fa fa-check me-1" aria-hidden="true" *ngIf="!isSaving"></i>
-                {{ isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Değişiklikleri kaydet' : 'Yayınla') }}
-              </button>
-              <button type="button" class="btn btn-light" (click)="goBack()" [disabled]="isSaving">Vazgeç</button>
-            </div>
-
-            <p class="small text-muted mb-0 mt-3" *ngIf="!isEditMode">
-              Resimler yükleneceği için kaydetmek birkaç saniye sürebilir.
-            </p>
-          </div>
+        <!-- KATEGORİ: p-select (açılır liste) -->
+        <div class="zb-field">
+          <label for="categoryId" class="zb-label">Kategori <span class="zb-req">*</span></label>
+          <p-select inputId="categoryId" name="categoryId" [options]="categories" optionLabel="name" optionValue="id"
+                    placeholder="Kategori seç" [(ngModel)]="model.categoryId" #categoryId="ngModel" required
+                    [style]="{ width: '100%' }"
+                    [class.zb-invalid]="(categoryId.invalid && categoryId.touched) || getError('CategoryId')" />
+          <small class="zb-error" *ngIf="(categoryId.invalid && categoryId.touched) || getError('CategoryId')">
+            {{ getError('CategoryId') || 'Kategori seçmelisin.' }}
+          </small>
         </div>
-      </div>
-    </div>
+
+        <!-- KAPAK GÖRSELİ -->
+        <ng-container *ngTemplateOutlet="imagePicker; context: { field: 'CoverImage', label: 'Kapak görseli' }"></ng-container>
+
+        <!-- KAYDET: istek sürerken kilitli (iki kez basılıp iki blog oluşmasın) -->
+        <div class="zb-publish-actions">
+          <p-button type="submit" styleClass="zb-full-btn" icon="pi pi-check"
+                    [label]="isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Değişiklikleri kaydet' : 'Yayınla')"
+                    [loading]="isSaving" [disabled]="isSaving" />
+          <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" styleClass="zb-full-btn"
+                    [disabled]="isSaving" (onClick)="goBack()" />
+        </div>
+
+        <p class="zb-publish-note" *ngIf="!isEditMode">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          Resimler yükleneceği için yayınlamak birkaç saniye sürebilir.
+        </p>
+        <p class="zb-publish-note" *ngIf="isEditMode">
+          <i class="pi pi-info-circle" aria-hidden="true"></i>
+          Yeni görsel seçmediğin alanlarda mevcut görsel kalır.
+        </p>
+      </section>
+    </aside>
 
   </div>
 </form>
@@ -225,55 +246,44 @@
 
 <!-- =====================================================================
      RESİM SEÇİCİ ŞABLONU (Razor'daki partial view gibi)
-     ng-template kendi başına ekrana ÇİZİLMEZ; yukarıda *ngTemplateOutlet ile
-     her çağrıldığı yerde, verilen field ve label ile çizilir.
-     let-field="field": context'teki field değerini bu şablonda "field" adıyla kullan
+     let-field / let-label: *ngTemplateOutlet'in context'inden gelen değerler
      ===================================================================== -->
 <ng-template #imagePicker let-field="field" let-label="label">
+  <div class="zb-field">
+    <label class="zb-label">{{ label }} <span class="zb-req" *ngIf="!isEditMode">*</span></label>
 
-  <label class="form-label fw-semibold d-block">
-    {{ label }} <span class="text-danger" *ngIf="!isEditMode">*</span>
-  </label>
+    <!-- Asıl dosya inputu: görünmez ama klavyeyle (Tab) seçilebilir -->
+    <input type="file" class="zb-sr-only zb-image-input" [id]="'file-' + field" #fileInput
+           [accept]="acceptAttr" (change)="onFileSelected($event, field, fileInput)">
 
-  <!-- Asıl dosya inputu: görünmez ama klavyeyle (Tab) seçilebilir.
-       #fileInput: inputun kendisi; removeFile içinde değerini temizlemek için -->
-  <input type="file" class="visually-hidden image-input" [id]="'file-' + field" #fileInput
-         [accept]="acceptAttr" (change)="onFileSelected($event, field, fileInput)">
+    <!-- Görünen kutu bir <label>: tıklayınca bağlı dosya inputunu açar -->
+    <label class="zb-image-box" [attr.for]="'file-' + field"
+           [class.has-image]="previews[field]"
+           [class.is-invalid]="fileErrors[field] || getError(field) || (submitted && isImageMissing(field))">
 
-  <!-- Görünen kutu bir <label>: tıklayınca bağlı olduğu dosya inputunu açar -->
-  <label class="image-box d-flex align-items-center justify-content-center"
-         [attr.for]="'file-' + field"
-         [class.is-invalid]="fileErrors[field] || getError(field) || (submitted && isImageMissing(field))">
+      <img *ngIf="previews[field]" [src]="previews[field]" [alt]="label + ' önizlemesi'">
 
-    <img *ngIf="previews[field]" [src]="previews[field]" [alt]="label + ' önizlemesi'" class="w-100 h-100">
+      <span class="zb-image-empty" *ngIf="!previews[field]">
+        <i class="pi pi-image" aria-hidden="true"></i>
+        <strong>Görsel seç</strong>
+        <small>JPG, PNG veya WEBP · en fazla 5 MB</small>
+      </span>
 
-    <span class="text-center text-muted px-3" *ngIf="!previews[field]">
-      <i class="fa fa-picture-o fa-2x d-block mb-2 opacity-50" aria-hidden="true"></i>
-      <span class="d-block fw-semibold">Görsel seç</span>
-      <span class="small">JPG, PNG veya WEBP, en fazla 5 MB</span>
-    </span>
+      <span class="zb-image-change" *ngIf="previews[field]">
+        <i class="pi pi-camera" aria-hidden="true"></i> Değiştir
+      </span>
+    </label>
 
-    <!-- Resim varken üstünde "Değiştir" yazısı -->
-    <span class="image-change badge" *ngIf="previews[field]">
-      <i class="fa fa-camera me-1" aria-hidden="true"></i> Değiştir
-    </span>
-  </label>
+    <div class="zb-image-foot">
+      <small class="zb-image-name" *ngIf="files[field]">{{ files[field]?.name }}</small>
+      <small class="zb-hint" *ngIf="!files[field] && isEditMode">Mevcut görsel kullanılıyor.</small>
+      <button type="button" class="zb-link-btn is-danger" *ngIf="files[field]" (click)="removeFile(field, fileInput)">
+        Seçimi kaldır
+      </button>
+    </div>
 
-  <div class="d-flex align-items-center justify-content-between mt-2 gap-2">
-    <!-- Dosya adı (yeni seçildiyse) ya da düzenlemede bilgi notu -->
-    <small class="text-muted text-truncate" *ngIf="files[field]">{{ files[field]?.name }}</small>
-    <small class="text-muted" *ngIf="!files[field] && isEditMode">Yeni görsel seçmezsen mevcut görsel kalır.</small>
-
-    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-auto" *ngIf="files[field]"
-            (click)="removeFile(field, fileInput)">
-      Seçimi kaldır
-    </button>
+    <small class="zb-error" *ngIf="fileErrors[field] || getError(field) || (submitted && isImageMissing(field))">
+      {{ fileErrors[field] || getError(field) || 'Bu görseli seçmelisin.' }}
+    </small>
   </div>
-
-  <!-- Hata: önce tarayıcıda yakalanan, sonra API'den gelen, sonra "seçilmedi" -->
-  <div class="text-danger small mt-1"
-       *ngIf="fileErrors[field] || getError(field) || (submitted && isImageMissing(field))">
-    {{ fileErrors[field] || getError(field) || 'Bu görseli seçmelisin.' }}
-  </div>
-
 </ng-template>

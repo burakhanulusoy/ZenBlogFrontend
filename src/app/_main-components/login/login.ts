@@ -4,6 +4,7 @@ import { AuthService } from '../../_services/auth-service';
 import { LoginDto } from '../../_models/loginDto';
 import { Turnstile } from '../../_shared-components/turnstile/turnstile';   // YENİ
 import { GOOGLE_CLIENT_ID } from '../../../_constans/google';
+import { SweetAlert } from '../../_services/sweet-alert';
 
 declare const alertify: any;
 declare const google: any;   // index.html'deki Google script'inin sağladığı nesne
@@ -16,11 +17,11 @@ declare const google: any;   // index.html'deki Google script'inin sağladığı
 })
 export class Login implements OnInit, AfterViewInit {
 
-  constructor(private authService: AuthService,
+    constructor(private authService: AuthService,
               private route: ActivatedRoute,
               private router: Router,
-              private ngZone: NgZone) {}
-
+              private ngZone: NgZone,
+              private swal: SweetAlert) {}   // YENİ
   // HTML'deki <div #googleButton> → Google butonu bu kutunun içine çizilecek
   @ViewChild('googleButton') googleButton: ElementRef;
 
@@ -76,7 +77,8 @@ export class Login implements OnInit, AfterViewInit {
     // DEĞİŞTİ: Turnstile token'ı da gönderiliyor (71. satırdaki hatanın çözümü)
     this.authService.login(this.loginDto, this.turnstileToken).subscribe({
 
-      next: result => this.onLoginSuccess(result.data.token),
+            // DEĞİŞTİ: hesap kapatma iptal edildi mi bilgisi de gidiyor
+      next: result => this.onLoginSuccess(result.data.token, result.data.accountReactivated),
 
       error: err => {
         this.isLoading = false;
@@ -154,9 +156,17 @@ export class Login implements OnInit, AfterViewInit {
   }
 
   // İki giriş türünün de ortak başarı adımı
-  private onLoginSuccess(token: string) {
-  localStorage.setItem("token", token);
-  alertify.success("Giriş başarılı, hoş geldin!");
-  this.router.navigate([this.authService.getHomeRoute()]);   // DEĞİŞTİ
-}
+   // İki giriş türünün de ortak başarı adımı
+  // DEĞİŞTİ: reactivated → kişi "Hesabımı kapat" demişti, 30 gün dolmadan geri döndü
+  private onLoginSuccess(token: string, reactivated = false) {
+    localStorage.setItem("token", token);
+
+    if (reactivated) {
+      this.swal.success('Tekrar hoş geldin!', 'Hesap kapatma işlemin iptal edildi; blogların ve yorumların geri geldi.');
+    } else {
+      alertify.success("Giriş başarılı, hoş geldin!");
+    }
+
+    this.router.navigate([this.authService.getHomeRoute()]);
+  }
 }

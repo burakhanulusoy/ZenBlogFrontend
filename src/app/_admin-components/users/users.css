@@ -1,0 +1,334 @@
+/* =====================================================================
+   KULLANICILAR
+   ===================================================================== */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.zb-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+/* ---------------------------------------------------------------
+   DURUM SEKMELERİ
+   --------------------------------------------------------------- */
+.zb-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.zb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 999px;
+  background-color: var(--zb-surface);
+  color: var(--zb-ink-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.zb-tab:hover {
+  border-color: var(--p-primary-300);
+}
+
+.zb-tab.is-active {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-600);
+  color: #fff;
+}
+
+.zb-tab.is-blocked.is-active {
+  border-color: #b91c1c;
+  background-color: #b91c1c;
+}
+
+.zb-tab:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
+}
+
+.zb-tab-count {
+  min-width: 1.5rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-tab.is-active .zb-tab-count {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------
+   TABLO KARTI
+   --------------------------------------------------------------- */
+.zb-card {
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--zb-line);
+}
+
+.zb-search {
+  display: block;
+  flex: 1 1 300px;
+}
+
+.zb-search-input {
+  width: 100%;
+}
+
+.zb-filter {
+  flex: 0 1 200px;
+  min-width: 180px;
+}
+
+.zb-result-count {
+  margin-left: auto;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+:host ::ng-deep .zb-table .p-datatable-thead > tr > th {
+  background-color: #fafbf9;
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+:host ::ng-deep .zb-table .p-datatable-tbody > tr > td {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+
+.zb-row {
+  cursor: pointer;
+}
+
+.zb-col-num {
+  width: 6rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-col-arrow {
+  width: 3rem;
+  color: var(--zb-muted);
+  text-align: right;
+}
+
+/* Kullanıcı hücresi */
+.zb-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+:host ::ng-deep .zb-user-avatar {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.zb-user-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.zb-user-name {
+  color: var(--zb-ink);
+  font-weight: 700;
+}
+
+.zb-user-handle {
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+}
+
+.zb-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.9rem;
+}
+
+.zb-ok {
+  color: var(--p-primary-600);
+}
+
+.zb-warn {
+  color: #d97706;
+}
+
+/* Roller */
+.zb-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.zb-role {
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background-color: var(--zb-hover);
+  color: var(--zb-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.zb-role.is-admin {
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+}
+
+/* Durum rozeti: yeşil aktif, turuncu kapatılıyor, kırmızı bloke */
+.zb-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.zb-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+.zb-status.is-Active {
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-status.is-PendingDeletion {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.zb-status.is-Blocked {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.zb-status-note {
+  margin-top: 0.25rem;
+  color: var(--zb-muted);
+  font-size: 0.75rem;
+}
+
+/* Boş durum */
+.zb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.zb-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 1rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 1.3rem;
+}
+
+.zb-empty-title {
+  margin: 0;
+  color: var(--zb-ink-soft);
+  font-weight: 700;
+}
+
+.zb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}

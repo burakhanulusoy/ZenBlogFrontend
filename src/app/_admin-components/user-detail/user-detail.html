@@ -1,0 +1,344 @@
+<!-- =====================================================================
+     KULLANICI DETAYI
+     ===================================================================== -->
+
+<div class="zb-detail-bar">
+  <p-button label="Kullanıcılar" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadUser()" />
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="zb-layout" *ngIf="isLoading">
+  <div class="zb-main-col">
+    <p-skeleton width="100%" height="11rem" borderRadius="1rem" styleClass="mb-3" />
+    <p-skeleton width="100%" height="14rem" borderRadius="1rem" />
+  </div>
+  <div class="zb-side-col">
+    <p-skeleton width="100%" height="12rem" borderRadius="1rem" />
+  </div>
+</div>
+
+<ng-container *ngIf="user && !isLoading">
+
+  <!-- BLOKE UYARI ŞERİDİ -->
+  <div class="zb-banner is-blocked" *ngIf="user.status === 'Blocked'">
+    <i class="pi pi-ban" aria-hidden="true"></i>
+    <div>
+      <strong>Bu hesap bloke.</strong>
+      Kullanıcı giriş yapamıyor; blogları ve yorumları gizli. Ayrıntılar aşağıda, bloke geçmişinde.
+    </div>
+  </div>
+
+  <!-- KAPATILIYOR UYARI ŞERİDİ -->
+  <div class="zb-banner is-pending" *ngIf="user.status === 'PendingDeletion'">
+    <i class="pi pi-clock" aria-hidden="true"></i>
+    <div>
+      <strong>Kullanıcı hesabını kapatma sürecinde.</strong>
+      {{ user.deletionDeadline | date:'dd.MM.yyyy' }} tarihine kadar giriş yaparsa hesap yeniden açılır.
+    </div>
+  </div>
+
+  <div class="zb-layout">
+
+    <!-- ===================== SOL ===================== -->
+    <div class="zb-main-col">
+
+      <!-- PROFİL KARTI -->
+      <section class="zb-panel zb-profile">
+        <p-avatar *ngIf="user.imageUrl" [image]="user.imageUrl" shape="circle" size="xlarge" styleClass="zb-profile-avatar" />
+        <p-avatar *ngIf="!user.imageUrl" [label]="initials" shape="circle" size="xlarge" styleClass="zb-profile-avatar" />
+
+        <div class="zb-profile-text">
+          <div class="zb-profile-top">
+            <h1 class="zb-profile-name">{{ fullName }}</h1>
+            <span class="zb-status" [ngClass]="'is-' + user.status">
+              <span class="zb-status-dot" aria-hidden="true"></span>
+              {{ statusLabel(user.status) }}
+            </span>
+            <span class="zb-you" *ngIf="isSelf">Sen</span>
+          </div>
+          <p class="zb-profile-handle">&#64;{{ user.userName }}</p>
+          <div class="zb-roles">
+            <span class="zb-role" *ngFor="let role of user.roles" [class.is-admin]="role === 'Admin'">{{ roleLabel(role) }}</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- BİLGİLER -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Hesap bilgileri</h2>
+
+        <dl class="zb-info-grid">
+          <div>
+            <dt>E-posta</dt>
+            <dd>
+              {{ user.email }}
+              <span class="zb-verify" [class.is-ok]="user.emailConfirmed">
+                <i class="pi" [class.pi-verified]="user.emailConfirmed" [class.pi-exclamation-circle]="!user.emailConfirmed" aria-hidden="true"></i>
+                {{ user.emailConfirmed ? 'Doğrulanmış' : 'Doğrulanmamış' }}
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt>Telefon</dt>
+            <dd>{{ user.phoneNumber || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Konum</dt>
+            <dd>{{ user.location || '—' }}</dd>
+          </div>
+          <div>
+            <dt>Sosyal medya</dt>
+            <dd>
+              <span *ngIf="socialLinks.length === 0">—</span>
+              <span class="zb-socials" *ngIf="socialLinks.length > 0">
+                <a *ngFor="let link of socialLinks" [href]="link.url" target="_blank" rel="noopener noreferrer"
+                   class="zb-social" [pTooltip]="link.label" [attr.aria-label]="link.label">
+                  <i [class]="link.icon" aria-hidden="true"></i>
+                </a>
+              </span>
+            </dd>
+          </div>
+        </dl>
+
+        <div class="zb-about" *ngIf="user.description">
+          <dt>Hakkında</dt>
+          <p>{{ user.description }}</p>
+        </div>
+      </section>
+
+      <!-- SON BLOGLAR -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Son bloglar</h2>
+        <p class="zb-muted" *ngIf="user.recentBlogs.length === 0">
+          {{ user.status === 'Active' ? 'Henüz yayında blogu yok.' : 'Hesap aktif olmadığı için blogları gizli.' }}
+        </p>
+        <ul class="zb-blogs" *ngIf="user.recentBlogs.length > 0">
+          <li *ngFor="let blog of user.recentBlogs">
+            <button type="button" class="zb-blog" (click)="openBlog(blog)">
+              <img [src]="blog.coverImage" alt="" loading="lazy">
+              <span class="zb-blog-title">{{ blog.mainTitle }}</span>
+              <span class="zb-blog-date">{{ blog.createdAt | date:'dd.MM.yyyy' }}</span>
+              <i class="pi pi-angle-right" aria-hidden="true"></i>
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <!-- BLOKE GEÇMİŞİ: zaman çizelgesi -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Bloke geçmişi</h2>
+        <p class="zb-muted" *ngIf="user.blockHistory.length === 0">Bu hesaba hiç bloke uygulanmadı.</p>
+
+        <ol class="zb-timeline" *ngIf="user.blockHistory.length > 0">
+          <li *ngFor="let block of user.blockHistory" class="zb-tl-item" [class.is-open]="!block.unblockedAt">
+
+            <!-- Bloke -->
+            <div class="zb-tl-event is-block">
+              <span class="zb-tl-dot"><i class="pi pi-ban" aria-hidden="true"></i></span>
+              <div class="zb-tl-body">
+                <div class="zb-tl-head">
+                  <strong>Bloke edildi</strong>
+                  <span class="zb-tl-meta">{{ block.blockedAt | date:'dd.MM.yyyy HH:mm' }} · {{ block.blockedByAdminName }}</span>
+                </div>
+                <p class="zb-tl-reason">{{ block.reason }}</p>
+                <a [href]="block.evidenceUrl" target="_blank" rel="noopener noreferrer" class="zb-evidence">
+                  <i class="pi" [class.pi-file-pdf]="isPdf(block.evidenceUrl)" [class.pi-image]="!isPdf(block.evidenceUrl)" aria-hidden="true"></i>
+                  Kanıt dosyasını aç
+                  <i class="pi pi-external-link" aria-hidden="true"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Bloke kaldırıldıysa -->
+            <div class="zb-tl-event is-unblock" *ngIf="block.unblockedAt">
+              <span class="zb-tl-dot"><i class="pi pi-check" aria-hidden="true"></i></span>
+              <div class="zb-tl-body">
+                <div class="zb-tl-head">
+                  <strong>Bloke kaldırıldı</strong>
+                  <span class="zb-tl-meta">{{ block.unblockedAt | date:'dd.MM.yyyy HH:mm' }} · {{ block.unblockedByAdminName }}</span>
+                </div>
+                <p class="zb-tl-reason">{{ block.unblockReason }}</p>
+              </div>
+            </div>
+
+          </li>
+        </ol>
+      </section>
+
+    </div>
+
+    <!-- ===================== SAĞ ===================== -->
+    <aside class="zb-side-col">
+
+      <!-- İSTATİSTİK -->
+      <section class="zb-panel">
+        <div class="zb-stats">
+          <div>
+            <span class="zb-stat-value">{{ user.blogCount }}</span>
+            <span class="zb-stat-label">Yayındaki blog</span>
+          </div>
+          <div>
+            <span class="zb-stat-value">{{ user.commentCount }}</span>
+            <span class="zb-stat-label">Yorum</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- YÖNETİM İŞLEMLERİ -->
+      <section class="zb-panel">
+        <h2 class="zb-panel-title">Yönetim</h2>
+
+        <ng-container *ngIf="canBlock">
+          <p class="zb-muted zb-small">Bloke edilen kullanıcı giriş yapamaz, blogları ve yorumları gizlenir, gerekçeli e-posta alır.</p>
+          <p-button label="Bloke et" icon="pi pi-ban" severity="danger" styleClass="zb-full-btn" (onClick)="openBlockDialog()" />
+        </ng-container>
+
+        <ng-container *ngIf="canUnblock">
+          <p class="zb-muted zb-small">Bloke kaldırılınca kullanıcı yeniden giriş yapabilir ve içerikleri yayına döner.</p>
+          <p-button label="Blokeyi kaldır" icon="pi pi-unlock" styleClass="zb-full-btn" (onClick)="openUnblockDialog()" />
+        </ng-container>
+
+        <p class="zb-muted zb-small" *ngIf="!canBlock && !canUnblock">{{ blockDisabledReason }}</p>
+      </section>
+
+    </aside>
+  </div>
+</ng-container>
+
+
+<!-- =====================================================================
+     BLOKE ET PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="blockDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="!isBlocking" [style]="{ width: '560px' }" [breakpoints]="{ '640px': '95vw' }"
+          styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon is-danger"><i class="pi pi-ban" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">Kullanıcıyı bloke et</h2>
+        <p class="zb-dialog-sub">{{ fullName }} · &#64;{{ user?.userName }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Bir alana bağlı olmayan API hataları -->
+  <div class="zb-dialog-alert" *ngIf="generalErrors(blockErrors, ['Reason', 'Evidence']).length > 0">
+    <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+    <div><div *ngFor="let e of generalErrors(blockErrors, ['Reason', 'Evidence'])">{{ e.errorMessage }}</div></div>
+  </div>
+
+  <!-- GEREKÇE -->
+  <label for="blockReason" class="zb-label">Gerekçe <span class="zb-req">*</span></label>
+  <textarea pTextarea id="blockReason" rows="5" class="zb-textarea" [(ngModel)]="blockReason" name="blockReason"
+            [attr.maxlength]="maxReason"
+            placeholder="Kullanıcının hangi davranışı nedeniyle bloke edildiğini açıkça yaz. Bu metin kullanıcıya e-posta ile gönderilecek."></textarea>
+  <div class="zb-field-foot">
+    <small class="zb-error" *ngIf="apiError(blockErrors, 'Reason')">{{ apiError(blockErrors, 'Reason') }}</small>
+    <small class="zb-hint" *ngIf="!apiError(blockErrors, 'Reason')"
+           [class.is-ok]="blockReason.trim().length >= minBlockReason">
+      En az {{ minBlockReason }} karakter
+    </small>
+    <small class="zb-counter">{{ blockReason.length }}/{{ maxReason }}</small>
+  </div>
+
+  <!-- KANIT DOSYASI -->
+  <label class="zb-label zb-mt">Kanıt dosyası <span class="zb-req">*</span></label>
+  <input type="file" #evidenceInput class="zb-sr-only" id="evidenceInput" [accept]="evidenceAccept"
+         (change)="onEvidenceSelected($event, evidenceInput)">
+
+  <!-- Dosya seçilmediyse: seçme alanı -->
+  <label for="evidenceInput" class="zb-drop" *ngIf="!evidenceFile">
+    <i class="pi pi-upload" aria-hidden="true"></i>
+    <span><strong>Dosya seç</strong> · ekran görüntüsü ya da PDF</span>
+    <small>JPG, PNG, WEBP veya PDF, en fazla 10 MB</small>
+  </label>
+
+  <!-- Dosya seçildiyse: dosya kartı -->
+  <div class="zb-file" *ngIf="evidenceFile">
+    <i class="pi" [class.pi-file-pdf]="evidenceFile.name.toLowerCase().endsWith('.pdf')"
+       [class.pi-image]="!evidenceFile.name.toLowerCase().endsWith('.pdf')" aria-hidden="true"></i>
+    <div class="zb-file-text">
+      <span class="zb-file-name">{{ evidenceFile.name }}</span>
+      <small>{{ formatSize(evidenceFile.size) }}</small>
+    </div>
+    <p-button icon="pi pi-times" [rounded]="true" [text]="true" severity="secondary" ariaLabel="Dosyayı kaldır"
+              (onClick)="removeEvidence(evidenceInput)" />
+  </div>
+  <small class="zb-error" *ngIf="evidenceError || apiError(blockErrors, 'Evidence')">
+    {{ evidenceError || apiError(blockErrors, 'Evidence') }}
+  </small>
+
+  <!-- SONUÇLAR + ONAY KUTUSU -->
+  <div class="zb-consequences">
+    <p class="zb-consequences-title">Bu işlemin sonuçları:</p>
+    <ul>
+      <li>Kullanıcı giriş yapamaz, açık oturumu sonlanır.</li>
+      <li>Blogları, yorumları ve alt yorumları sitede gizlenir.</li>
+      <li>Kullanıcıya gerekçeyi içeren bir e-posta gönderilir.</li>
+      <li>Bu e-posta adresi ve kullanıcı adıyla yeniden kayıt olunamaz.</li>
+    </ul>
+    <label class="zb-check">
+      <input type="checkbox" [(ngModel)]="blockConfirmed" name="blockConfirmed">
+      <span>Bu işlemin sonuçlarını anladım.</span>
+    </label>
+  </div>
+
+  <div class="zb-dialog-actions">
+    <p-button label="Vazgeç" severity="secondary" [text]="true" [disabled]="isBlocking" (onClick)="blockDialogVisible = false" />
+    <p-button label="Bloke et" icon="pi pi-ban" severity="danger" [loading]="isBlocking"
+              [disabled]="!blockFormValid || isBlocking" (onClick)="submitBlock()" />
+  </div>
+</p-dialog>
+
+
+<!-- =====================================================================
+     BLOKEYİ KALDIR PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="unblockDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="!isUnblocking" [style]="{ width: '500px' }" [breakpoints]="{ '640px': '95vw' }"
+          styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon"><i class="pi pi-unlock" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">Blokeyi kaldır</h2>
+        <p class="zb-dialog-sub">{{ fullName }} · &#64;{{ user?.userName }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="zb-dialog-alert" *ngIf="generalErrors(unblockErrors, ['Reason']).length > 0">
+    <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+    <div><div *ngFor="let e of generalErrors(unblockErrors, ['Reason'])">{{ e.errorMessage }}</div></div>
+  </div>
+
+  <label for="unblockReason" class="zb-label">Gerekçe <span class="zb-req">*</span></label>
+  <textarea pTextarea id="unblockReason" rows="4" class="zb-textarea" [(ngModel)]="unblockReason" name="unblockReason"
+            [attr.maxlength]="maxReason" placeholder="Örn: İtiraz incelendi, bloke kaldırılmasına karar verildi."></textarea>
+  <div class="zb-field-foot">
+    <small class="zb-error" *ngIf="apiError(unblockErrors, 'Reason')">{{ apiError(unblockErrors, 'Reason') }}</small>
+    <small class="zb-hint" *ngIf="!apiError(unblockErrors, 'Reason')"
+           [class.is-ok]="unblockReason.trim().length >= minUnblockReason">
+      En az {{ minUnblockReason }} karakter
+    </small>
+    <small class="zb-counter">{{ unblockReason.length }}/{{ maxReason }}</small>
+  </div>
+
+  <p class="zb-muted zb-small zb-mt">Kullanıcı yeniden giriş yapabilir, içerikleri yayına döner ve bilgilendirme e-postası alır.</p>
+
+  <div class="zb-dialog-actions">
+    <p-button label="Vazgeç" severity="secondary" [text]="true" [disabled]="isUnblocking" (onClick)="unblockDialogVisible = false" />
+    <p-button label="Blokeyi kaldır" icon="pi pi-unlock" [loading]="isUnblocking"
+              [disabled]="!unblockFormValid || isUnblocking" (onClick)="submitUnblock()" />
+  </div>
+</p-dialog>

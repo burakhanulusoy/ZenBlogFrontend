@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { RegisterDto } from '../_models/registerDto';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -124,5 +125,29 @@ export class AuthService {
   getEmail(): string {
     return this.decodeToken()?.email ?? '';
   }
+
+  // YENİ: profil fotoğrafının adresi (token'daki "imageUrl" claim'i; yoksa boş)
+  getImageUrl(): string {
+    return this.decodeToken()?.imageUrl ?? '';
+  }
+
+  // YENİ: giriş yapan kişinin Id'si (token'daki "sub" claim'i)
+  // Admin kendi satırında "Bloke et" butonunu görmesin diye kullanılıyor
+  getUserId(): string {
+    return this.decodeToken()?.sub ?? '';
+  }
+
+  // YENİ: Kullanıcı bilgisi değişti haberi (profil güncellenince).
+  // Subject: "olay yayıncısı". Layout'lar buna abone olup sağ üstteki adı yeniler.
+  // (C#'taki event + Invoke() gibi: next() ile olayı tetikliyoruz)
+  readonly userChanged$ = new Subject<void>();
+
+  // YENİ: Yeni token'ı sakla ve herkese haber ver
+  // (profil güncellemesinden sonra ad soyad yeni token'da)
+  setToken(token: string) {
+    localStorage.setItem('token', token);
+    this.userChanged$.next();
+  }
+
 
 }

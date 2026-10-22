@@ -1,0 +1,243 @@
+/* =====================================================================
+   HATA SAYFASI (403 / 404)
+   ===================================================================== */
+.zb-error {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3rem);
+  background-color: #fff;
+  color: var(--zb-ink);
+}
+
+/* Arka plan: yukarıdan yayılan yeşil ışık + ince nokta deseni */
+.zb-error::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 70%),
+    radial-gradient(rgba(20, 32, 26, 0.07) 1px, transparent 1px);
+  background-size: 100% 100%, 22px 22px;
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+  pointer-events: none;
+}
+
+/* 403: ışık kırmızımsı */
+.zb-error.is-403::before {
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(220, 38, 38, 0.1) 0%, transparent 70%),
+    radial-gradient(rgba(20, 32, 26, 0.07) 1px, transparent 1px);
+  background-size: 100% 100%, 22px 22px;
+}
+
+.zb-error-top,
+.zb-error-main,
+.zb-error-foot {
+  position: relative;   /* arka planın üstünde dursun */
+}
+
+.zb-error-logo {
+  display: block;
+  height: 32px;
+}
+
+/* ORTA */
+.zb-error-main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  text-align: center;
+  animation: zb-error-in 0.5s ease-out both;
+}
+
+@keyframes zb-error-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* DEV KOD: 4 🍃 4 */
+.zb-code {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.25rem, 1.5vw, 1rem);
+  margin-bottom: 1.5rem;
+  color: var(--zb-ink);
+  font-family: var(--zb-serif);
+  font-size: clamp(6rem, 18vw, 11rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+/* Sıfırın yerindeki yaprak: yuvarlak yeşil zemin içinde, hafifçe süzülür */
+.zb-code-leaf {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 0.78em;
+  height: 0.78em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ecfdf5, #d1fae5);
+  box-shadow: 0 0 0 0.06em #fff, 0 0 0 0.075em var(--p-primary-200), 0 24px 50px -24px rgba(5, 150, 105, 0.6);
+  animation: zb-float 4s ease-in-out infinite;
+}
+
+.zb-code-leaf img {
+  width: 52%;
+  height: 52%;
+  object-fit: contain;
+}
+
+.is-403 .zb-code-leaf {
+  background: radial-gradient(circle at 30% 30%, #fef2f2, #fee2e2);
+  box-shadow: 0 0 0 0.06em #fff, 0 0 0 0.075em #fecaca, 0 24px 50px -24px rgba(220, 38, 38, 0.5);
+}
+
+/* 403: yaprağın sağ altında küçük kilit rozeti */
+.zb-code-lock {
+  position: absolute;
+  right: 4%;
+  bottom: 4%;
+  display: grid;
+  place-items: center;
+  width: 0.26em;
+  height: 0.26em;
+  border: 0.025em solid #fff;
+  border-radius: 50%;
+  background-color: #b91c1c;
+  color: #fff;
+  font-size: 0.11em;
+}
+
+@keyframes zb-float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-0.06em) rotate(4deg); }
+}
+
+/* ROZET */
+.zb-error-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--p-primary-200);
+  border-radius: 999px;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.is-403 .zb-error-badge {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.zb-error-title {
+  max-width: 22ch;
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.6rem, 3.4vw, 2.3rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.zb-error-text {
+  max-width: 52ch;
+  margin: 0 0 1.25rem;
+  color: var(--zb-muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+/* İstenen adres */
+.zb-error-url {
+  max-width: 100%;
+  margin-bottom: 1.75rem;
+  padding: 0.4rem 0.8rem;
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.6rem;
+  background-color: #f7f8f6;
+  color: var(--zb-ink-soft);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* BUTONLAR */
+.zb-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.zb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.zb-btn:hover {
+  transform: translateY(-1px);
+}
+
+.zb-btn:focus-visible {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
+}
+
+.zb-btn-primary {
+  background-color: var(--p-primary-600);
+  box-shadow: 0 12px 26px -14px rgba(5, 150, 105, 0.9);
+  color: #fff;
+}
+
+.zb-btn-primary:hover {
+  background-color: var(--p-primary-700);
+  color: #fff;
+}
+
+.zb-btn-ghost {
+  border-color: var(--zb-line);
+  background-color: #fff;
+  color: var(--zb-ink);
+}
+
+.zb-btn-ghost:hover {
+  border-color: var(--p-primary-300);
+  color: var(--zb-ink);
+}
+
+.zb-error-foot {
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zb-error-main,
+  .zb-code-leaf,
+  .zb-btn {
+    animation: none;
+    transition: none;
+  }
+}

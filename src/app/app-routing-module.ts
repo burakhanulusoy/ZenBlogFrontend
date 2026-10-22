@@ -1,27 +1,51 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './_guards/auth-guard';
+
+// Layout'lar
 import { MainLayout } from './_layouts/main-layout/main-layout';
-import { Home } from './_main-components/home/home';
 import { AdminLayout } from './_layouts/admin-layout/admin-layout';
 import { WriterLayout } from './_layouts/writer-layout/writer-layout';
-import { Category } from './_admin-components/category/category';
-import { Dashboard } from './_admin-components/dashboard/dashboard';
-import { WriterDashboard } from './_writer-components/writer-dashboard/writer-dashboard';
-import { MyBlogs } from './_personal-components/my-blogs/my-blogs';
-import { BlogForm } from './_personal-components/blog-form/blog-form';
+import { UserLayout } from './_layouts/user-layout/user-layout';                 // YENİ
+
+// Ziyaretçi sitesi ve kimlik doğrulama
+import { Home } from './_main-components/home/home';
 import { Login } from './_main-components/login/login';
 import { Register } from './_main-components/register/register';
 import { VerifyEmail } from './_main-components/verify-email/verify-email';
 import { ForgotPassword } from './_main-components/forgot-password/forgot-password';
-import { AuthGuard } from './_guards/auth-guard';
-import { AllBlogs } from './_admin-components/all-blogs/all-blogs';             // YENİ
-import { BlogDetail } from './_personal-components/blog-detail/blog-detail';    // YENİ
 
+// Admin sayfaları
+import { Dashboard } from './_admin-components/dashboard/dashboard';
+import { AllBlogs } from './_admin-components/all-blogs/all-blogs';
+import { Category } from './_admin-components/category/category';
+import { Users } from './_admin-components/users/users';
+import { UserDetail } from './_admin-components/user-detail/user-detail';
 
+// Yazar sayfaları
+import { WriterDashboard } from './_writer-components/writer-dashboard/writer-dashboard';
+
+// Ortak sayfalar (birden fazla panelde kullanılıyor)
+import { MyBlogs } from './_personal-components/my-blogs/my-blogs';
+import { BlogForm } from './_personal-components/blog-form/blog-form';
+import { BlogDetail } from './_personal-components/blog-detail/blog-detail';
+import { Profile } from './_personal-components/profile/profile';
+import { ErrorPage } from './_main-components/error-page/error-page';
+
+// ---------------------------------------------------------------------
+// ROTA NOTLARI
+// data.title    → üst çubuktaki sayfa adı ("Yönetim › Kategoriler")
+// data.returnTo → detay/form işi bitince hangi listeye dönülecek (varsayılan: my-blogs)
+// data.backLabel→ üstteki "geri" butonunda ne yazacak
+// data.canEdit  → blog detayında "Düzenle" butonu görünsün mü (sadece kendi bloğunda)
+//
+// Sıra önemli: 'my-blogs/edit/:id' satırı 'my-blogs/:id' satırından ÖNCE olmalı,
+// yoksa "edit" kelimesi bir Id sanılabilir.
+//
 // Neden 'new-blog' ayrı, düzenleme 'my-blogs/edit/:id' altında?
-// Menüde "Bloglarım" bağlantısı /.../my-blogs ile BAŞLAYAN her adreste aktif görünüyor.
-// Düzenleme sayfası onun altında olunca düzenlerken "Bloglarım" seçili kalıyor;
-// yeni blog ayrı adreste olunca da sadece "Yeni Blog Yaz" seçili görünüyor.
+// Menüde "Bloglarım" /.../my-blogs ile BAŞLAYAN her adreste seçili görünüyor.
+// Düzenleme onun altında olunca düzenlerken "Bloglarım" seçili kalıyor.
+// ---------------------------------------------------------------------
 const routes: Routes = [
 
   // GİRİŞ, KAYIT, DOĞRULAMA, ŞİFRE SIFIRLAMA: kendi başına tam ekran sayfalar
@@ -29,6 +53,8 @@ const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'verify-email', component: VerifyEmail },
   { path: 'forgot-password', component: ForgotPassword },
+    // YENİ: 403 → AuthGuard rolü yetmeyen kişiyi buraya gönderiyor
+  { path: 'forbidden', component: ErrorPage, data: { code: 403 } },
 
   // ZİYARETÇİ SİTESİ: navbar + içerik
   {
@@ -38,39 +64,40 @@ const routes: Routes = [
     ]
   },
 
-  // ADMİN PANELİ: sadece Admin rolü
+  // =================================================================
+  // ADMİN PANELİ: sadece Admin
+  // =================================================================
   {
     path: 'admin', component: AdminLayout,
     canActivate: [AuthGuard],
     data: { roles: ['Admin'] },
-    // DEĞİŞTİ: her sayfaya data.title eklendi → üst çubukta "Yönetim › Kategoriler" gibi görünüyor
-        // DEĞİŞTİ: Tüm bloglar + detay + oradan düzenleme eklendi
-    // returnTo: detay/form işi bitince hangi listeye dönülecek
-    // backLabel: üstteki "geri" butonunda ne yazacak
-    // Not: 'blogs/edit/:id' satırı 'blogs/:id' satırından ÖNCE olmalı (yoksa "edit" bir Id sanılabilir)
     children: [
       { path: '', component: Dashboard, data: { title: 'Genel bakış' } },
 
       // SİTE YÖNETİMİ
+      // Tüm bloglar'da düzenleme yok (admin başkasının yazısını düzenlemez) → canEdit yok
       { path: 'blogs', component: AllBlogs, data: { title: 'Tüm bloglar' } },
       { path: 'blogs/:id', component: BlogDetail, data: { title: 'Blog detayı', returnTo: 'blogs', backLabel: 'Tüm bloglar' } },
       { path: 'category', component: Category, data: { title: 'Kategoriler' } },
+      { path: 'users', component: Users, data: { title: 'Kullanıcılar' } },
+      { path: 'users/:id', component: UserDetail, data: { title: 'Kullanıcı detayı' } },
 
-            // SIZE ÖZEL (ortak sayfalar)
-      // Not: 'my-blogs/edit/:id' satırı 'my-blogs/:id' satırından ÖNCE olmalı
+      // SIZE ÖZEL (ortak sayfalar)
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
-      { path: 'my-blogs/:id', component: BlogDetail, data: { title: 'Blog detayı', canEdit: true, backLabel: 'Bloglarım' } },   // YENİ
-      { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } }
+      { path: 'my-blogs/:id', component: BlogDetail, data: { title: 'Blog detayı', canEdit: true, backLabel: 'Bloglarım' } },
+      { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } },
+      { path: 'profile', component: Profile, data: { title: 'Profilim' } }
     ]
   },
 
-  // YAZAR PANELİ: sadece Writer (şimdilik değişmedi)
+  // =================================================================
+  // YAZAR PANELİ: sadece Writer
+  // =================================================================
   {
     path: 'writer', component: WriterLayout,
     canActivate: [AuthGuard],
     data: { roles: ['Writer'] },
-       // DEĞİŞTİ: başlıklar + kendi bloğunun detayı (canEdit: true → Düzenle butonu görünür)
     children: [
       { path: '', component: WriterDashboard, data: { title: 'Genel bakış' } },
 
@@ -78,15 +105,32 @@ const routes: Routes = [
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
       { path: 'my-blogs/:id', component: BlogDetail, data: { title: 'Blog detayı', canEdit: true, backLabel: 'Bloglarım' } },
-      { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } }
+      { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } },
+
+      // HESABIM
+      { path: 'profile', component: Profile, data: { title: 'Profilim' } }
     ]
   },
 
-  // USER paneli ileride:
-  // { path: 'account', ..., data: { roles: ['User'] } }
+  // =================================================================
+  // YENİ: OKUR (USER) PANELİ: sadece User
+  // AuthGuard: User rolündeki kişi giriş yapınca getHomeRoute() → /account
+  // =================================================================
+  {
+    path: 'account', component: UserLayout,
+    canActivate: [AuthGuard],
+    data: { roles: ['User'] },
+    children: [
+      // /account → doğrudan Profilim (şimdilik tek sayfa)
+      // pathMatch 'full': sadece adres TAM OLARAK /account ise yönlendir
+      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      { path: 'profile', component: Profile, data: { title: 'Profilim' } }
+    ]
+  },
 
   // Var olmayan bir adrese girilirse ana sayfaya dön
-  { path: '**', redirectTo: '' }
+    // DEĞİŞTİ: Olmayan bir adres → 404 sayfası (eskiden sessizce ana sayfaya atıyordu)
+  { path: '**', component: ErrorPage, data: { code: 404 } }
 ];
 
 @NgModule({

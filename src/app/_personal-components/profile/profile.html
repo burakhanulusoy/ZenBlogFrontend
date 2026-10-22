@@ -1,0 +1,362 @@
+<!-- =====================================================================
+     PROFİLİM
+     ===================================================================== -->
+
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">Profilim</h1>
+    <p class="zb-page-sub">Bilgilerini buradan güncelleyebilirsin. Değişiklikleri kaydetmek için şifren istenecek.</p>
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadProfile()" />
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="zb-layout" *ngIf="isLoading">
+  <div class="zb-main-col">
+    <p-skeleton width="100%" height="10rem" borderRadius="1rem" styleClass="mb-3" />
+    <p-skeleton width="100%" height="22rem" borderRadius="1rem" />
+  </div>
+  <div class="zb-side-col">
+    <p-skeleton width="100%" height="14rem" borderRadius="1rem" />
+  </div>
+</div>
+
+<!-- ŞİFRESİZ HESAP UYARISI (Google ile kayıt olanlar) -->
+<div class="zb-banner" *ngIf="profile && !profile.hasPassword">
+  <i class="pi pi-key" aria-hidden="true"></i>
+  <div>
+    <strong>Hesabında henüz şifre yok.</strong>
+    Google ile kayıt olduğun için değişiklikleri onaylayabilmen gereken bir şifren bulunmuyor.
+    <a routerLink="/forgot-password" [queryParams]="{ email: profile.email }">Şifre belirle</a>
+  </div>
+</div>
+
+<form #profileForm="ngForm" novalidate *ngIf="profile && !isLoading" class="zb-layout">
+
+  <!-- ===================== SOL ===================== -->
+  <div class="zb-main-col">
+
+    <!-- FOTOĞRAF + KİMLİK -->
+    <section class="zb-panel zb-identity">
+      <div class="zb-avatar-wrap">
+        <img *ngIf="displayImage" [src]="displayImage" alt="Profil fotoğrafı" class="zb-avatar-img">
+        <span *ngIf="!displayImage" class="zb-avatar-initials">{{ initials }}</span>
+      </div>
+
+      <div class="zb-identity-text">
+        <h2 class="zb-identity-name">{{ fullName }}</h2>
+        <p class="zb-identity-handle">&#64;{{ form.userName }}</p>
+        <div class="zb-roles">
+          <span class="zb-role" *ngFor="let role of roleLabels">{{ role }}</span>
+        </div>
+
+        <!-- Fotoğraf butonları -->
+        <input type="file" #imageInput id="profileImage" class="zb-sr-only" [accept]="imageAccept"
+               (change)="onImageSelected($event, imageInput)">
+        <div class="zb-photo-actions">
+          <label for="profileImage" class="zb-photo-btn">
+            <i class="pi pi-camera" aria-hidden="true"></i>
+            {{ displayImage ? 'Fotoğrafı değiştir' : 'Fotoğraf yükle' }}
+          </label>
+          <button type="button" class="zb-link-btn is-danger" *ngIf="displayImage" (click)="removePhoto(imageInput)">
+            {{ imageFile ? 'Seçimi iptal et' : 'Kaldır' }}
+          </button>
+          <button type="button" class="zb-link-btn" *ngIf="removeImage" (click)="undoRemovePhoto()">Geri al</button>
+        </div>
+        <small class="zb-hint">JPG, PNG veya WEBP, en fazla 5 MB</small>
+        <small class="zb-error" *ngIf="imageError || fieldError('Image')">{{ imageError || fieldError('Image') }}</small>
+      </div>
+    </section>
+
+    <!-- KİŞİSEL BİLGİLER -->
+    <section class="zb-panel">
+      <h2 class="zb-panel-title">Kişisel bilgiler</h2>
+
+      <div class="zb-grid-2">
+        <div class="zb-field">
+          <label for="name" class="zb-label">Ad <span class="zb-req">*</span></label>
+          <input pInputText id="name" name="name" autocomplete="given-name" maxlength="50"
+                 [(ngModel)]="form.name" #nameModel="ngModel" required
+                 [class.zb-invalid]="(nameModel.invalid && nameModel.touched) || fieldError('Name')">
+          <small class="zb-error" *ngIf="nameModel.invalid && nameModel.touched">Ad zorunludur.</small>
+          <small class="zb-error" *ngIf="fieldError('Name')">{{ fieldError('Name') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="surname" class="zb-label">Soyad <span class="zb-req">*</span></label>
+          <input pInputText id="surname" name="surname" autocomplete="family-name" maxlength="50"
+                 [(ngModel)]="form.surname" #surnameModel="ngModel" required
+                 [class.zb-invalid]="(surnameModel.invalid && surnameModel.touched) || fieldError('Surname')">
+          <small class="zb-error" *ngIf="surnameModel.invalid && surnameModel.touched">Soyad zorunludur.</small>
+          <small class="zb-error" *ngIf="fieldError('Surname')">{{ fieldError('Surname') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="userName" class="zb-label">Kullanıcı adı <span class="zb-req">*</span></label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-at" />
+            <input pInputText id="userName" name="userName" autocomplete="username" maxlength="50"
+                   [(ngModel)]="form.userName" #userNameModel="ngModel" required
+                   [class.zb-invalid]="(userNameModel.invalid && userNameModel.touched) || fieldError('UserName') || fieldError('DuplicateUserName')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="userNameModel.invalid && userNameModel.touched">Kullanıcı adı zorunludur.</small>
+          <small class="zb-error" *ngIf="fieldError('UserName') || fieldError('DuplicateUserName')">
+            {{ fieldError('UserName') || fieldError('DuplicateUserName') }}
+          </small>
+        </div>
+
+        <!-- E-POSTA: değiştirilemez -->
+        <div class="zb-field">
+          <label for="email" class="zb-label">E-posta</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-lock" />
+            <input pInputText id="email" name="email" [value]="profile.email" readonly class="zb-readonly">
+          </p-iconfield>
+          <small class="zb-hint">E-posta adresi değiştirilemez.</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="phoneNumber" class="zb-label">Telefon</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-phone" />
+            <input pInputText type="tel" id="phoneNumber" name="phoneNumber" autocomplete="tel" maxlength="20"
+                   placeholder="05XX XXX XX XX" [(ngModel)]="form.phoneNumber"
+                   [class.zb-invalid]="fieldError('PhoneNumber')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('PhoneNumber')">{{ fieldError('PhoneNumber') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="location" class="zb-label">Konum</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-map-marker" />
+            <input pInputText id="location" name="location" maxlength="100" placeholder="Örn: İstanbul"
+                   [(ngModel)]="form.location" [class.zb-invalid]="fieldError('Location')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('Location')">{{ fieldError('Location') }}</small>
+        </div>
+      </div>
+
+      <div class="zb-field zb-mt">
+        <label for="description" class="zb-label">Hakkımda</label>
+        <textarea pTextarea id="description" name="description" rows="4" class="zb-textarea"
+                  [attr.maxlength]="maxDescription" placeholder="Kendinden kısaca bahset"
+                  [(ngModel)]="form.description" [class.zb-invalid]="fieldError('Description')"></textarea>
+        <div class="zb-field-foot">
+          <small class="zb-error" *ngIf="fieldError('Description')">{{ fieldError('Description') }}</small>
+          <small class="zb-counter">{{ form.description.length }}/{{ maxDescription }}</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOSYAL MEDYA -->
+    <section class="zb-panel">
+      <h2 class="zb-panel-title">Sosyal medya</h2>
+      <p class="zb-muted zb-small">İstersen doldur; adresler https:// ile başlamalı.</p>
+
+      <div class="zb-grid-2">
+        <div class="zb-field">
+          <label for="instagramUrl" class="zb-label">Instagram</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-instagram" />
+            <input pInputText type="url" id="instagramUrl" name="instagramUrl" placeholder="https://instagram.com/..."
+                   [(ngModel)]="form.instagramUrl" [class.zb-invalid]="fieldError('InstagramUrl')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('InstagramUrl')">{{ fieldError('InstagramUrl') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="twitterUrl" class="zb-label">X (Twitter)</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-twitter" />
+            <input pInputText type="url" id="twitterUrl" name="twitterUrl" placeholder="https://x.com/..."
+                   [(ngModel)]="form.twitterUrl" [class.zb-invalid]="fieldError('TwitterUrl')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('TwitterUrl')">{{ fieldError('TwitterUrl') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="linkedlnUrl" class="zb-label">LinkedIn</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-linkedin" />
+            <input pInputText type="url" id="linkedlnUrl" name="linkedlnUrl" placeholder="https://linkedin.com/in/..."
+                   [(ngModel)]="form.linkedlnUrl" [class.zb-invalid]="fieldError('LinkedlnUrl')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('LinkedlnUrl')">{{ fieldError('LinkedlnUrl') }}</small>
+        </div>
+
+        <div class="zb-field">
+          <label for="facebookUrl" class="zb-label">Facebook</label>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-facebook" />
+            <input pInputText type="url" id="facebookUrl" name="facebookUrl" placeholder="https://facebook.com/..."
+                   [(ngModel)]="form.facebookUrl" [class.zb-invalid]="fieldError('FacebookUrl')">
+          </p-iconfield>
+          <small class="zb-error" *ngIf="fieldError('FacebookUrl')">{{ fieldError('FacebookUrl') }}</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- KAYDET ÇUBUĞU: sadece değişiklik varsa, sayfanın altına yapışık -->
+    <div class="zb-savebar" *ngIf="hasChanges">
+      <span class="zb-savebar-text">
+        <i class="pi pi-info-circle" aria-hidden="true"></i>
+        Kaydedilmemiş değişikliklerin var.
+      </span>
+      <div class="zb-savebar-actions">
+        <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" (onClick)="resetForm(imageInput)" />
+        <p-button type="button" label="Değişiklikleri kaydet" icon="pi pi-check"
+                  [disabled]="!profile.hasPassword" (onClick)="openSaveDialog(profileForm)" />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== SAĞ ===================== -->
+  <aside class="zb-side-col">
+
+    <section class="zb-panel">
+      <h2 class="zb-panel-title">Hesap</h2>
+      <ul class="zb-facts">
+        <li>
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span class="zb-fact-label">E-posta</span>
+          <span class="zb-fact-value">{{ profile.email }}</span>
+        </li>
+        <li>
+          <i class="pi pi-shield" aria-hidden="true"></i>
+          <span class="zb-fact-label">Şifre</span>
+          <span class="zb-fact-value">{{ profile.hasPassword ? 'Belirlenmiş' : 'Yok' }}</span>
+        </li>
+        <li>
+          <i class="pi pi-id-card" aria-hidden="true"></i>
+          <span class="zb-fact-label">Rol</span>
+          <span class="zb-fact-value">{{ roleLabels.join(', ') }}</span>
+        </li>
+      </ul>
+      <a routerLink="/forgot-password" [queryParams]="{ email: profile.email }" class="zb-side-link">
+        <i class="pi pi-key" aria-hidden="true"></i>
+        Şifremi değiştir
+      </a>
+    </section>
+
+    <!-- TEHLİKELİ BÖLGE: sadece Admin olmayanlarda -->
+    <section class="zb-panel zb-danger" *ngIf="profile.canCloseAccount">
+      <h2 class="zb-panel-title">Hesabımı kapat</h2>
+      <p class="zb-muted zb-small">
+        Hesabın 30 gün sonra kalıcı olarak kapanır. Bu süre içinde giriş yaparsan kapatma iptal olur.
+      </p>
+      <p-button type="button" label="Hesabımı kapat" icon="pi pi-power-off" severity="danger" [outlined]="true"
+                styleClass="zb-full-btn" (onClick)="openCloseDialog()" />
+    </section>
+
+  </aside>
+</form>
+
+
+<!-- =====================================================================
+     ŞİFRE ONAY PENCERESİ (kaydet)
+     ===================================================================== -->
+<p-dialog [(visible)]="passwordDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="!isSaving" [style]="{ width: '440px' }" [breakpoints]="{ '575px': '95vw' }"
+          styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon"><i class="pi pi-lock" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">Değişiklikleri onayla</h2>
+        <p class="zb-dialog-sub">Güvenliğin için mevcut şifreni gir.</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Enter'a basınca da onaylasın diye form -->
+  <form (ngSubmit)="confirmSave()" novalidate>
+    <label for="currentPassword" class="zb-label">Mevcut şifre</label>
+    <p-password inputId="currentPassword" name="currentPassword" [(ngModel)]="currentPassword"
+                [toggleMask]="true" [feedback]="false" autocomplete="current-password"
+                placeholder="Şifreni gir" styleClass="zb-password" [class.zb-invalid]="passwordError" />
+    <small class="zb-error" *ngIf="passwordError">{{ passwordError }}</small>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isSaving"
+                (onClick)="passwordDialogVisible = false" />
+      <p-button type="submit" label="Onayla ve kaydet" icon="pi pi-check" [loading]="isSaving"
+                [disabled]="!currentPassword || isSaving" />
+    </div>
+  </form>
+</p-dialog>
+
+
+<!-- =====================================================================
+     HESABIMI KAPAT PENCERESİ
+     1) confirm: ne olacağı + onay kutusu + şifre
+     2) done: "30 gün" ekranı → Tamam → çıkış
+     ===================================================================== -->
+<p-dialog [(visible)]="closeDialogVisible" [modal]="true" [draggable]="false" [resizable]="false"
+          [closable]="closeStep === 'confirm' && !isClosing" [closeOnEscape]="closeStep === 'confirm'"
+          [style]="{ width: '520px' }" [breakpoints]="{ '575px': '95vw' }"
+          styleClass="zb-dialog" (onHide)="onCloseDialogHide()">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon is-danger" *ngIf="closeStep === 'confirm'"><i class="pi pi-power-off" aria-hidden="true"></i></span>
+      <span class="zb-dialog-icon is-pending" *ngIf="closeStep === 'done'"><i class="pi pi-clock" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">{{ closeStep === 'confirm' ? 'Hesabını kapat' : 'Hesabın kapatılıyor' }}</h2>
+        <p class="zb-dialog-sub">{{ closeStep === 'confirm' ? 'Bu adımı dikkatle oku.' : '30 günlük bekleme süresi başladı.' }}</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- 1) ONAY -->
+  <form *ngIf="closeStep === 'confirm'" (ngSubmit)="confirmClose()" novalidate>
+    <div class="zb-consequences">
+      <p class="zb-consequences-title">Hesabını kapatırsan:</p>
+      <ul>
+        <li>Hemen çıkış yaparsın; bloglarını, yorumlarını ve profilini kimse göremez.</li>
+        <li><strong>30 gün içinde</strong> giriş yaparsan kapatma otomatik iptal olur, her şey geri gelir.</li>
+        <li>30 gün dolunca hesabın kalıcı olarak kapanır; bu e-posta ve kullanıcı adıyla tekrar kayıt olunamaz.</li>
+        <li>Kapanmadan 3 gün önce sana hatırlatma e-postası göndeririz.</li>
+      </ul>
+      <label class="zb-check">
+        <input type="checkbox" [(ngModel)]="closeConfirmed" name="closeConfirmed">
+        <span>Okudum, hesabımı kapatmak istiyorum.</span>
+      </label>
+    </div>
+
+    <label for="closePassword" class="zb-label zb-mt">Şifren</label>
+    <p-password inputId="closePassword" name="closePassword" [(ngModel)]="closePassword"
+                [toggleMask]="true" [feedback]="false" autocomplete="current-password"
+                placeholder="Onaylamak için şifreni gir" styleClass="zb-password" [class.zb-invalid]="closeError" />
+    <small class="zb-error" *ngIf="closeError">{{ closeError }}</small>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isClosing"
+                (onClick)="closeDialogVisible = false" />
+      <p-button type="submit" label="Hesabımı kapat" icon="pi pi-power-off" severity="danger"
+                [loading]="isClosing" [disabled]="!closeFormValid || isClosing" />
+    </div>
+  </form>
+
+  <!-- 2) TAMAMLANDI -->
+  <div *ngIf="closeStep === 'done'" class="zb-done">
+    <div class="zb-done-date">
+      <span class="zb-done-label">Kalıcı kapanış tarihi</span>
+      <span class="zb-done-value">{{ closeDeadline | date:'dd.MM.yyyy' }}</span>
+    </div>
+    <p>Fikrini değiştirirsen bu tarihten önce <strong>giriş yapman yeterli</strong>; hesabın, blogların ve yorumların geri gelir.</p>
+    <p class="zb-muted">Ayrıntıları e-posta adresine de gönderdik. Şimdi oturumun kapatılacak.</p>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Tamam, çıkış yap" icon="pi pi-sign-out" (onClick)="finishClose()" />
+    </div>
+  </div>
+</p-dialog>

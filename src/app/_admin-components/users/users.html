@@ -1,0 +1,128 @@
+<!-- =====================================================================
+     KULLANICILAR
+     ===================================================================== -->
+
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Kullanıcılar
+      <span class="zb-count" *ngIf="!isLoading">{{ users.length }}</span>
+    </h1>
+    <p class="zb-page-sub">Sitedeki bütün hesaplar. Ayrıntıları görmek ve bloke işlemleri için bir satıra tıkla.</p>
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadUsers()" />
+</div>
+
+<!-- DURUM SEKMELERİ: tıklayınca o durumdakiler listelenir, yanında kaç kişi olduğu -->
+<div class="zb-tabs" role="tablist" aria-label="Hesap durumu">
+  <button type="button" role="tab" class="zb-tab" *ngFor="let tab of statusTabs"
+          [class.is-active]="statusFilter === tab.value"
+          [class.is-blocked]="tab.value === 'Blocked'"
+          [attr.aria-selected]="statusFilter === tab.value"
+          (click)="setStatus(tab.value)">
+    <i [class]="tab.icon" aria-hidden="true"></i>
+    <span>{{ tab.label }}</span>
+    <span class="zb-tab-count">{{ isLoading ? '–' : counts[tab.value] }}</span>
+  </button>
+</div>
+
+<div class="zb-card">
+
+  <!-- ARAMA + ROL -->
+  <div class="zb-toolbar">
+    <p-iconfield class="zb-search">
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" class="zb-search-input" placeholder="Ad, kullanıcı adı ya da e-posta ara"
+             [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" />
+    </p-iconfield>
+
+    <p-select class="zb-filter" [options]="roleOptions" optionLabel="label" optionValue="value"
+              placeholder="Tüm roller" [showClear]="true" appendTo="body" [style]="{ width: '100%' }"
+              [ngModel]="selectedRole" (ngModelChange)="onRoleChange($event)" />
+
+    <p-button *ngIf="hasActiveFilter" label="Filtreleri temizle" icon="pi pi-filter-slash"
+              [text]="true" severity="secondary" (onClick)="clearFilters()" />
+
+    <span class="zb-result-count" *ngIf="!isLoading">{{ filteredUsers.length }} kullanıcı</span>
+  </div>
+
+  <p-table [value]="filteredUsers" dataKey="id" [loading]="isLoading" [rowHover]="true"
+           [paginator]="filteredUsers.length > 10" [rows]="10" [rowsPerPageOptions]="[10, 20, 50]"
+           sortField="name" [sortOrder]="1"
+           styleClass="zb-table" [tableStyle]="{ 'min-width': '58rem' }">
+
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="name">Kullanıcı <p-sortIcon field="name" /></th>
+        <th>E-posta</th>
+        <th>Rol</th>
+        <th>Durum</th>
+        <th pSortableColumn="blogCount" class="zb-col-num">Blog <p-sortIcon field="blogCount" /></th>
+        <th class="zb-col-arrow"><span class="zb-sr-only">Detay</span></th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-user>
+      <tr class="zb-row" (click)="view(user)">
+        <td>
+          <div class="zb-user-cell">
+            <p-avatar *ngIf="user.imageUrl" [image]="user.imageUrl" shape="circle" styleClass="zb-user-avatar" />
+            <p-avatar *ngIf="!user.imageUrl" [label]="initials(user)" shape="circle" styleClass="zb-user-avatar" />
+            <div class="zb-user-text">
+              <span class="zb-user-name">{{ fullName(user) }}</span>
+              <span class="zb-user-handle">&#64;{{ user.userName }}</span>
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <span class="zb-email">
+            {{ user.email }}
+            <!-- Doğrulanmış e-posta: yeşil tik; doğrulanmamış: turuncu uyarı -->
+            <i *ngIf="user.emailConfirmed" class="pi pi-verified zb-ok" pTooltip="E-posta doğrulanmış" aria-label="Doğrulanmış"></i>
+            <i *ngIf="!user.emailConfirmed" class="pi pi-exclamation-circle zb-warn" pTooltip="E-posta doğrulanmamış" aria-label="Doğrulanmamış"></i>
+          </span>
+        </td>
+
+        <td>
+          <div class="zb-roles">
+            <span class="zb-role" *ngFor="let role of user.roles" [class.is-admin]="role === 'Admin'">{{ roleLabel(role) }}</span>
+          </div>
+        </td>
+
+        <td>
+          <span class="zb-status" [ngClass]="'is-' + user.status">
+            <span class="zb-status-dot" aria-hidden="true"></span>
+            {{ statusLabel(user.status) }}
+          </span>
+          <div class="zb-status-note" *ngIf="user.status === 'PendingDeletion' && user.deletionDeadline">
+            {{ user.deletionDeadline | date:'dd.MM.yyyy' }} tarihinde kapanır
+          </div>
+        </td>
+
+        <td class="zb-col-num">{{ user.blogCount }}</td>
+
+        <td class="zb-col-arrow"><i class="pi pi-angle-right" aria-hidden="true"></i></td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6">
+          <div class="zb-empty">
+            <span class="zb-empty-icon"><i class="pi pi-users" aria-hidden="true"></i></span>
+            <p class="zb-empty-title">{{ hasActiveFilter ? 'Filtrelere uygun kullanıcı yok' : 'Henüz kullanıcı yok' }}</p>
+            <p-button *ngIf="hasActiveFilter" label="Filtreleri temizle" [outlined]="true" size="small" (onClick)="clearFilters()" />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+  </p-table>
+</div>

@@ -1,0 +1,773 @@
+/* =====================================================================
+   PROFİLİM (ortak sayfa)
+   Writer / user panelindeki piksel görünüm sonraki adımda eklenecek
+   (:host-context(.zb-pixel))
+   ===================================================================== */
+.zb-page-head {
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-page-sub {
+  margin: 0.3rem 0 0;
+  color: var(--zb-muted);
+}
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span {
+  flex-grow: 1;
+}
+
+.zb-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid #fed7aa;
+  border-radius: 0.9rem;
+  background-color: #fff7ed;
+  color: #9a3412;
+  font-size: 0.92rem;
+}
+
+.zb-banner i {
+  margin-top: 0.15rem;
+}
+
+.zb-banner a {
+  color: #9a3412;
+  font-weight: 800;
+}
+
+/* DÜZEN */
+.zb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.zb-main-col,
+.zb-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zb-side-col {
+  position: sticky;
+  top: 88px;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-side-col {
+    position: static;
+  }
+}
+
+.zb-panel {
+  padding: 1.35rem 1.4rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-panel-title {
+  margin: 0 0 1rem;
+  color: var(--zb-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.zb-muted {
+  margin: 0;
+  color: var(--zb-muted);
+}
+
+.zb-small {
+  margin-bottom: 1rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+/* KİMLİK KARTI */
+.zb-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    var(--zb-surface);
+}
+
+@media (max-width: 575.98px) {
+  .zb-identity {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.zb-avatar-wrap {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--p-primary-500), var(--p-primary-800));
+  box-shadow: 0 0 0 1px var(--zb-line), 0 12px 28px -16px rgba(12, 20, 16, 0.45);
+}
+
+.zb-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.zb-avatar-initials {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.zb-identity-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (max-width: 575.98px) {
+  .zb-identity-text {
+    align-items: center;
+  }
+}
+
+.zb-identity-name {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-identity-handle {
+  margin: 0.1rem 0 0.55rem;
+  color: var(--zb-muted);
+}
+
+.zb-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+
+.zb-role {
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-800);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.zb-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.zb-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.65rem;
+  background-color: #fff;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.zb-photo-btn:hover {
+  border-color: var(--p-primary-400);
+}
+
+.zb-link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-primary-700);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zb-link-btn.is-danger {
+  color: #b91c1c;
+}
+
+.zb-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* FORM */
+.zb-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+@media (max-width: 767.98px) {
+  .zb-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zb-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.zb-mt {
+  margin-top: 1.1rem;
+}
+
+.zb-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.zb-req {
+  color: #dc2626;
+}
+
+:host ::ng-deep p-iconfield {
+  display: block;
+  width: 100%;
+}
+
+.zb-field .p-inputtext,
+:host ::ng-deep .zb-field .p-inputtext {
+  width: 100%;
+  border-radius: 0.65rem;
+}
+
+.zb-readonly {
+  background-color: #f5f6f3 !important;
+  color: var(--zb-muted) !important;
+  cursor: not-allowed;
+}
+
+.zb-textarea {
+  width: 100%;
+  border-radius: 0.65rem;
+  resize: vertical;
+}
+
+.zb-invalid,
+:host ::ng-deep .zb-invalid .p-inputtext {
+  border-color: #dc2626 !important;
+}
+
+.zb-field-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.zb-hint {
+  margin-top: 0.35rem;
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+}
+
+.zb-counter {
+  margin-left: auto;
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-error {
+  display: block;
+  margin-top: 0.35rem;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* KAYDET ÇUBUĞU: sayfanın altına yapışık */
+.zb-savebar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--zb-ink);
+  border-radius: 0.9rem;
+  background-color: var(--zb-ink);
+  box-shadow: 0 18px 40px -18px rgba(12, 20, 16, 0.6);
+  color: #fff;
+  animation: zb-rise 0.2s ease-out;
+}
+
+@keyframes zb-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.zb-savebar-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.zb-savebar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .zb-savebar .p-button-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* SAĞ KOLON */
+.zb-facts {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.zb-facts li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.zb-facts i {
+  width: 1rem;
+  color: var(--p-primary-600);
+  text-align: center;
+}
+
+.zb-fact-label {
+  color: var(--zb-muted);
+}
+
+.zb-fact-value {
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--zb-ink);
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.zb-side-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--p-primary-700);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.zb-side-link:hover {
+  text-decoration: underline;
+}
+
+.zb-danger {
+  border-color: #fecaca;
+  background-color: #fffafa;
+}
+
+.zb-danger .zb-panel-title {
+  color: #991b1b;
+}
+
+:host ::ng-deep .zb-full-btn {
+  width: 100%;
+  justify-content: center;
+  border-radius: 0.7rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------
+   PENCERELER
+   --------------------------------------------------------------- */
+::ng-deep .zb-dialog.p-dialog {
+  border: 0;
+  border-radius: 1.1rem;
+  box-shadow: 0 30px 60px -20px rgba(12, 20, 16, 0.35);
+  font-family: var(--zb-font);
+}
+
+::ng-deep .zb-dialog .p-dialog-header {
+  padding: 1.4rem 1.5rem 0.75rem;
+}
+
+::ng-deep .zb-dialog .p-dialog-content {
+  padding: 0.5rem 1.5rem 1.5rem;
+}
+
+.zb-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.zb-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 0.8rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+}
+
+.zb-dialog-icon.is-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.zb-dialog-icon.is-pending {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.zb-dialog-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.zb-dialog-sub {
+  margin: 0.15rem 0 0;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+}
+
+:host ::ng-deep .zb-password,
+:host ::ng-deep .zb-password .p-password-input {
+  width: 100%;
+}
+
+.zb-consequences {
+  padding: 0.9rem 1rem;
+  border: 1px solid #fecaca;
+  border-radius: 0.85rem;
+  background-color: #fffafa;
+}
+
+.zb-consequences-title {
+  margin: 0 0 0.4rem;
+  color: #991b1b;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.zb-consequences ul {
+  margin: 0 0 0.8rem;
+  padding-left: 1.1rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.zb-check {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--zb-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zb-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #b91c1c;
+}
+
+.zb-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+/* "30 gün" ekranı */
+.zb-done p {
+  margin: 0 0 0.6rem;
+  color: var(--zb-ink-soft);
+  line-height: 1.6;
+}
+
+.zb-done-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  margin-bottom: 1.1rem;
+  padding: 1.1rem;
+  border: 1px solid #fed7aa;
+  border-radius: 0.9rem;
+  background-color: #fff7ed;
+}
+
+.zb-done-label {
+  color: #9a3412;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.zb-done-value {
+  color: #7c2d12;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zb-savebar {
+    animation: none;
+  }
+}
+
+
+/* =====================================================================
+   PİKSEL GÖRÜNÜM (yazar ve okur paneli)
+   :host-context(.zb-pixel): sayfa "zb-pixel" sınıflı bir kutunun içindeyse uygula
+   ===================================================================== */
+:host-context(.zb-pixel) .zb-page-title {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+:host-context(.zb-pixel) .zb-page-sub {
+  color: var(--px-green-dark);
+  font-size: 1.05rem;
+}
+
+/* Kartlar: kalın çerçeve + sert gölge */
+:host-context(.zb-pixel) .zb-panel,
+:host-context(.zb-pixel) .zb-banner,
+:host-context(.zb-pixel) .zb-alert {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: var(--px-shadow);
+}
+
+:host-context(.zb-pixel) .zb-panel-title {
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.65rem;
+  line-height: 1.6;
+}
+
+/* Kimlik kartı: kare avatar, yeşil zemin */
+:host-context(.zb-pixel) .zb-identity {
+  background:
+    linear-gradient(rgba(20, 32, 26, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 32, 26, 0.05) 1px, transparent 1px),
+    #fff;
+  background-size: 12px 12px;
+}
+
+:host-context(.zb-pixel) .zb-avatar-wrap {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background: var(--px-green);
+  box-shadow: 5px 5px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-avatar-initials {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 1.4rem;
+}
+
+:host-context(.zb-pixel) .zb-identity-name {
+  font-family: var(--px-font);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+:host-context(.zb-pixel) .zb-identity-handle {
+  color: var(--px-green-dark);
+}
+
+:host-context(.zb-pixel) .zb-role {
+  border: 2px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  box-shadow: 2px 2px 0 var(--px-ink);
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.5rem;
+  line-height: 1.6;
+}
+
+:host-context(.zb-pixel) .zb-photo-btn {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--px-ink);
+  font-family: var(--px-font);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+
+:host-context(.zb-pixel) .zb-photo-btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+:host-context(.zb-pixel) .zb-label {
+  font-size: 0.95rem;
+}
+
+:host-context(.zb-pixel) .zb-textarea {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  font-family: var(--px-font);
+}
+
+:host-context(.zb-pixel) .zb-readonly {
+  background-color: var(--px-paper) !important;
+}
+
+/* Kaydet çubuğu: sarı piksel şerit */
+:host-context(.zb-pixel) .zb-savebar {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  box-shadow: 5px 5px 0 var(--px-ink);
+  color: var(--px-ink);
+}
+
+:host-context(.zb-pixel) ::ng-deep .zb-savebar .p-button-text {
+  color: var(--px-ink);
+}
+
+/* Tehlikeli bölge: kırmızı piksel kart */
+:host-context(.zb-pixel) .zb-danger {
+  border-color: #b91c1c;
+  background: #fff5f5;
+  box-shadow: 4px 4px 0 #b91c1c;
+}
+
+:host-context(.zb-pixel) .zb-danger .zb-panel-title {
+  color: #b91c1c;
+}
+
+/* Pencereler */
+:host-context(.zb-pixel) ::ng-deep .zb-dialog.p-dialog {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 var(--px-ink);
+  font-family: var(--px-font);
+}
+
+:host-context(.zb-pixel) .zb-dialog-icon {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-dialog-title {
+  font-family: var(--px-display);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+:host-context(.zb-pixel) .zb-consequences {
+  border: 3px solid #b91c1c;
+  border-radius: 0;
+}
+
+:host-context(.zb-pixel) .zb-done-date {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  box-shadow: 4px 4px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-done-label {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 0.5rem;
+}
+
+:host-context(.zb-pixel) .zb-done-value {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 1.3rem;
+  line-height: 1.6;
+}

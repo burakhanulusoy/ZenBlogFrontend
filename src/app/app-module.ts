@@ -61,7 +61,15 @@ import { AuthShell } from './_shared-components/auth-shell/auth-shell';
 import { PasswordModule } from 'primeng/password';     // YENİ: <p-password> (göster/gizle düğmeli şifre)
 import { InputOtpModule } from 'primeng/inputotp';     // YENİ: <p-inputotp> (6 kutulu kod girişi)
 import { ChartModule } from 'primeng/chart';   // YENİ: <p-chart> (chart.js tabanlı grafikler)
-import { DialogModule } from 'primeng/dialog';   // YENİ: <p-dialog> (açılır pencere)
+import { DialogModule } from 'primeng/dialog';
+import { Users } from './_admin-components/users/users';
+import { UserDetail } from './_admin-components/user-detail/user-detail';   // YENİ: <p-dialog> (açılır pencere)
+
+import { TextareaModule } from 'primeng/textarea';
+import { Profile } from './_personal-components/profile/profile';
+import { UserLayout } from './_layouts/user-layout/user-layout';
+import { ErrorPage } from './_main-components/error-page/error-page';   // YENİ: pTextarea
+
 
 @NgModule({
   declarations: [
@@ -71,6 +79,7 @@ import { DialogModule } from 'primeng/dialog';   // YENİ: <p-dialog> (açılır
     AdminLayout,
     MainLayout,
     WriterLayout,
+    UserLayout,
 
     // Ziyaretçi ve kimlik doğrulama
     Home,
@@ -93,7 +102,12 @@ import { DialogModule } from 'primeng/dialog';   // YENİ: <p-dialog> (açılır
     BlogForm,
     AllBlogs,
     BlogDetail,
-    AuthShell
+    AuthShell,
+    Users,
+    UserDetail,
+    Profile,
+    UserLayout,
+    ErrorPage
   ],
   imports: [
     BrowserModule,
@@ -117,8 +131,8 @@ import { DialogModule } from 'primeng/dialog';   // YENİ: <p-dialog> (açılır
     PasswordModule,
     InputOtpModule,
     ChartModule,
-        DialogModule        // YENİ: <p-dialog>
-
+        DialogModule,        // YENİ: <p-dialog>
+    TextareaModule      // YENİ: pTextarea
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

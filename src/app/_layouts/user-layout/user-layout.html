@@ -1,0 +1,108 @@
+<!-- zb-pixel: içerideki her şey piksel temaya geçer (styles.css → PİKSEL TEMA) -->
+<div class="px-shell zb-pixel">
+
+  <!-- SOL MENÜ (geniş ekran) -->
+  <aside class="px-sidebar">
+    <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
+  </aside>
+
+  <!-- SOL MENÜ (mobil) -->
+  <p-drawer [(visible)]="mobileMenuVisible" position="left" [showCloseIcon]="false"
+            [style]="{ width: '280px' }" styleClass="px-drawer">
+    <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
+  </p-drawer>
+
+  <!-- SAĞ TARAF -->
+  <div class="px-main">
+
+    <header class="px-topbar">
+      <div class="px-topbar-left">
+        <button type="button" class="px-icon-btn px-menu-toggle" (click)="mobileMenuVisible = true" aria-label="Menüyü aç">
+          <i class="pi pi-bars" aria-hidden="true"></i>
+        </button>
+
+        <!-- Konum: HESABIM ▶ Profilim -->
+        <div class="px-crumbs">
+          <span class="px-crumb-root">Hesabım</span>
+          <ng-container *ngIf="pageTitle">
+            <span class="px-crumb-sep" aria-hidden="true">▶</span>
+            <span class="px-crumb-current">{{ pageTitle }}</span>
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="px-topbar-right">
+        <a routerLink="/" target="_blank" class="px-site-link">
+          <i class="pi pi-external-link" aria-hidden="true"></i>
+          <span>Siteyi görüntüle</span>
+        </a>
+
+        <button type="button" class="px-user" (click)="userMenu.toggle($event)" aria-haspopup="true">
+                   <!-- DEĞİŞTİ: fotoğraf varsa fotoğraf, yoksa baş harfler -->
+          <span class="px-avatar">
+            <img *ngIf="imageUrl" [src]="imageUrl" alt="">
+            <ng-container *ngIf="!imageUrl">{{ initials }}</ng-container>
+          </span>
+          <span class="px-user-text">
+            <span class="px-user-name">{{ fullName || 'Okur' }}</span>
+            <span class="px-user-role">Okur</span>
+          </span>
+          <i class="pi pi-chevron-down px-user-caret" aria-hidden="true"></i>
+        </button>
+
+        <p-menu #userMenu [model]="userMenuItems" [popup]="true" appendTo="body" styleClass="zb-pixel-overlay">
+          <ng-template #start>
+            <div class="px-menu-head">
+              <div class="px-menu-name">{{ fullName || 'Okur' }}</div>
+              <div class="px-menu-email">{{ email }}</div>
+            </div>
+          </ng-template>
+        </p-menu>
+      </div>
+    </header>
+
+    <main class="px-content">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>
+
+
+<!-- MENÜ ŞABLONU (masaüstü ve mobilde ortak) -->
+<ng-template #sidebarContent>
+  <div class="px-sidebar-inner">
+
+    <a routerLink="/account" class="px-brand" aria-label="ZenBlog hesabım">
+      <span class="px-brand-tile">
+        <img src="zenblog-icon.png" alt="">
+      </span>
+      <span class="px-brand-text">
+        <span class="px-brand-name">ZenBlog</span>
+        <span class="px-brand-tag">Okur</span>
+      </span>
+    </a>
+
+    <nav class="px-nav" aria-label="Hesap menüsü">
+      <div class="px-nav-group" *ngFor="let group of menuGroups">
+        <p class="px-nav-title">{{ group.title }}</p>
+        <a *ngFor="let item of group.items" class="px-nav-link"
+           [routerLink]="item.link" routerLinkActive="is-active"
+           [routerLinkActiveOptions]="{ exact: !!item.exact }">
+          <i [class]="item.icon" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- ALTTAKİ ÇAĞRI KARTI: okumaya yönlendir -->
+    <div class="px-cta">
+      <p class="px-cta-title">Yeni yazılar var!</p>
+      <p class="px-cta-text">ZenBlog'da seni bekleyen yazıları keşfet.</p>
+      <a routerLink="/" class="px-cta-btn">
+        <i class="pi pi-book" aria-hidden="true"></i> Okumaya devam et
+      </a>
+    </div>
+
+  </div>
+</ng-template>

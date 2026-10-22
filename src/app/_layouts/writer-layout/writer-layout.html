@@ -38,7 +38,11 @@
         </a>
 
         <button type="button" class="px-user" (click)="userMenu.toggle($event)" aria-haspopup="true">
-          <span class="px-avatar">{{ initials }}</span>
+                   <!-- DEĞİŞTİ: fotoğraf varsa fotoğraf, yoksa baş harfler -->
+          <span class="px-avatar">
+            <img *ngIf="imageUrl" [src]="imageUrl" alt="">
+            <ng-container *ngIf="!imageUrl">{{ initials }}</ng-container>
+          </span>
           <span class="px-user-text">
             <span class="px-user-name">{{ fullName || 'Yazar' }}</span>
             <span class="px-user-role">Yazar</span>

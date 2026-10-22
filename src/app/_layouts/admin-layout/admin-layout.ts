@@ -34,6 +34,7 @@ export class AdminLayout implements OnInit, OnDestroy {
 
   fullName = '';
   email = '';
+    imageUrl = '';   // YENİ: sağ üstteki avatar
   pageTitle = '';
   todayText = '';
 
@@ -51,32 +52,36 @@ export class AdminLayout implements OnInit, OnDestroy {
         { label: 'Genel bakış', icon: 'pi pi-th-large', link: '/admin', exact: true }
       ]
     },
-    {
+        {
       title: 'Site yönetimi',
       items: [
         { label: 'Tüm bloglar', icon: 'pi pi-book', link: '/admin/blogs' },
-        { label: 'Kategoriler', icon: 'pi pi-tags', link: '/admin/category' }
+        { label: 'Kategoriler', icon: 'pi pi-tags', link: '/admin/category' },
+        { label: 'Kullanıcılar', icon: 'pi pi-users', link: '/admin/users' }   // YENİ
       ]
     }
   ];
 
     // ALTTAKİ MENÜ: admin'in kendi içerikleri
   // DEĞİŞTİ: "Yeni blog yaz" kaldırıldı (Bloglarım sayfasındaki butondan yazılıyor)
+    // ALTTAKİ MENÜ: admin'in kendi içerikleri
   personalGroup: NavGroup = {
     title: 'Size özel',
     items: [
-      { label: 'Bloglarım', icon: 'pi pi-file-edit', link: '/admin/my-blogs' }
+      { label: 'Bloglarım', icon: 'pi pi-file-edit', link: '/admin/my-blogs' },
+      { label: 'Profilim', icon: 'pi pi-user', link: '/admin/profile' }   // YENİ
     ]
   };
 
   userMenuItems: MenuItem[] = [];
 
   private routerSubscription: Subscription;
+  private userSubscription: Subscription;   // YENİ: profil güncellenince adı yenilemek için
 
   ngOnInit(): void {
     this.fullName = this.authService.getFullName();
     this.email = this.authService.getEmail();
-
+    this.imageUrl = this.authService.getImageUrl();   // YENİ
     // "21 Ekim 2026, Çarşamba" (tr-TR: Türkçe ay ve gün adları)
     this.todayText = new Date().toLocaleDateString('tr-TR', {
       day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
@@ -94,6 +99,14 @@ export class AdminLayout implements OnInit, OnDestroy {
       { separator: true },
       { label: 'Çıkış yap', icon: 'pi pi-sign-out', command: () => this.authService.logout() }
     ];
+
+        // YENİ: Profilim'de ad soyad değişince yeni token gelir → sağ üstteki ad ve e-posta yenilensin
+      this.userSubscription = this.authService.userChanged$.subscribe(() => {
+      this.fullName = this.authService.getFullName();
+      this.email = this.authService.getEmail();
+      this.imageUrl = this.authService.getImageUrl();   // YENİ
+    });
+
 
     this.updatePageTitle();
 
@@ -139,7 +152,8 @@ export class AdminLayout implements OnInit, OnDestroy {
       .join('') || 'A';
   }
 
-  ngOnDestroy(): void {
+   ngOnDestroy(): void {
     this.routerSubscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();   // YENİ
   }
 }

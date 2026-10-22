@@ -44,7 +44,9 @@
         </a>
 
         <button type="button" class="zb-user" (click)="userMenu.toggle($event)" aria-haspopup="true">
-          <p-avatar [label]="initials" shape="circle" styleClass="zb-avatar" />
+                    <!-- DEĞİŞTİ: fotoğraf varsa fotoğraf, yoksa baş harfler -->
+          <p-avatar *ngIf="imageUrl" [image]="imageUrl" shape="circle" styleClass="zb-avatar" />
+          <p-avatar *ngIf="!imageUrl" [label]="initials" shape="circle" styleClass="zb-avatar" />
           <span class="zb-user-text">
             <span class="zb-user-name">{{ fullName || 'Admin' }}</span>
             <span class="zb-user-role">Yönetici</span>

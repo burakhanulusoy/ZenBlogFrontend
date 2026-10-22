@@ -38,8 +38,8 @@ export class WriterLayout implements OnInit, OnDestroy {
   email = '';
   mobileMenuVisible = false;
   pageTitle = '';
-
-  menuGroups: NavGroup[] = [
+  imageUrl = '';   // YENİ: sağ üstteki avatar
+      menuGroups: NavGroup[] = [
     {
       title: 'Genel',
       items: [
@@ -52,6 +52,13 @@ export class WriterLayout implements OnInit, OnDestroy {
         { label: 'Bloglarım', icon: 'pi pi-book', link: '/writer/my-blogs' },
         { label: 'Yeni blog yaz', icon: 'pi pi-pencil', link: '/writer/new-blog' }
       ]
+    },
+    // YENİ: hesap işlemleri
+    {
+      title: 'Hesabım',
+      items: [
+        { label: 'Profilim', icon: 'pi pi-user', link: '/writer/profile' }
+      ]
     }
   ];
 
@@ -59,15 +66,25 @@ export class WriterLayout implements OnInit, OnDestroy {
 
   private routerSubscription: Subscription;
 
+    private userSubscription: Subscription;   // YENİ: profil güncellenince adı yenilemek için
+
   ngOnInit(): void {
     this.fullName = this.authService.getFullName();
     this.email = this.authService.getEmail();
-
+    this.imageUrl = this.authService.getImageUrl();   // YENİ
     this.userMenuItems = [
       { label: 'Siteyi görüntüle', icon: 'pi pi-external-link', url: '/', target: '_blank' },
       { separator: true },
       { label: 'Çıkış yap', icon: 'pi pi-sign-out', command: () => this.authService.logout() }
     ];
+
+        // YENİ: Profilim'de ad soyad değişince sağ üstteki ad ve e-posta yenilensin
+        this.userSubscription = this.authService.userChanged$.subscribe(() => {
+      this.fullName = this.authService.getFullName();
+      this.email = this.authService.getEmail();
+      this.imageUrl = this.authService.getImageUrl();   // YENİ
+    });
+
 
     this.updatePageTitle();
 
@@ -98,7 +115,8 @@ export class WriterLayout implements OnInit, OnDestroy {
       .join('') || 'Y';
   }
 
-  ngOnDestroy(): void {
+    ngOnDestroy(): void {
     this.routerSubscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();   // YENİ
   }
 }

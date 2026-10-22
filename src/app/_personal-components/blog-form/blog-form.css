@@ -1,79 +1,477 @@
-/* Başlığın solundaki yuvarlak ikon (Bloglarım sayfasıyla aynı) */
-.page-icon {
+/* =====================================================================
+   BLOG FORMU · ortak sayfa
+   Üst kısım: sade görünüm (admin)
+   Alt kısım: :host-context(.zb-pixel) → yazar panelinde piksel
+   ===================================================================== */
+
+/* SAYFA BAŞLIĞI */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-head-text {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.zb-page-icon {
+  display: grid;
+  place-items: center;
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  border-radius: 0.9rem;
+  background-color: var(--p-primary-50);
+  box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.08);
+  color: var(--p-primary-700);
+  font-size: 1.15rem;
 }
 
-/* Bölüm numarası: yazının sırasını gösteriyor (giriş → 1 → 2 → 3) */
-.section-no {
-  display: inline-flex;
+.zb-page-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-page-sub {
+  margin: 0.2rem 0 0;
+  color: var(--zb-muted);
+}
+
+/* UYARILAR */
+.zb-alert {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  margin-right: 0.4rem;
-  border-radius: 50%;
-  background-color: rgba(79, 70, 229, 0.1);
-  color: #4f46e5;
-  font-size: 0.8rem;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
 }
 
-/* Geniş ekranda sağ kolon (kategori, kapak, kaydet) sayfa kaydırılırken yerinde dursun */
-@media (min-width: 1200px) {
-  .form-sidebar {
-    position: sticky;
-    top: 1rem;
+.zb-alert > span {
+  flex-grow: 1;
+}
+
+.zb-alert.is-error {
+  align-items: flex-start;
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+/* DÜZEN: solda içerik, sağda yayın kartı */
+.zb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-layout {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* ---------------------------------------------------------------
-   RESİM KUTUSU
-   --------------------------------------------------------------- */
-.image-box {
+.zb-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Geniş ekranda yayın kartı kaydırırken yerinde durur */
+.zb-side-col {
+  position: sticky;
+  top: 88px;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-side-col {
+    position: static;
+  }
+}
+
+.zb-panel {
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-panel-title {
+  margin: 0 0 1.1rem;
+  color: var(--zb-ink);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* BÖLÜM BAŞLIĞI: büyük numara + başlık */
+.zb-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--zb-line);
+}
+
+.zb-section-no {
+  color: var(--p-primary-300);
+  font-family: var(--zb-serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.zb-section-title {
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.zb-section-sub {
+  margin: 0.15rem 0 0;
+  color: var(--zb-muted);
+  font-size: 0.85rem;
+}
+
+/* ALANLAR */
+.zb-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.zb-field + .zb-field {
+  margin-top: 1.1rem;
+}
+
+.zb-label {
+  margin-bottom: 0.45rem;
+  color: var(--zb-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.zb-req {
+  color: #dc2626;
+}
+
+.zb-input,
+.zb-textarea {
+  width: 100%;
+  border-radius: 0.65rem;
+}
+
+.zb-input-lg {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.zb-textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.zb-invalid,
+:host ::ng-deep .zb-invalid.p-select {
+  border-color: #dc2626 !important;
+}
+
+.zb-field-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.zb-counter {
+  margin-top: 0.35rem;
+  margin-left: auto;
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.zb-error {
+  margin-top: 0.35rem;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.zb-hint {
+  color: var(--zb-muted);
+  font-size: 0.78rem;
+}
+
+/* RESİM KUTUSU */
+.zb-image-box {
   position: relative;
-  height: 190px;
-  margin-bottom: 0;
-  border: 2px dashed #cbd5e1;
-  border-radius: 0.75rem;
-  background-color: #f8fafc;
+  display: grid;
+  place-items: center;
+  height: 200px;
+  margin: 0;
   overflow: hidden;
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.85rem;
+  background-color: #f8faf8;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
 }
 
-.image-box:hover {
-  border-color: #4f46e5;
-  background-color: #eef2ff;
+.zb-image-box:hover {
+  border-color: var(--p-primary-400);
+  background-color: var(--p-primary-50);
 }
 
-/* Resim seçilince kesikli çizgi yerine ince düz çerçeve */
-.image-box:has(img) {
+.zb-image-box.has-image {
   border-style: solid;
   border-width: 1px;
+  border-color: var(--zb-line);
 }
 
-.image-box img {
-  object-fit: cover;   /* kutuya sığdır, oranı bozmadan kırp */
+.zb-image-box.is-invalid {
+  border-color: #dc2626;
 }
 
-/* Hatalı: kırmızı çerçeve */
-.image-box.is-invalid {
-  border-color: #dc3545;
+.zb-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Klavyeyle (Tab) dosya inputuna gelince kutunun etrafında odak çizgisi */
-.image-input:focus-visible + .image-box {
-  outline: 3px solid rgba(79, 70, 229, 0.45);
-  outline-offset: 2px;
+.zb-image-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--zb-ink-soft);
+  text-align: center;
 }
 
-/* Resmin sağ altındaki "Değiştir" rozeti */
-.image-change {
+.zb-image-empty i {
+  margin-bottom: 0.2rem;
+  color: var(--p-primary-600);
+  font-size: 1.6rem;
+}
+
+.zb-image-empty small {
+  color: var(--zb-muted);
+}
+
+.zb-image-change {
   position: absolute;
   right: 10px;
   bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
   background-color: rgba(17, 24, 39, 0.75);
   backdrop-filter: blur(4px);
-  font-weight: 500;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Klavyeyle dosya inputuna gelince kutuda odak çizgisi */
+.zb-image-input:focus-visible + .zb-image-box {
+  outline: 2px solid var(--p-primary-500);
+  outline-offset: 2px;
+}
+
+.zb-image-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.6rem;
+  margin-top: 0.35rem;
+}
+
+.zb-image-name {
+  overflow: hidden;
+  color: var(--zb-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.zb-link-btn {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-primary-700);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zb-link-btn.is-danger {
+  color: #b91c1c;
+}
+
+.zb-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* YAYIN KARTI */
+.zb-publish .zb-field + .zb-field {
+  margin-top: 1.25rem;
+}
+
+.zb-publish-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+}
+
+:host ::ng-deep .zb-full-btn {
+  width: 100%;
+  justify-content: center;
+  border-radius: 0.7rem;
+  font-weight: 700;
+}
+
+.zb-publish-note {
+  display: flex;
+  gap: 0.45rem;
+  margin: 1rem 0 0;
+  color: var(--zb-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.zb-publish-note i {
+  margin-top: 0.15rem;
+}
+
+.zb-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* =====================================================================
+   PİKSEL GÖRÜNÜM (yazar paneli)
+   ===================================================================== */
+:host-context(.zb-pixel) .zb-page-icon {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-green);
+  box-shadow: 3px 3px 0 var(--px-ink);
+  color: var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-page-title {
+  color: var(--px-ink);
+  font-family: var(--px-display);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+:host-context(.zb-pixel) .zb-page-sub {
+  color: var(--px-green-dark);
+  font-size: 1.05rem;
+}
+
+:host-context(.zb-pixel) .zb-panel,
+:host-context(.zb-pixel) .zb-alert {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  background-color: #fff;
+  box-shadow: var(--px-shadow);
+}
+
+:host-context(.zb-pixel) .zb-panel-title {
+  color: var(--px-green-dark);
+  font-family: var(--px-display);
+  font-size: 0.65rem;
+  line-height: 1.6;
+}
+
+/* Bölüm numarası: yeşil, siyah gölgeli piksel rakam */
+:host-context(.zb-pixel) .zb-section-head {
+  border-bottom: 3px dashed var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-section-no {
+  color: var(--px-green);
+  font-family: var(--px-display);
+  font-size: 1.2rem;
+  text-shadow: 3px 3px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-section-title {
+  font-family: var(--px-font);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+:host-context(.zb-pixel) .zb-label {
+  font-size: 0.95rem;
+}
+
+:host-context(.zb-pixel) .zb-textarea {
+  border: 3px solid var(--px-ink);
+  border-radius: 0;
+  font-family: var(--px-font);
+  font-size: 1rem;
+}
+
+:host-context(.zb-pixel) .zb-input-lg {
+  font-family: var(--px-font);
+  font-size: 1.2rem;
+}
+
+/* Resim kutusu: kalın kesikli çerçeve, seçilince sert gölge */
+:host-context(.zb-pixel) .zb-image-box {
+  border: 3px dashed var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-paper);
+}
+
+:host-context(.zb-pixel) .zb-image-box:hover {
+  background-color: #dcfce7;
+}
+
+:host-context(.zb-pixel) .zb-image-box.has-image {
+  border: 3px solid var(--px-ink);
+  box-shadow: 4px 4px 0 var(--px-ink);
+}
+
+:host-context(.zb-pixel) .zb-image-change {
+  border: 2px solid var(--px-ink);
+  border-radius: 0;
+  background-color: var(--px-yellow);
+  backdrop-filter: none;
+  color: var(--px-ink);
+  font-family: var(--px-font);
+}
+
+/* Yayın kartı: sarı başlık şeridi */
+:host-context(.zb-pixel) .zb-publish {
+  box-shadow: 6px 6px 0 var(--px-ink);
 }

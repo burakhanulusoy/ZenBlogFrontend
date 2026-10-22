@@ -1,0 +1,63 @@
+<!-- =====================================================================
+     HATA SAYFASI (403 / 404)
+     ===================================================================== -->
+<div class="zb-error" [class.is-403]="code === 403">
+
+  <!-- Üst: logo -->
+  <header class="zb-error-top">
+    <a routerLink="/" aria-label="ZenBlog ana sayfa">
+      <img src="zenblog-logo.png" alt="ZenBlog" class="zb-error-logo">
+    </a>
+  </header>
+
+  <main class="zb-error-main">
+
+    <!-- 4 🍃 4  /  4 🍃 3  → ortadaki sıfırın yerinde yaprak -->
+    <div class="zb-code" [attr.aria-label]="'Hata ' + code">
+      <span aria-hidden="true">4</span>
+      <span class="zb-code-leaf" aria-hidden="true">
+        <img src="zenblog-icon.png" alt="">
+        <!-- 403'te yaprağın üstünde küçük kilit -->
+        <i class="pi pi-lock zb-code-lock" *ngIf="code === 403"></i>
+      </span>
+      <span aria-hidden="true">{{ lastDigit }}</span>
+    </div>
+
+    <span class="zb-error-badge">
+      <i class="pi" [class.pi-ban]="code === 403" [class.pi-compass]="code === 404" aria-hidden="true"></i>
+      {{ code === 403 ? 'Erişim engellendi' : 'Sayfa bulunamadı' }}
+    </span>
+
+    <h1 class="zb-error-title">{{ title }}</h1>
+    <p class="zb-error-text">{{ message }}</p>
+
+    <!-- 404'te istenen adres -->
+    <code class="zb-error-url" *ngIf="code === 404">{{ requestedUrl }}</code>
+
+    <!-- BUTONLAR -->
+    <div class="zb-error-actions">
+      <!-- Giriş yapmışsa kendi paneline, yapmamışsa ana sayfaya -->
+      <a [routerLink]="homeRoute" class="zb-btn zb-btn-primary">
+        <i class="pi" [class.pi-th-large]="loggedIn" [class.pi-home]="!loggedIn" aria-hidden="true"></i>
+        {{ loggedIn ? 'Panelime dön' : 'Ana sayfaya dön' }}
+      </a>
+
+      <button type="button" class="zb-btn zb-btn-ghost" (click)="goBack()">
+        <i class="pi pi-arrow-left" aria-hidden="true"></i> Geri dön
+      </button>
+
+      <!-- 403: başka hesapla giriş -->
+      <button type="button" class="zb-btn zb-btn-ghost" *ngIf="code === 403 && loggedIn" (click)="switchAccount()">
+        <i class="pi pi-sign-in" aria-hidden="true"></i> Farklı hesapla giriş yap
+      </button>
+
+      <!-- 404 + giriş yapmışsa: ana sayfa da seçenek olsun -->
+      <a routerLink="/" class="zb-btn zb-btn-ghost" *ngIf="code === 404 && loggedIn">
+        <i class="pi pi-home" aria-hidden="true"></i> Ana sayfa
+      </a>
+    </div>
+
+  </main>
+
+  <footer class="zb-error-foot">Hata kodu {{ code }} · ZenBlog</footer>
+</div>
