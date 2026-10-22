@@ -1,0 +1,145 @@
+<!-- =====================================================================
+     SOSYAL MEDYA
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Sosyal medya
+      <span class="zb-count" *ngIf="!isLoading">{{ items.length }}</span>
+    </h1>
+    <p class="zb-page-sub">Buraya eklenen bütün hesaplar sitenin alt bilgisinde ve iletişim sayfasında ikon olarak görünür.</p>
+  </div>
+  <p-button label="Yeni hesap" icon="pi pi-plus" (onClick)="openCreate()" />
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- SİTEDE BÖYLE GÖRÜNECEK: canlı önizleme şeridi -->
+<section class="zb-preview" *ngIf="!isLoading && items.length > 0">
+  <div class="zb-preview-text">
+    <span class="zb-preview-label"><i class="pi pi-eye" aria-hidden="true"></i> Sitede böyle görünecek</span>
+    <span class="zb-preview-brand">ZenBlog'u takip et</span>
+  </div>
+  <div class="zb-preview-icons">
+    <a *ngFor="let item of items" [href]="item.url" target="_blank" rel="noopener noreferrer"
+       class="zb-preview-icon" [pTooltip]="item.title" tooltipPosition="top" [attr.aria-label]="item.title">
+      <img [src]="item.icon" alt="">
+    </a>
+  </div>
+</section>
+
+<!-- YÜKLENİYOR -->
+<div class="zb-grid" *ngIf="isLoading">
+  <p-skeleton *ngFor="let s of [1, 2, 3, 4]" width="100%" height="9rem" borderRadius="1rem" />
+</div>
+
+<!-- BOŞ -->
+<div class="zb-empty" *ngIf="!isLoading && !errorMessage && items.length === 0">
+  <span class="zb-empty-icon"><i class="pi pi-share-alt" aria-hidden="true"></i></span>
+  <p class="zb-empty-title">Henüz sosyal medya hesabı eklenmemiş</p>
+  <p class="zb-muted">Instagram, X, LinkedIn gibi hesaplarını ekle; sitede ikon olarak görünsün.</p>
+  <p-button label="İlk hesabı ekle" icon="pi pi-plus" (onClick)="openCreate()" />
+</div>
+
+<!-- KARTLAR -->
+<div class="zb-grid" *ngIf="!isLoading && items.length > 0">
+  <article class="zb-card" *ngFor="let item of items">
+    <div class="zb-card-top">
+      <span class="zb-icon-tile"><img [src]="item.icon" [alt]="item.title"></span>
+      <div class="zb-card-text">
+        <h2 class="zb-card-title">{{ item.title }}</h2>
+        <a [href]="item.url" target="_blank" rel="noopener noreferrer" class="zb-card-link">
+          {{ host(item.url) }} <i class="pi pi-external-link" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+    <div class="zb-card-url" [title]="item.url">{{ item.url }}</div>
+    <div class="zb-card-actions">
+      <p-button label="Düzenle" icon="pi pi-pencil" size="small" [outlined]="true" severity="secondary"
+                styleClass="zb-grow-btn" (onClick)="openEdit(item)" />
+      <p-button icon="pi pi-trash" size="small" [outlined]="true" severity="danger"
+                pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil" (onClick)="deleteItem(item)" />
+    </div>
+  </article>
+</div>
+
+
+<!-- =====================================================================
+     EKLE / DÜZENLE PENCERESİ
+     ===================================================================== -->
+<p-dialog [(visible)]="dialogVisible" [modal]="true" [dismissableMask]="!isSaving"
+          [draggable]="false" [resizable]="false" [closable]="!isSaving"
+          [style]="{ width: '500px' }" [breakpoints]="{ '575px': '95vw' }" styleClass="zb-dialog">
+
+  <ng-template #header>
+    <div class="zb-dialog-head">
+      <span class="zb-dialog-icon"><i class="pi" [class.pi-pencil]="isEditMode" [class.pi-plus]="!isEditMode" aria-hidden="true"></i></span>
+      <div>
+        <h2 class="zb-dialog-title">{{ isEditMode ? 'Hesabı düzenle' : 'Yeni sosyal medya hesabı' }}</h2>
+        <p class="zb-dialog-sub">Ad, adres ve ikon resmi.</p>
+      </div>
+    </div>
+  </ng-template>
+
+  <form #socialForm="ngForm" (ngSubmit)="save(socialForm)" novalidate>
+
+    <div class="zb-dialog-alert" *ngIf="otherErrors.length > 0">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <div><div *ngFor="let e of otherErrors">{{ e.errorMessage }}</div></div>
+    </div>
+
+    <!-- İKON: solda önizleme kutusu, sağda butonlar -->
+    <label class="zb-label">İkon <span class="zb-req" *ngIf="!isEditMode">*</span></label>
+    <input type="file" #iconInput id="iconInput" class="zb-sr-only" [accept]="iconAccept"
+           (change)="onIconSelected($event, iconInput)">
+    <div class="zb-icon-picker">
+      <label for="iconInput" class="zb-icon-box" [class.is-invalid]="(submitted && iconMissing) || iconError || fieldError('Icon')">
+        <img *ngIf="displayIcon" [src]="displayIcon" alt="İkon önizlemesi">
+        <i *ngIf="!displayIcon" class="pi pi-image" aria-hidden="true"></i>
+      </label>
+      <div class="zb-icon-actions">
+        <label for="iconInput" class="zb-file-btn">
+          <i class="pi pi-upload" aria-hidden="true"></i> {{ displayIcon ? 'İkonu değiştir' : 'İkon seç' }}
+        </label>
+        <button type="button" class="zb-link-btn" *ngIf="iconFile" (click)="removeIcon(iconInput)">Seçimi kaldır</button>
+        <small class="zb-hint">Kare, şeffaf arka planlı PNG önerilir · en fazla 5 MB</small>
+      </div>
+    </div>
+    <small class="zb-error" *ngIf="(submitted && iconMissing) || iconError || fieldError('Icon')">
+      {{ iconError || fieldError('Icon') || 'İkon seçmelisin.' }}
+    </small>
+
+    <!-- AD -->
+    <label for="smTitle" class="zb-label zb-mt">Ad <span class="zb-req">*</span></label>
+    <input pInputText id="smTitle" name="title" class="zb-input" maxlength="50" placeholder="Örn: Instagram"
+           [(ngModel)]="form.title" #titleModel="ngModel" required
+           [class.zb-invalid]="(titleModel.invalid && titleModel.touched) || fieldError('Title')">
+    <small class="zb-error" *ngIf="(titleModel.invalid && titleModel.touched) || fieldError('Title')">
+      {{ fieldError('Title') || 'Ad zorunludur.' }}
+    </small>
+
+    <!-- ADRES -->
+    <label for="smUrl" class="zb-label zb-mt">Adres <span class="zb-req">*</span></label>
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-link" />
+      <input pInputText type="url" id="smUrl" name="url" class="zb-input" maxlength="500"
+             placeholder="https://instagram.com/zenblog" [(ngModel)]="form.url" #urlModel="ngModel"
+             required pattern="https?://.+"
+             [class.zb-invalid]="(urlModel.invalid && urlModel.touched) || fieldError('Url')">
+    </p-iconfield>
+    <small class="zb-error" *ngIf="(urlModel.invalid && urlModel.touched) || fieldError('Url')">
+      {{ fieldError('Url') || 'Geçerli bir adres gir (https://...).' }}
+    </small>
+
+    <div class="zb-dialog-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isSaving"
+                (onClick)="dialogVisible = false" />
+      <p-button type="submit" [label]="isEditMode ? 'Güncelle' : 'Kaydet'" icon="pi pi-check"
+                [loading]="isSaving" [disabled]="isSaving" />
+    </div>
+  </form>
+</p-dialog>

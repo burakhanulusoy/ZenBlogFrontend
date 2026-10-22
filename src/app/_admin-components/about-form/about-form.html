@@ -1,0 +1,160 @@
+<!-- =====================================================================
+     HAKKIMIZDA FORMU (yeni + düzenle)
+     Sıra sitedeki düzenle aynı: giriş → maddeler → mozaik görseller
+     ===================================================================== -->
+
+<!-- SAYFA BAŞLIĞI -->
+<div class="zb-page-head">
+  <div class="zb-page-head-text">
+    <span class="zb-page-icon">
+      <i class="pi" [class.pi-pencil]="isEditMode" [class.pi-plus]="!isEditMode" aria-hidden="true"></i>
+    </span>
+    <div>
+      <h1 class="zb-page-title">{{ isEditMode ? 'Hakkımızda içeriğini düzenle' : 'Yeni Hakkımızda içeriği' }}</h1>
+      <p class="zb-page-sub">{{ isEditMode ? 'Resim seçmediğin alanlarda mevcut görsel kalır.' : 'Kaydettiğinde bu içerik sitede yayına girer.' }}</p>
+    </div>
+  </div>
+  <p-button label="Hakkımızda" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+</div>
+
+<!-- DÜZENLEME: YÜKLENİYOR -->
+<p-skeleton *ngIf="isLoading" width="100%" height="28rem" borderRadius="1rem" />
+
+<!-- DÜZENLEME: GETİRİLEMEDİ -->
+<div class="zb-alert" *ngIf="loadError">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ loadError }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadAbout()" />
+</div>
+
+<form #aboutForm="ngForm" (ngSubmit)="save(aboutForm)" novalidate *ngIf="!isLoading && !loadError">
+
+  <!-- Alana bağlı olmayan API hataları -->
+  <div class="zb-alert is-error" *ngIf="generalErrors.length > 0">
+    <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+    <div><div *ngFor="let e of generalErrors">{{ e.errorMessage }}</div></div>
+  </div>
+
+  <!-- ============ 00 · GİRİŞ ============ -->
+  <section class="zb-panel">
+    <header class="zb-section-head">
+      <span class="zb-section-no">00</span>
+      <div>
+        <h2 class="zb-section-title">Giriş</h2>
+        <p class="zb-section-sub">Ziyaretçinin ilk okuyacağı başlık ve italik açıklama.</p>
+      </div>
+    </header>
+
+    <div class="zb-field">
+      <label for="mainTitle" class="zb-label">Ana başlık <span class="zb-req">*</span></label>
+      <input pInputText id="mainTitle" name="mainTitle" class="zb-input zb-input-lg" maxlength="150"
+             placeholder="Örn: Sakin bir alanda düşünceleri paylaşıyoruz"
+             [(ngModel)]="model.mainTitle" #mainTitle="ngModel" required
+             [class.zb-invalid]="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
+      <div class="zb-field-foot">
+        <small class="zb-error" *ngIf="(mainTitle.invalid && mainTitle.touched) || getError('MainTitle')">
+          {{ getError('MainTitle') || 'Ana başlık boş olamaz.' }}
+        </small>
+        <small class="zb-counter">{{ model.mainTitle.length }}/150</small>
+      </div>
+    </div>
+
+    <div class="zb-field">
+      <label for="description" class="zb-label">Açıklama <span class="zb-req">*</span></label>
+      <textarea pTextarea id="description" name="description" rows="5" class="zb-textarea"
+                placeholder="ZenBlog'u, amacını ve hikâyesini anlat"
+                [(ngModel)]="model.description" #description="ngModel" required
+                [class.zb-invalid]="(description.invalid && description.touched) || getError('Description')"></textarea>
+      <small class="zb-error" *ngIf="(description.invalid && description.touched) || getError('Description')">
+        {{ getError('Description') || 'Açıklama boş olamaz.' }}
+      </small>
+    </div>
+  </section>
+
+  <!-- ============ 01 · MADDELER (sitede tikli liste) ============ -->
+  <section class="zb-panel zb-mt-panel">
+    <header class="zb-section-head">
+      <span class="zb-section-no">01</span>
+      <div>
+        <h2 class="zb-section-title">Maddeler</h2>
+        <p class="zb-section-sub">Açıklamanın altında tik işaretiyle sıralanan üç kısa cümle.</p>
+      </div>
+    </header>
+
+    <div class="zb-field" *ngFor="let b of blocks; let i = index">
+      <label [for]="b.titleKey" class="zb-label">{{ i + 1 }}. madde <span class="zb-req">*</span></label>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-check-circle" />
+        <input pInputText [id]="b.titleKey" [name]="b.titleKey" class="zb-input" maxlength="150"
+               [(ngModel)]="model[b.titleKey]" #titleModel="ngModel" required
+               [class.zb-invalid]="(titleModel.invalid && titleModel.touched) || getError(b.titleField)">
+      </p-iconfield>
+      <small class="zb-error" *ngIf="(titleModel.invalid && titleModel.touched) || getError(b.titleField)">
+        {{ getError(b.titleField) || 'Madde boş olamaz.' }}
+      </small>
+    </div>
+  </section>
+
+  <!-- ============ 02 · GÖRSELLER (sitedeki mozaik düzeni) ============
+       1. görsel solda uzun, 2. ve 3. sağda üst üste -->
+  <section class="zb-panel zb-mt-panel">
+    <header class="zb-section-head">
+      <span class="zb-section-no">02</span>
+      <div>
+        <h2 class="zb-section-title">Görseller</h2>
+        <p class="zb-section-sub">Sitede bu düzende görünür: solda uzun görsel, sağda üst üste iki görsel.</p>
+      </div>
+    </header>
+
+    <div class="zb-mosaic-form">
+      <div class="zb-mosaic-cell" *ngFor="let b of blocks; let first = first; let i = index" [class.is-main]="first">
+
+        <!-- Asıl dosya inputu: görünmez; aşağıdaki kutu (label) onu açar -->
+        <input type="file" class="zb-sr-only" [id]="'file-' + b.image" #fileInput [accept]="acceptAttr"
+               (change)="onFileSelected($event, b.image, fileInput)">
+
+        <label class="zb-image-box" [attr.for]="'file-' + b.image" [class.has-image]="previews[b.image]"
+               [class.is-invalid]="fileErrors[b.image] || getError(b.image) || (submitted && isImageMissing(b.image))">
+          <img *ngIf="previews[b.image]" [src]="previews[b.image]" alt="Görsel önizlemesi">
+
+          <span class="zb-image-empty" *ngIf="!previews[b.image]">
+            <i class="pi pi-image" aria-hidden="true"></i>
+            <strong>{{ i === 0 ? 'Büyük görsel' : (i === 1 ? 'Sağ üst görsel' : 'Sağ alt görsel') }}</strong>
+            <small>JPG, PNG veya WEBP · en fazla 5 MB</small>
+          </span>
+
+          <!-- Konum etiketi -->
+          <span class="zb-image-tag">{{ i === 0 ? 'Sol · uzun' : (i === 1 ? 'Sağ üst' : 'Sağ alt') }}</span>
+
+          <span class="zb-image-change" *ngIf="previews[b.image]">
+            <i class="pi pi-camera" aria-hidden="true"></i> Değiştir
+          </span>
+        </label>
+
+        <div class="zb-image-foot">
+          <small class="zb-hint" *ngIf="!files[b.image] && isEditMode">Mevcut görsel</small>
+          <button type="button" class="zb-link-btn" *ngIf="files[b.image]" (click)="removeFile(b.image, fileInput)">
+            Seçimi kaldır
+          </button>
+        </div>
+        <small class="zb-error" *ngIf="fileErrors[b.image] || getError(b.image) || (submitted && isImageMissing(b.image))">
+          {{ fileErrors[b.image] || getError(b.image) || 'Görsel seçmelisin.' }}
+        </small>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KAYDET ÇUBUĞU (altta yapışık) ============ -->
+  <div class="zb-savebar">
+    <span class="zb-savebar-text">
+      <i class="pi" [class.pi-globe]="!isEditMode" [class.pi-info-circle]="isEditMode" aria-hidden="true"></i>
+      {{ isEditMode ? 'Değişiklikler kaydedilince güncellenir.' : 'Kaydedince sitede yayına girer.' }}
+    </span>
+    <div class="zb-savebar-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isSaving" (onClick)="goBack()" />
+      <p-button type="submit" icon="pi pi-check"
+                [label]="isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Değişiklikleri kaydet' : 'Yayınla')"
+                [loading]="isSaving" [disabled]="isSaving" />
+    </div>
+  </div>
+</form>

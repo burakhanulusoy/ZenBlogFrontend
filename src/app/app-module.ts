@@ -72,7 +72,10 @@ import { ErrorPage } from './_main-components/error-page/error-page';
 import { Roles } from './_admin-components/roles/roles';
 import { BecomeWriter } from './_user-components/become-writer/become-writer';
 import { WriterApplications } from './_admin-components/writer-applications/writer-applications';
-import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';   // YENİ: pTextarea
+import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';
+import { SocialMedias } from './_admin-components/social-medias/social-medias';
+import { Abouts } from './_admin-components/abouts/abouts';
+import { AboutForm } from './_admin-components/about-form/about-form';   // YENİ: pTextarea
 
 
 @NgModule({
@@ -115,7 +118,10 @@ import { WriterApplicationDetail } from './_admin-components/writer-application-
     Roles,
     BecomeWriter,
     WriterApplications,
-    WriterApplicationDetail
+    WriterApplicationDetail,
+    SocialMedias,
+    Abouts,
+    AboutForm
   ],
   imports: [
     BrowserModule,

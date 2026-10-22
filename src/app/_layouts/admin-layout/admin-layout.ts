@@ -66,7 +66,16 @@ export class AdminLayout implements OnInit, OnDestroy {
         { label: 'Roller', icon: 'pi pi-shield', link: '/admin/roles' },   // YENİ
         { label: 'Yazarlık başvuruları', icon: 'pi pi-inbox', link: '/admin/writer-applications', badge: 'applications' }   // YENİ
       ]
-    }
+    },
+    // YENİ: ziyaretçi sitesinde görünen içerikler
+    {
+      title: 'Site içeriği',
+      items: [
+        { label: 'Hakkımızda', icon: 'pi pi-info-circle', link: '/admin/abouts' },
+        { label: 'Sosyal medya', icon: 'pi pi-share-alt', link: '/admin/social-medias' }
+      ]
+    },
+
   ];
 
     // ALTTAKİ MENÜ: admin'in kendi içerikleri

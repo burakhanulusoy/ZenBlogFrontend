@@ -1,0 +1,96 @@
+<!-- =====================================================================
+     HAKKIMIZDA (liste)
+     Üstte yayındaki içerik (sitedeki düzenin birebir önizlemesi),
+     altta önceki sürümler.
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">Hakkımızda</h1>
+    <p class="zb-page-sub">Sitede her zaman <strong>en son eklenen</strong> içerik yayında olur. Yeni içerik ekleyince eskisi önceki sürümlere geçer.</p>
+  </div>
+  <p-button label="Yeni içerik" icon="pi pi-plus" (onClick)="goToNew()" />
+</div>
+
+<!-- HATA -->
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- YÜKLENİYOR -->
+<p-skeleton *ngIf="isLoading" width="100%" height="28rem" borderRadius="1.25rem" />
+
+<!-- BOŞ -->
+<div class="zb-empty" *ngIf="!isLoading && !errorMessage && !published">
+  <span class="zb-empty-icon"><i class="pi pi-info-circle" aria-hidden="true"></i></span>
+  <p class="zb-empty-title">Henüz Hakkımızda içeriği yok</p>
+  <p class="zb-muted">İlk içeriği ekle; sitenin Hakkımızda sayfasında hemen yayına girsin.</p>
+  <p-button label="İlk içeriği ekle" icon="pi pi-plus" (onClick)="goToNew()" />
+</div>
+
+<!-- ============ YAYINDAKİ İÇERİK ============ -->
+<section class="zb-live" *ngIf="!isLoading && published">
+
+  <!-- Üst çubuk: durum + tarih + işlemler -->
+  <header class="zb-live-bar">
+    <span class="zb-live-badge"><span class="zb-live-dot" aria-hidden="true"></span> Yayında</span>
+    <span class="zb-muted zb-small">{{ published.createdAt | date:'dd.MM.yyyy HH:mm' }} tarihinde eklendi</span>
+    <div class="zb-live-actions">
+      <p-button label="Düzenle" icon="pi pi-pencil" size="small" [outlined]="true" (onClick)="edit(published)" />
+      <p-button icon="pi pi-trash" size="small" [outlined]="true" severity="danger"
+                pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil" (onClick)="deleteAbout(published)" />
+    </div>
+  </header>
+
+  <!-- Sitedeki düzen:
+       Solda: etiket + başlık + italik açıklama + 3 tikli madde
+       Sağda: mozaik (solda uzun görsel, sağda üst üste iki görsel) -->
+  <div class="zb-live-body">
+    <div class="zb-about">
+
+      <div class="zb-about-text">
+        <span class="zb-eyebrow">Biz kimiz</span>
+        <h2 class="zb-about-title">{{ published.mainTitle }}</h2>
+        <p class="zb-about-desc">{{ published.description }}</p>
+
+        <ul class="zb-checks">
+          <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ published.title1 }}</span></li>
+          <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ published.title2 }}</span></li>
+          <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ published.title3 }}</span></li>
+        </ul>
+      </div>
+
+      <div class="zb-mosaic">
+        <img class="zb-mosaic-main" [src]="published.image1" alt="" loading="lazy">
+        <img [src]="published.image2" alt="" loading="lazy">
+        <img [src]="published.image3" alt="" loading="lazy">
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÖNCEKİ SÜRÜMLER ============ -->
+<section class="zb-history" *ngIf="!isLoading && history.length > 0">
+  <h2 class="zb-history-title">
+    <i class="pi pi-history" aria-hidden="true"></i> Önceki sürümler
+    <span class="zb-history-count">{{ history.length }}</span>
+  </h2>
+
+  <ul class="zb-history-list">
+    <li *ngFor="let about of history" class="zb-history-item">
+      <img [src]="about.image1" alt="" class="zb-history-thumb" loading="lazy">
+      <div class="zb-history-text">
+        <span class="zb-history-name">{{ about.mainTitle }}</span>
+        <span class="zb-muted zb-small">{{ about.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+      <div class="zb-history-actions">
+        <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary"
+                  pTooltip="Düzenle" tooltipPosition="top" ariaLabel="Düzenle" (onClick)="edit(about)" />
+        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                  pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil" (onClick)="deleteAbout(about)" />
+      </div>
+    </li>
+  </ul>
+</section>

@@ -35,6 +35,9 @@ import { Roles } from './_admin-components/roles/roles';
 import { WriterApplications } from './_admin-components/writer-applications/writer-applications';
 import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';
 import { BecomeWriter } from './_user-components/become-writer/become-writer';
+import { Abouts } from './_admin-components/abouts/abouts';
+import { AboutForm } from './_admin-components/about-form/about-form';
+import { SocialMedias } from './_admin-components/social-medias/social-medias';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -87,7 +90,12 @@ const routes: Routes = [
       { path: 'users/:id', component: UserDetail, data: { title: 'Kullanıcı detayı' } },
             { path: 'roles', component: Roles, data: { title: 'Roller' } },   // YENİ
       { path: 'writer-applications', component: WriterApplications, data: { title: 'Yazarlık başvuruları' } },        // YENİ
-      { path: 'writer-applications/:id', component: WriterApplicationDetail, data: { title: 'Başvuru detayı' } },     // YENİ
+      { path: 'writer-applications/:id', component: WriterApplicationDetail, data: { title: 'Başvuru detayı' } },
+            // SİTE İÇERİĞİ (YENİ)
+      { path: 'abouts', component: Abouts, data: { title: 'Hakkımızda' } },
+      { path: 'abouts/new', component: AboutForm, data: { title: 'Yeni Hakkımızda içeriği' } },
+      { path: 'abouts/edit/:id', component: AboutForm, data: { title: 'Hakkımızda düzenle' } },
+      { path: 'social-medias', component: SocialMedias, data: { title: 'Sosyal medya' } },    // YENİ
       // SIZE ÖZEL (ortak sayfalar)
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
