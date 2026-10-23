@@ -1,0 +1,210 @@
+/* =====================================================================
+   EKİP
+   ===================================================================== */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--zb-ink);
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.zb-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background-color: var(--p-primary-600);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.zb-page-sub { margin: 0.3rem 0 0; color: var(--zb-muted); }
+.zb-muted { margin: 0; color: var(--zb-muted); }
+.zb-small { font-size: 0.82rem; }
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span { flex-grow: 1; }
+
+/* BOŞ */
+.zb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1.5rem;
+  border: 1px dashed var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+  text-align: center;
+}
+
+.zb-empty-icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 1rem;
+  background-color: var(--p-primary-50);
+  color: var(--p-primary-700);
+  font-size: 1.3rem;
+}
+
+.zb-empty-title { margin: 0; color: var(--zb-ink); font-weight: 800; }
+
+/* KART IZGARASI */
+.zb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ÜYE KARTI */
+.zb-member {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--zb-line);
+  border-radius: 1.1rem;
+  background-color: var(--zb-surface);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.zb-member:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px -24px rgba(12, 20, 16, 0.45);
+}
+
+.zb-member-photo {
+  position: relative;
+  aspect-ratio: 4 / 4.2;
+  overflow: hidden;
+  background-color: var(--zb-hover);
+}
+
+.zb-member-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s;
+}
+
+.zb-member:hover .zb-member-photo img { transform: scale(1.04); }
+
+/* Sitedeki görünme sırası */
+.zb-member-order {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.92);
+  color: var(--zb-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.zb-member-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 1.1rem 1.2rem 0.5rem;
+  text-align: center;
+}
+
+.zb-member-name {
+  margin: 0;
+  color: var(--zb-ink);
+  font-family: var(--zb-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.zb-member-title {
+  margin: 0.15rem 0 0.6rem;
+  color: var(--p-primary-700);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.zb-member-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 0.85rem;
+  color: var(--zb-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.zb-member-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-bottom: 0.5rem;
+}
+
+.zb-social {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--zb-line);
+  border-radius: 50%;
+  color: var(--zb-ink-soft);
+  text-decoration: none;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.zb-social:hover {
+  border-color: var(--p-primary-600);
+  background-color: var(--p-primary-600);
+  color: #fff;
+}
+
+.zb-member-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.2rem 1.1rem;
+  border-top: 1px solid var(--zb-line);
+}
+
+.zb-member-actions p-button:first-child { flex-grow: 1; }
+:host ::ng-deep .zb-grow-btn { width: 100%; justify-content: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .zb-member,
+  .zb-member-photo img { transition: none; }
+}

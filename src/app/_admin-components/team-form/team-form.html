@@ -1,0 +1,211 @@
+<!-- =====================================================================
+     EKİP ÜYESİ FORMU
+     Solda: fotoğraf + bilgiler · Sağda: canlı önizleme + sosyal hesaplar
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div class="zb-page-head-text">
+    <span class="zb-page-icon"><i class="pi" [class.pi-pencil]="isEditMode" [class.pi-user-plus]="!isEditMode" aria-hidden="true"></i></span>
+    <div>
+      <h1 class="zb-page-title">{{ isEditMode ? 'Ekip üyesini düzenle' : 'Yeni ekip üyesi' }}</h1>
+      <p class="zb-page-sub">{{ isEditMode ? 'Bilgileri güncelle, sosyal hesaplarını yönet.' : 'Üyeyi kaydettikten sonra sosyal hesaplarını ekleyebilirsin.' }}</p>
+    </div>
+  </div>
+  <p-button label="Ekip" icon="pi pi-arrow-left" [text]="true" severity="secondary" (onClick)="goBack()" />
+</div>
+
+<p-skeleton *ngIf="isLoading" width="100%" height="26rem" borderRadius="1rem" />
+
+<div class="zb-alert" *ngIf="loadError">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ loadError }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="loadTeam()" />
+</div>
+
+<div class="zb-layout" *ngIf="!isLoading && !loadError">
+
+  <!-- ===================== SOL: ÜYE BİLGİLERİ ===================== -->
+  <form #teamForm="ngForm" (ngSubmit)="save(teamForm)" novalidate class="zb-panel">
+
+    <div class="zb-alert is-error" *ngIf="generalErrors.length > 0">
+      <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+      <div><div *ngFor="let e of generalErrors">{{ e.errorMessage }}</div></div>
+    </div>
+
+    <!-- FOTOĞRAF -->
+    <div class="zb-photo-row">
+      <input type="file" #imageInput id="teamImage" class="zb-sr-only" [accept]="imageAccept"
+             (change)="onImageSelected($event, imageInput)">
+      <label for="teamImage" class="zb-photo" [class.is-invalid]="(submitted && imageMissing) || imageError || fieldError('Image')">
+        <img *ngIf="displayImage" [src]="displayImage" alt="Fotoğraf önizlemesi">
+        <span *ngIf="!displayImage" class="zb-photo-empty"><i class="pi pi-camera" aria-hidden="true"></i></span>
+      </label>
+      <div class="zb-photo-text">
+        <span class="zb-label">Fotoğraf <span class="zb-req" *ngIf="!isEditMode">*</span></span>
+        <label for="teamImage" class="zb-file-btn">
+          <i class="pi pi-upload" aria-hidden="true"></i> {{ displayImage ? 'Fotoğrafı değiştir' : 'Fotoğraf seç' }}
+        </label>
+        <button type="button" class="zb-link-btn" *ngIf="imageFile" (click)="removeImageSelection(imageInput)">Seçimi kaldır</button>
+        <small class="zb-hint">Dikey ya da kare, yüzü net bir fotoğraf · en fazla 5 MB</small>
+        <small class="zb-error" *ngIf="(submitted && imageMissing) || imageError || fieldError('Image')">
+          {{ imageError || fieldError('Image') || 'Fotoğraf seçmelisin.' }}
+        </small>
+      </div>
+    </div>
+
+    <!-- AD + SOYAD -->
+    <div class="zb-row-2">
+      <div class="zb-field">
+        <label for="name" class="zb-label">Ad <span class="zb-req">*</span></label>
+        <input pInputText id="name" name="name" class="zb-input" maxlength="50"
+               [(ngModel)]="model.name" #nameModel="ngModel" required
+               [class.zb-invalid]="(nameModel.invalid && nameModel.touched) || fieldError('Name')">
+        <small class="zb-error" *ngIf="(nameModel.invalid && nameModel.touched) || fieldError('Name')">
+          {{ fieldError('Name') || 'Ad zorunludur.' }}
+        </small>
+      </div>
+      <div class="zb-field">
+        <label for="surname" class="zb-label">Soyad <span class="zb-req">*</span></label>
+        <input pInputText id="surname" name="surname" class="zb-input" maxlength="50"
+               [(ngModel)]="model.surname" #surnameModel="ngModel" required
+               [class.zb-invalid]="(surnameModel.invalid && surnameModel.touched) || fieldError('Surname')">
+        <small class="zb-error" *ngIf="(surnameModel.invalid && surnameModel.touched) || fieldError('Surname')">
+          {{ fieldError('Surname') || 'Soyad zorunludur.' }}
+        </small>
+      </div>
+    </div>
+
+    <!-- UNVAN -->
+    <div class="zb-field">
+      <label for="title" class="zb-label">Unvan <span class="zb-req">*</span></label>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-briefcase" />
+        <input pInputText id="title" name="title" class="zb-input" maxlength="100" placeholder="Örn: Kurucu, Editör"
+               [(ngModel)]="model.title" #titleModel="ngModel" required
+               [class.zb-invalid]="(titleModel.invalid && titleModel.touched) || fieldError('Title')">
+      </p-iconfield>
+      <small class="zb-error" *ngIf="(titleModel.invalid && titleModel.touched) || fieldError('Title')">
+        {{ fieldError('Title') || 'Unvan zorunludur.' }}
+      </small>
+    </div>
+
+    <!-- AÇIKLAMA -->
+    <div class="zb-field">
+      <label for="description" class="zb-label">Açıklama <span class="zb-req">*</span></label>
+      <textarea pTextarea id="description" name="description" rows="5" class="zb-textarea"
+                [attr.maxlength]="maxDescription" placeholder="Üyeyi kısaca tanıt"
+                [(ngModel)]="model.description" #descModel="ngModel" required
+                [class.zb-invalid]="(descModel.invalid && descModel.touched) || fieldError('Description')"></textarea>
+      <div class="zb-field-foot">
+        <small class="zb-error" *ngIf="(descModel.invalid && descModel.touched) || fieldError('Description')">
+          {{ fieldError('Description') || 'Açıklama zorunludur.' }}
+        </small>
+        <small class="zb-counter">{{ model.description.length }}/{{ maxDescription }}</small>
+      </div>
+    </div>
+
+    <div class="zb-form-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true" [disabled]="isSaving" (onClick)="goBack()" />
+      <p-button type="submit" icon="pi pi-check" [loading]="isSaving" [disabled]="isSaving"
+                [label]="isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Değişiklikleri kaydet' : 'Kaydet ve devam et')" />
+    </div>
+  </form>
+
+  <!-- ===================== SAĞ: ÖNİZLEME + SOSYAL HESAPLAR ===================== -->
+  <aside class="zb-side-col">
+
+    <!-- CANLI ÖNİZLEME: yazdıkça güncellenir -->
+    <section class="zb-preview">
+      <span class="zb-preview-label"><i class="pi pi-eye" aria-hidden="true"></i> Sitede böyle görünecek</span>
+      <div class="zb-preview-card">
+        <div class="zb-preview-photo">
+          <img *ngIf="displayImage" [src]="displayImage" alt="">
+          <i *ngIf="!displayImage" class="pi pi-user" aria-hidden="true"></i>
+        </div>
+        <div class="zb-preview-body">
+          <span class="zb-preview-name">{{ previewName }}</span>
+          <span class="zb-preview-title">{{ model.title || 'Unvan' }}</span>
+          <div class="zb-preview-socials">
+            <span *ngFor="let s of socials" class="zb-preview-social"><i [class]="s.icon" aria-hidden="true"></i></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOSYAL HESAPLAR -->
+    <section class="zb-panel">
+      <h2 class="zb-panel-title">Sosyal hesaplar</h2>
+
+      <!-- Yeni üyede: önce kaydet -->
+      <div class="zb-locked" *ngIf="!isEditMode">
+        <i class="pi pi-lock" aria-hidden="true"></i>
+        <span>Sosyal hesap eklemek için önce üyeyi kaydet.</span>
+      </div>
+
+      <ng-container *ngIf="isEditMode">
+
+        <!-- MEVCUT HESAPLAR -->
+        <p class="zb-muted zb-small" *ngIf="socials.length === 0">Henüz sosyal hesap eklenmemiş.</p>
+
+        <ul class="zb-socials">
+          <li *ngFor="let s of socials" class="zb-social-row">
+
+            <!-- Normal görünüm -->
+            <ng-container *ngIf="editingSocialId !== s.id">
+              <span class="zb-social-icon"><i [class]="s.icon" aria-hidden="true"></i></span>
+              <span class="zb-social-text">
+                <strong>{{ platformLabel(s.socialMediaName) }}</strong>
+                <a [href]="s.url" target="_blank" rel="noopener noreferrer">{{ s.url }}</a>
+              </span>
+              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" size="small"
+                        ariaLabel="Düzenle" (onClick)="startEdit(s)" />
+              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" size="small"
+                        ariaLabel="Sil" (onClick)="deleteSocial(s)" />
+            </ng-container>
+
+            <!-- Düzenleme görünümü -->
+            <div class="zb-social-edit" *ngIf="editingSocialId === s.id">
+              <p-select [options]="platformsForEdit(s)" optionLabel="name" optionValue="name"
+                        [(ngModel)]="editSocial.socialMediaName" [style]="{ width: '100%' }" appendTo="body">
+                <ng-template #selectedItem let-p>
+                  <span class="zb-opt" *ngIf="p"><i [class]="p.icon" aria-hidden="true"></i> {{ platformLabel(p.name) }}</span>
+                </ng-template>
+                <ng-template #item let-p>
+                  <span class="zb-opt"><i [class]="p.icon" aria-hidden="true"></i> {{ platformLabel(p.name) }}</span>
+                </ng-template>
+              </p-select>
+              <input pInputText type="url" class="zb-input" [(ngModel)]="editSocial.url" placeholder="https://...">
+              <small class="zb-error" *ngIf="editSocialError">{{ editSocialError }}</small>
+              <div class="zb-social-edit-actions">
+                <p-button label="Vazgeç" size="small" [text]="true" severity="secondary" (onClick)="cancelEdit()" />
+                <p-button label="Kaydet" size="small" icon="pi pi-check" [loading]="isSavingSocial" (onClick)="saveEdit(s)" />
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- YENİ HESAP EKLE -->
+        <div class="zb-add" *ngIf="availablePlatforms.length > 0">
+          <span class="zb-add-title"><i class="pi pi-plus-circle" aria-hidden="true"></i> Hesap ekle</span>
+          <p-select [options]="availablePlatforms" optionLabel="name" optionValue="name" placeholder="Platform seç"
+                    [(ngModel)]="newSocial.socialMediaName" [style]="{ width: '100%' }" appendTo="body">
+            <ng-template #selectedItem let-p>
+              <span class="zb-opt" *ngIf="p"><i [class]="p.icon" aria-hidden="true"></i> {{ platformLabel(p.name) }}</span>
+            </ng-template>
+            <ng-template #item let-p>
+              <span class="zb-opt"><i [class]="p.icon" aria-hidden="true"></i> {{ platformLabel(p.name) }}</span>
+            </ng-template>
+          </p-select>
+          <input pInputText type="url" class="zb-input" [(ngModel)]="newSocial.url" placeholder="https://...">
+          <small class="zb-error" *ngIf="newSocialError">{{ newSocialError }}</small>
+          <p-button label="Ekle" icon="pi pi-plus" size="small" styleClass="zb-full-btn"
+                    [loading]="isAddingSocial" [disabled]="isAddingSocial" (onClick)="addSocial()" />
+        </div>
+
+        <p class="zb-muted zb-small" *ngIf="availablePlatforms.length === 0 && platforms.length > 0">
+          Bütün platformlar eklendi.
+        </p>
+      </ng-container>
+    </section>
+
+  </aside>
+</div>

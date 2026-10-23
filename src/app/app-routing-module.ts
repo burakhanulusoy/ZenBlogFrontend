@@ -38,6 +38,8 @@ import { BecomeWriter } from './_user-components/become-writer/become-writer';
 import { Abouts } from './_admin-components/abouts/abouts';
 import { AboutForm } from './_admin-components/about-form/about-form';
 import { SocialMedias } from './_admin-components/social-medias/social-medias';
+import { Teams } from './_admin-components/teams/teams';
+import { TeamForm } from './_admin-components/team-form/team-form';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -96,6 +98,9 @@ const routes: Routes = [
       { path: 'abouts/new', component: AboutForm, data: { title: 'Yeni Hakkımızda içeriği' } },
       { path: 'abouts/edit/:id', component: AboutForm, data: { title: 'Hakkımızda düzenle' } },
       { path: 'social-medias', component: SocialMedias, data: { title: 'Sosyal medya' } },    // YENİ
+            { path: 'teams', component: Teams, data: { title: 'Ekip' } },                          // YENİ
+      { path: 'teams/new', component: TeamForm, data: { title: 'Yeni ekip üyesi' } },        // YENİ
+      { path: 'teams/edit/:id', component: TeamForm, data: { title: 'Ekip üyesini düzenle' } }, // YENİ
       // SIZE ÖZEL (ortak sayfalar)
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },

@@ -75,7 +75,9 @@ import { WriterApplications } from './_admin-components/writer-applications/writ
 import { WriterApplicationDetail } from './_admin-components/writer-application-detail/writer-application-detail';
 import { SocialMedias } from './_admin-components/social-medias/social-medias';
 import { Abouts } from './_admin-components/abouts/abouts';
-import { AboutForm } from './_admin-components/about-form/about-form';   // YENİ: pTextarea
+import { AboutForm } from './_admin-components/about-form/about-form';
+import { Teams } from './_admin-components/teams/teams';
+import { TeamForm } from './_admin-components/team-form/team-form';   // YENİ: pTextarea
 
 
 @NgModule({
@@ -121,7 +123,9 @@ import { AboutForm } from './_admin-components/about-form/about-form';   // YEN�
     WriterApplicationDetail,
     SocialMedias,
     Abouts,
-    AboutForm
+    AboutForm,
+    Teams,
+    TeamForm
   ],
   imports: [
     BrowserModule,

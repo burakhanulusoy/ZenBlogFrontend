@@ -72,7 +72,8 @@ export class AdminLayout implements OnInit, OnDestroy {
       title: 'Site içeriği',
       items: [
         { label: 'Hakkımızda', icon: 'pi pi-info-circle', link: '/admin/abouts' },
-        { label: 'Sosyal medya', icon: 'pi pi-share-alt', link: '/admin/social-medias' }
+        { label: 'Sosyal medya', icon: 'pi pi-share-alt', link: '/admin/social-medias' },
+      { label: 'Ekip', icon: 'pi pi-id-card', link: '/admin/teams' }   // YENİ
       ]
     },
 

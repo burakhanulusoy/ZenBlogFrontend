@@ -1,0 +1,66 @@
+<!-- =====================================================================
+     EKİP
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Ekip
+      <span class="zb-count" *ngIf="!isLoading">{{ teams.length }}</span>
+    </h1>
+    <p class="zb-page-sub">Hakkımızda sayfasının ekip bölümünde, eklenme sırasıyla görünür.</p>
+  </div>
+  <p-button label="Yeni üye" icon="pi pi-plus" (onClick)="goToNew()" />
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="zb-grid" *ngIf="isLoading">
+  <p-skeleton *ngFor="let s of [1, 2, 3, 4]" width="100%" height="22rem" borderRadius="1rem" />
+</div>
+
+<!-- BOŞ -->
+<div class="zb-empty" *ngIf="!isLoading && !errorMessage && teams.length === 0">
+  <span class="zb-empty-icon"><i class="pi pi-id-card" aria-hidden="true"></i></span>
+  <p class="zb-empty-title">Henüz ekip üyesi eklenmemiş</p>
+  <p class="zb-muted">Ekibini tanıt; ziyaretçiler sitenin arkasındaki insanları görsün.</p>
+  <p-button label="İlk üyeyi ekle" icon="pi pi-plus" (onClick)="goToNew()" />
+</div>
+
+<!-- KARTLAR (sitedeki ekip kartı tasarımı) -->
+<div class="zb-grid" *ngIf="!isLoading && teams.length > 0">
+  <article class="zb-member" *ngFor="let team of teams; let i = index">
+
+    <div class="zb-member-photo">
+      <img [src]="team.image" [alt]="team.name + ' ' + team.surname" loading="lazy">
+      <span class="zb-member-order">{{ i + 1 }}</span>
+    </div>
+
+    <div class="zb-member-body">
+      <h2 class="zb-member-name">{{ team.name }} {{ team.surname }}</h2>
+      <span class="zb-member-title">{{ team.title }}</span>
+      <p class="zb-member-desc">{{ team.description }}</p>
+
+      <!-- Sosyal ikonlar -->
+      <div class="zb-member-socials">
+        <a *ngFor="let s of team.teamSocialMedias" [href]="s.url" target="_blank" rel="noopener noreferrer"
+           class="zb-social" [pTooltip]="platformLabel(s.socialMediaName)" tooltipPosition="top"
+           [attr.aria-label]="platformLabel(s.socialMediaName)">
+          <i [class]="s.icon" aria-hidden="true"></i>
+        </a>
+        <span class="zb-muted zb-small" *ngIf="team.teamSocialMedias.length === 0">Sosyal hesap yok</span>
+      </div>
+    </div>
+
+    <div class="zb-member-actions">
+      <p-button label="Düzenle" icon="pi pi-pencil" size="small" [outlined]="true" severity="secondary"
+                styleClass="zb-grow-btn" (onClick)="edit(team)" />
+      <p-button icon="pi pi-trash" size="small" [outlined]="true" severity="danger"
+                pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil" (onClick)="deleteTeam(team)" />
+    </div>
+  </article>
+</div>
