@@ -1,55 +1,180 @@
-<nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
-  <div class="container">
+<!-- =====================================================================
+     ZİYARETÇİ SİTESİ ÇERÇEVESİ
+     zb-site: sitenin bütün stilleri sadece bu kutunun içinde geçerli
+     İkonlar: PrimeIcons (pi pi-...), panellerle aynı ikon seti
+     ===================================================================== -->
+<div class="zb-site">
 
-    <a class="navbar-brand fw-bold" routerLink="/">
-      <i class="fa fa-pencil-square-o text-primary me-1" aria-hidden="true"></i> ZenBlog
-    </a>
+  <!-- Klavye kullanıcıları için "içeriğe atla" (Tab'a basınca görünür) -->
+  <a href="#site-main" class="skip-link">İçeriğe atla</a>
 
-    <!-- Mobilde menüyü açıp kapatan buton (Bootstrap 5: data-bs-...) -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
-            aria-controls="mainNavbar" aria-expanded="false" aria-label="Menüyü aç/kapat">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <!-- ============================== HEADER ============================== -->
+  <header class="site-header" [class.is-scrolled]="scrolled">
+    <div class="site-container header-inner">
 
-    <div class="collapse navbar-collapse" id="mainNavbar">
+      <!-- Logo -->
+      <a routerLink="/" class="logo" aria-label="ZenBlog ana sayfa">ZenBlog</a>
 
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <!-- exact: true → sadece tam olarak "/" adresindeyken "aktif" görünsün -->
-          <a class="nav-link" routerLink="/" routerLinkActive="active"
-             [routerLinkActiveOptions]="{ exact: true }">Ana Sayfa</a>
-        </li>
-      </ul>
+      <!-- MENÜ (geniş ekran) -->
+      <nav class="nav" aria-label="Ana menü">
+        <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Ana sayfa</a>
+        <a routerLink="/about" routerLinkActive="is-active">Hakkımızda</a>
 
-      <div class="d-flex gap-2">
-
-        <!-- Giriş yapılmamışsa: Giriş Yap + Kayıt Ol
-             else loggedInMenu: giriş yapılmışsa aşağıdaki ng-template gösterilir -->
-        <ng-container *ngIf="!authService.loggedIn(); else loggedInMenu">
-          <a routerLink="/login" class="btn btn-outline-primary">
-            <i class="fa fa-sign-in me-1" aria-hidden="true"></i> Giriş Yap
-          </a>
-          <a routerLink="/register" class="btn btn-primary">
-            <i class="fa fa-user-plus me-1" aria-hidden="true"></i> Kayıt Ol
-          </a>
-        </ng-container>
-
-        <!-- Giriş yapılmışsa: Panel (sadece Admin) + Çıkış -->
-        <ng-template #loggedInMenu>
-          <!-- DEĞİŞTİ: *ngIf ile sadece Admin'e gösteriliyor -->
-          <a [routerLink]="authService.getHomeRoute()" class="btn btn-outline-primary"
-   *ngIf="authService.hasAnyRole(['Admin', 'Writer'])">
-  <i class="fa fa-tachometer me-1" aria-hidden="true"></i> Panel
-</a>
-          <button type="button" class="btn btn-outline-danger" (click)="authService.logout()">
-            <i class="fa fa-sign-out me-1" aria-hidden="true"></i> Çıkış
+        <!-- Kategoriler: üzerine gelince ya da klavyeyle odaklanınca açılır -->
+        <div class="nav-dropdown">
+          <button type="button" class="nav-dropdown-toggle" aria-haspopup="true">
+            Kategoriler <i class="pi pi-chevron-down" aria-hidden="true"></i>
           </button>
-        </ng-template>
+          <div class="nav-dropdown-menu">
+            <a *ngFor="let c of categories" [routerLink]="['/category', c.id]" routerLinkActive="is-active">{{ c.name }}</a>
+            <span class="nav-dropdown-empty" *ngIf="categories.length === 0">Henüz kategori yok</span>
+          </div>
+        </div>
 
+        <a routerLink="/contact" routerLinkActive="is-active">İletişim</a>
+      </nav>
+
+      <!-- SAĞ: sosyal ikonlar + hesap -->
+      <div class="header-right">
+        <div class="header-socials">
+          <a *ngFor="let s of socials" [href]="s.url" target="_blank" rel="noopener noreferrer"
+             [attr.aria-label]="s.title" [title]="s.title">
+            <img [src]="s.icon" alt="">
+          </a>
+        </div>
+
+        <!-- Giriş yapmamış -->
+        <div class="header-auth" *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="auth-link">Giriş yap</a>
+          <a routerLink="/register" class="auth-btn">Kayıt ol</a>
+        </div>
+
+        <!-- Giriş yapmış: fotoğraf + Panelim -->
+        <a *ngIf="isLoggedIn" [routerLink]="panelRoute" class="header-user" title="Paneline git">
+          <span class="header-avatar">
+            <img *ngIf="userImage" [src]="userImage" alt="">
+            <ng-container *ngIf="!userImage">{{ initials }}</ng-container>
+          </span>
+          <span class="header-user-text">
+            <span class="header-user-name">{{ firstName }}</span>
+            <span class="header-user-sub">Panelim</span>
+          </span>
+        </a>
+
+        <!-- Mobil menü butonu -->
+        <button type="button" class="menu-toggle" (click)="toggleMobile()"
+                [attr.aria-expanded]="mobileOpen" aria-controls="mobile-menu" aria-label="Menüyü aç/kapat">
+          <i class="pi" [class.pi-bars]="!mobileOpen" [class.pi-times]="mobileOpen" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================== MOBİL MENÜ ============================== -->
+  <div class="mobile-backdrop" [class.is-open]="mobileOpen" (click)="closeMobile()" aria-hidden="true"></div>
+
+  <aside id="mobile-menu" class="mobile-menu" [class.is-open]="mobileOpen" [attr.aria-hidden]="!mobileOpen">
+    <nav class="mobile-nav" aria-label="Mobil menü">
+      <a routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">Ana sayfa</a>
+      <a routerLink="/about" routerLinkActive="is-active">Hakkımızda</a>
+
+      <button type="button" class="mobile-cat-toggle" (click)="mobileCategoriesOpen = !mobileCategoriesOpen"
+              [attr.aria-expanded]="mobileCategoriesOpen">
+        Kategoriler
+        <i class="pi" [class.pi-chevron-down]="!mobileCategoriesOpen" [class.pi-chevron-up]="mobileCategoriesOpen" aria-hidden="true"></i>
+      </button>
+      <div class="mobile-cats" *ngIf="mobileCategoriesOpen">
+        <a *ngFor="let c of categories" [routerLink]="['/category', c.id]">{{ c.name }}</a>
+      </div>
+
+      <a routerLink="/contact" routerLinkActive="is-active">İletişim</a>
+    </nav>
+
+    <div class="mobile-auth">
+      <ng-container *ngIf="!isLoggedIn">
+        <a routerLink="/login" class="auth-link">Giriş yap</a>
+        <a routerLink="/register" class="auth-btn">Kayıt ol</a>
+      </ng-container>
+      <ng-container *ngIf="isLoggedIn">
+        <a [routerLink]="panelRoute" class="auth-btn">Panelime git</a>
+        <button type="button" class="auth-link" (click)="logout()">Çıkış yap</button>
+      </ng-container>
+    </div>
+
+    <div class="mobile-socials" *ngIf="socials.length > 0">
+      <a *ngFor="let s of socials" [href]="s.url" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.title">
+        <img [src]="s.icon" alt="">
+      </a>
+    </div>
+  </aside>
+
+  <!-- ============================== İÇERİK ============================== -->
+  <main id="site-main" class="site-main">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- ============================== FOOTER ============================== -->
+  <footer class="site-footer">
+    <div class="site-container footer-grid">
+
+      <!-- Marka + iletişim -->
+      <div class="footer-brand">
+        <a routerLink="/" class="logo logo-light">ZenBlog</a>
+        <p class="footer-tagline">Sakin bir alanda düşünceleri, hikâyeleri ve deneyimleri paylaşıyoruz.</p>
+
+        <ul class="footer-contact" *ngIf="contact">
+          <li><i class="pi pi-map-marker" aria-hidden="true"></i><span>{{ contact.address }}</span></li>
+          <li><i class="pi pi-phone" aria-hidden="true"></i><a [href]="'tel:' + contact.phoneNumber">{{ contact.phoneNumber }}</a></li>
+          <li><i class="pi pi-envelope" aria-hidden="true"></i><a [href]="'mailto:' + contact.email">{{ contact.email }}</a></li>
+        </ul>
+
+        <div class="footer-socials" *ngIf="socials.length > 0">
+          <a *ngFor="let s of socials" [href]="s.url" target="_blank" rel="noopener noreferrer"
+             [attr.aria-label]="s.title" [title]="s.title">
+            <img [src]="s.icon" alt="">
+          </a>
+        </div>
+      </div>
+
+      <!-- Bağlantılar -->
+      <div class="footer-col">
+        <h4>Keşfet</h4>
+        <ul>
+          <li><a routerLink="/">Ana sayfa</a></li>
+          <li><a routerLink="/about">Hakkımızda</a></li>
+          <li><a routerLink="/contact">İletişim</a></li>
+          <li *ngIf="!isLoggedIn"><a routerLink="/register">Kayıt ol</a></li>
+          <li *ngIf="isLoggedIn"><a [routerLink]="panelRoute">Panelim</a></li>
+        </ul>
+      </div>
+
+      <!-- Kategoriler (en fazla 8) -->
+      <div class="footer-col">
+        <h4>Kategoriler</h4>
+        <ul>
+          <li *ngFor="let c of categories.slice(0, 8)"><a [routerLink]="['/category', c.id]">{{ c.name }}</a></li>
+        </ul>
+      </div>
+
+      <!-- Yazar ol çağrısı -->
+      <div class="footer-col footer-cta">
+        <h4>Sen de yaz</h4>
+        <p>Fikirlerini ZenBlog okurlarıyla paylaşmak ister misin?</p>
+        <a [routerLink]="isLoggedIn ? panelRoute : '/register'" class="footer-cta-btn">
+          {{ isLoggedIn ? 'Paneline git' : 'Hemen kayıt ol' }} <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        </a>
       </div>
     </div>
 
-  </div>
-</nav>
+    <div class="site-container footer-bottom">
+      <span>© {{ year }} <strong>ZenBlog</strong>. Tüm hakları saklıdır.</span>
+      <span class="footer-credit">Tasarım: BootstrapMade şablonu esinlenilerek</span>
+    </div>
+  </footer>
 
-<router-outlet></router-outlet>
+  <!-- ============================== YUKARI ÇIK ============================== -->
+  <button type="button" class="scroll-top" [class.is-visible]="showScrollTop" (click)="scrollToTop()" aria-label="Sayfanın başına dön">
+    <i class="pi pi-arrow-up" aria-hidden="true"></i>
+  </button>
+
+</div>

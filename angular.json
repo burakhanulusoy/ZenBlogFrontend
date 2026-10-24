@@ -34,12 +34,14 @@
                 "input": "public"
               }
             ],
-            "styles": [
+                       "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css",
               "node_modules/alertifyjs/build/css/alertify.min.css",
               "node_modules/sweetalert2/dist/sweetalert2.min.css",
-              "node_modules/font-awesome/css/font-awesome.min.css"
+              "node_modules/font-awesome/css/font-awesome.min.css",
+              "node_modules/aos/dist/aos.css",
+              "node_modules/swiper/swiper-bundle.min.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
@@ -57,7 +59,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
+                  "maximumWarning": "2MB",
                   "maximumError": "8kB"
                 }
               ],

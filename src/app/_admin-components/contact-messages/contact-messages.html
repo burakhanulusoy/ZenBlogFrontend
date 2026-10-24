@@ -1,0 +1,134 @@
+<!-- =====================================================================
+     GELEN MESAJLAR (e-posta programı düzeni)
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">
+      Gelen mesajlar
+      <span class="zb-count" *ngIf="!isLoading && count(Status.Pending) > 0">{{ count(Status.Pending) }}</span>
+    </h1>
+    <p class="zb-page-sub">Sitedeki iletişim formundan gelen mesajlar. Açtığın mesaj otomatik olarak okundu sayılır.</p>
+  </div>
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- SEKMELER -->
+<div class="zb-tabs" role="tablist">
+  <button type="button" role="tab" class="zb-tab" *ngFor="let t of tabs"
+          [class.is-active]="tab === t.value" [attr.aria-selected]="tab === t.value" (click)="setTab(t.value)">
+    <i [class]="t.icon" aria-hidden="true"></i>
+    <span>{{ t.label }}</span>
+    <span class="zb-tab-count">{{ isLoading ? '–' : count(t.value) }}</span>
+  </button>
+</div>
+
+<!-- has-selection: mobilde liste gizlenip okuma paneli tam ekran olur -->
+<div class="zb-inbox" [class.has-selection]="selected">
+
+  <!-- ===================== SOL: LİSTE ===================== -->
+  <section class="zb-list">
+    <div class="zb-list-search">
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-search" />
+        <input pInputText type="text" placeholder="Ad, e-posta ya da konu ara" class="zb-search-input"
+               [ngModel]="searchText" (ngModelChange)="onSearch($event)" />
+      </p-iconfield>
+    </div>
+
+    <div class="zb-list-body">
+      <div class="zb-list-loading" *ngIf="isLoading">
+        <p-skeleton *ngFor="let s of [1, 2, 3, 4, 5]" width="100%" height="4.5rem" styleClass="mb-2" />
+      </div>
+
+      <div class="zb-list-empty" *ngIf="!isLoading && filtered.length === 0">
+        <i class="pi pi-inbox" aria-hidden="true"></i>
+        <span>{{ messages.length === 0 ? 'Henüz mesaj gelmemiş' : 'Bu görünümde mesaj yok' }}</span>
+      </div>
+
+      <button type="button" class="zb-row" *ngFor="let m of filtered"
+              [class.is-unread]="m.contactMessageStatus === Status.Pending"
+              [class.is-active]="selected?.id === m.id"
+              (click)="open(m)">
+        <span class="zb-row-avatar">{{ initials(m.name) }}</span>
+        <span class="zb-row-main">
+          <span class="zb-row-top">
+            <span class="zb-row-name">{{ m.name }}</span>
+            <span class="zb-row-date">{{ m.createdAt | date:'dd.MM.yy' }}</span>
+          </span>
+          <span class="zb-row-subject">{{ m.subject }}</span>
+          <span class="zb-row-preview">{{ m.messageBody }}</span>
+        </span>
+        <span class="zb-row-dot" *ngIf="m.contactMessageStatus === Status.Pending" aria-label="Okunmadı"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== SAĞ: OKUMA PANELİ ===================== -->
+  <section class="zb-reader">
+
+    <!-- Seçili mesaj yok -->
+    <div class="zb-reader-empty" *ngIf="!selected && !isLoadingDetail">
+      <span class="zb-reader-empty-icon"><i class="pi pi-envelope" aria-hidden="true"></i></span>
+      <p>Okumak için soldan bir mesaj seç.</p>
+    </div>
+
+    <div class="zb-reader-loading" *ngIf="isLoadingDetail">
+      <p-skeleton width="60%" height="1.6rem" styleClass="mb-3" />
+      <p-skeleton width="40%" height="1rem" styleClass="mb-4" />
+      <p-skeleton width="100%" height="10rem" />
+    </div>
+
+    <article *ngIf="selected && !isLoadingDetail" class="zb-message">
+
+      <header class="zb-message-head">
+        <!-- Mobilde listeye dön -->
+        <button type="button" class="zb-back" (click)="closeDetail()" aria-label="Listeye dön">
+          <i class="pi pi-arrow-left" aria-hidden="true"></i>
+        </button>
+
+        <div class="zb-message-title">
+          <span class="zb-status" [ngClass]="'is-' + selected.contactMessageStatus">{{ statusLabel(selected.contactMessageStatus) }}</span>
+          <h2>{{ selected.subject }}</h2>
+        </div>
+
+        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                  pTooltip="Sil" tooltipPosition="left" ariaLabel="Sil" (onClick)="deleteSelected()" />
+      </header>
+
+      <!-- Gönderen -->
+      <div class="zb-sender">
+        <span class="zb-sender-avatar">{{ initials(selected.name) }}</span>
+        <div class="zb-sender-text">
+          <strong>{{ selected.name }}</strong>
+          <a [href]="'mailto:' + selected.email">{{ selected.email }}</a>
+        </div>
+        <span class="zb-sender-date">{{ selected.createdAt | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+
+      <!-- Mesaj -->
+      <div class="zb-message-body">{{ selected.messageBody }}</div>
+
+      <!-- İşlemler -->
+      <footer class="zb-message-actions">
+        <a [href]="replyLink" class="zb-reply-btn">
+          <i class="pi pi-reply" aria-hidden="true"></i> E-postayla yanıtla
+        </a>
+
+        <div class="zb-status-actions">
+          <span class="zb-muted">İşaretle:</span>
+          <p-button label="Yanıtlandı" icon="pi pi-check" size="small" [outlined]="true"
+                    [disabled]="selected.contactMessageStatus === Status.Replied" (onClick)="setStatus(Status.Replied)" />
+          <p-button label="Gereksiz" icon="pi pi-ban" size="small" [outlined]="true" severity="secondary"
+                    [disabled]="selected.contactMessageStatus === Status.Irrelevant" (onClick)="setStatus(Status.Irrelevant)" />
+          <p-button label="Okunmadı" icon="pi pi-envelope" size="small" [text]="true" severity="secondary"
+                    [disabled]="selected.contactMessageStatus === Status.Pending" (onClick)="setStatus(Status.Pending)" />
+        </div>
+      </footer>
+    </article>
+  </section>
+</div>

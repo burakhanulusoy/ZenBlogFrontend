@@ -1,0 +1,194 @@
+/* =====================================================================
+   İLETİŞİM BİLGİLERİ
+   ===================================================================== */
+.zb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zb-page-title { margin: 0; color: var(--zb-ink); font-size: 1.65rem; font-weight: 800; letter-spacing: -0.02em; }
+.zb-page-sub { margin: 0.3rem 0 0; color: var(--zb-muted); }
+
+.zb-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background-color: #fff7ed;
+  color: #c2410c;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.zb-state.is-live { background-color: var(--p-primary-50); color: var(--p-primary-700); }
+
+.zb-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd9a8;
+  border-radius: 0.8rem;
+  background-color: #fff8ec;
+  color: #8a5300;
+}
+
+.zb-alert span { flex-grow: 1; }
+
+/* DÜZEN */
+.zb-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-layout { grid-template-columns: 1fr; }
+}
+
+.zb-panel {
+  padding: 1.4rem 1.5rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 1rem;
+  background-color: var(--zb-surface);
+}
+
+.zb-panel-title { margin: 0 0 1.1rem; color: var(--zb-ink); font-size: 1rem; font-weight: 800; }
+
+/* ALANLAR */
+.zb-field { display: flex; flex-direction: column; margin-bottom: 1.1rem; }
+
+.zb-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+@media (max-width: 575.98px) {
+  .zb-row-2 { grid-template-columns: 1fr; }
+}
+
+.zb-label { margin-bottom: 0.45rem; color: var(--zb-ink); font-size: 0.88rem; font-weight: 700; }
+.zb-req { color: #dc2626; }
+
+:host ::ng-deep p-iconfield { display: block; width: 100%; }
+.zb-input, .zb-textarea { width: 100%; border-radius: 0.65rem; }
+.zb-textarea { resize: vertical; }
+.zb-mono { font-family: ui-monospace, Consolas, monospace; font-size: 0.82rem; }
+.zb-invalid { border-color: #dc2626 !important; }
+.zb-error { margin-top: 0.35rem; color: #dc2626; font-size: 0.8rem; font-weight: 500; }
+
+/* "Nereden alırım?" açılır yardım */
+.zb-help {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--zb-line);
+  border-radius: 0.7rem;
+  background-color: #f7f8f6;
+  font-size: 0.85rem;
+}
+
+.zb-help summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--p-primary-700);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.zb-help ol { margin: 0.6rem 0 0.2rem; padding-left: 1.2rem; color: var(--zb-ink-soft); line-height: 1.6; }
+
+.zb-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--zb-line);
+}
+
+/* ÖNİZLEME */
+.zb-preview {
+  position: sticky;
+  top: 88px;
+  padding: 1.1rem;
+  border-radius: 1rem;
+  background:
+    radial-gradient(70% 120% at 100% 0%, rgba(52, 211, 153, 0.2) 0%, transparent 60%),
+    #0b1d15;
+}
+
+@media (max-width: 1199.98px) {
+  .zb-preview { position: static; }
+}
+
+.zb-preview-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.85rem;
+  color: #6ee7b7;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.zb-map {
+  overflow: hidden;
+  height: 240px;
+  margin-bottom: 0.85rem;
+  border-radius: 0.85rem;
+  background-color: #12271d;
+}
+
+.zb-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+.zb-map-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.zb-map-empty i { font-size: 1.8rem; }
+
+.zb-info {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.zb-info li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.zb-info small { display: block; color: rgba(255, 255, 255, 0.5); font-size: 0.72rem; }
+
+.zb-info-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: rgba(52, 211, 153, 0.15);
+  color: #6ee7b7;
+}

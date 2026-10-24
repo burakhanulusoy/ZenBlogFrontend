@@ -40,6 +40,8 @@ import { AboutForm } from './_admin-components/about-form/about-form';
 import { SocialMedias } from './_admin-components/social-medias/social-medias';
 import { Teams } from './_admin-components/teams/teams';
 import { TeamForm } from './_admin-components/team-form/team-form';
+import { ContactInfo } from './_admin-components/contact-info/contact-info';
+import { ContactMessages } from './_admin-components/contact-messages/contact-messages';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -101,6 +103,8 @@ const routes: Routes = [
             { path: 'teams', component: Teams, data: { title: 'Ekip' } },                          // YENİ
       { path: 'teams/new', component: TeamForm, data: { title: 'Yeni ekip üyesi' } },        // YENİ
       { path: 'teams/edit/:id', component: TeamForm, data: { title: 'Ekip üyesini düzenle' } }, // YENİ
+            { path: 'contact-info', component: ContactInfo, data: { title: 'İletişim bilgileri' } },     // YENİ
+      { path: 'contact-messages', component: ContactMessages, data: { title: 'Gelen mesajlar' } }, // YENİ
       // SIZE ÖZEL (ortak sayfalar)
       { path: 'my-blogs', component: MyBlogs, data: { title: 'Bloglarım' } },
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
@@ -154,7 +158,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+    // DEĞİŞTİ: sayfa değişince en üstten başla (bir blogdan diğerine geçince kaldığı yerden açılmasın)
+  imports: [RouterModule.forRoot(routes, { scrollPositionRestoration: 'top' })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

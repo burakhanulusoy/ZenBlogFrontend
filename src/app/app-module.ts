@@ -77,8 +77,14 @@ import { SocialMedias } from './_admin-components/social-medias/social-medias';
 import { Abouts } from './_admin-components/abouts/abouts';
 import { AboutForm } from './_admin-components/about-form/about-form';
 import { Teams } from './_admin-components/teams/teams';
-import { TeamForm } from './_admin-components/team-form/team-form';   // YENİ: pTextarea
+import { TeamForm } from './_admin-components/team-form/team-form';
+import { ContactInfo } from './_admin-components/contact-info/contact-info';
+import { ContactMessages } from './_admin-components/contact-messages/contact-messages';   // YENİ: pTextarea
 
+import { registerLocaleData } from '@angular/common';   // YENİ
+import localeTr from '@angular/common/locales/tr';
+
+registerLocaleData(localeTr);
 
 @NgModule({
   declarations: [
@@ -125,7 +131,9 @@ import { TeamForm } from './_admin-components/team-form/team-form';   // YENİ: 
     Abouts,
     AboutForm,
     Teams,
-    TeamForm
+    TeamForm,
+    ContactInfo,
+    ContactMessages,
   ],
   imports: [
     BrowserModule,

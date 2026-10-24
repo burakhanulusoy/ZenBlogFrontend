@@ -1,1 +1,187 @@
-<h1>home works!</h1>
+<!-- =====================================================================
+     ANA SAYFA
+     Listeler (latestColumns, sections) veri gelince home.ts'de BİR KEZ hazırlanıyor;
+     şablonda yeni dizi üreten ifade (slice, [a, b]) yok → gereksiz yeniden çizim yok.
+     Belirme efekti: saf CSS (fade-in sınıfı) → JavaScript yok, içerik asla gizli kalmaz.
+     ===================================================================== -->
+
+<!-- Tekrar kullanılan küçük parçalar (Razor'daki partial view gibi) -->
+
+<!-- Kategori • tarih satırı -->
+<ng-template #meta let-b>
+  <div class="post-meta">
+    <a [routerLink]="['/category', b.categoryId]" class="post-cat">{{ b.categoryName }}</a>
+    <span class="post-dot" aria-hidden="true">•</span>
+    <time [attr.datetime]="b.createdAt">{{ b.createdAt | date:'d MMMM yyyy':'':'tr' }}</time>
+  </div>
+</ng-template>
+
+<!-- Yazar (fotoğraf + ad) -->
+<ng-template #author let-b>
+  <div class="post-author">
+    <span class="post-author-photo">
+      <img *ngIf="b.authorImage" [src]="b.authorImage" alt="" loading="lazy">
+      <ng-container *ngIf="!b.authorImage">{{ initials(b.authorName) }}</ng-container>
+    </span>
+    <span class="post-author-name">{{ b.authorName }}</span>
+  </div>
+</ng-template>
+
+
+<!-- ============================== YÜKLENİYOR ============================== -->
+<div class="site-container home-loading" *ngIf="isLoading" aria-busy="true" aria-label="Yükleniyor">
+  <div class="sk sk-hero"></div>
+  <div class="sk-row">
+    <div class="sk sk-card-lg"></div>
+    <div class="sk sk-card"></div>
+    <div class="sk sk-card"></div>
+    <div class="sk sk-card"></div>
+  </div>
+</div>
+
+<!-- ============================== HATA ============================== -->
+<div class="site-container home-message" *ngIf="errorMessage">
+  <p>{{ errorMessage }}</p>
+  <button type="button" class="btn-outline" (click)="load()">Tekrar dene</button>
+</div>
+
+<!-- ============================== BOŞ ============================== -->
+<div class="site-container home-message" *ngIf="isEmpty">
+  <h2>Henüz yayınlanmış yazı yok</h2>
+  <p>Çok yakında burada ilk yazıları okuyabileceksin.</p>
+</div>
+
+
+<ng-container *ngIf="home && !isLoading && !isEmpty">
+
+  <!-- ============================== SLIDER (son 3) ============================== -->
+  <section class="hero" *ngIf="home.slider.length > 0" aria-label="Öne çıkan yazılar">
+    <div class="site-container">
+      <div class="swiper hero-swiper" #heroSwiper>
+        <div class="swiper-wrapper">
+
+          <article class="swiper-slide hero-slide" *ngFor="let b of home.slider; let first = first; trackBy: trackById">
+            <!-- İlk slayt öncelikli yüklensin (sayfada ilk görünen resim), diğerleri sonra -->
+            <img class="hero-img" [src]="b.coverImage" [alt]="b.mainTitle"
+                 [attr.loading]="first ? 'eager' : 'lazy'"
+                 [attr.fetchpriority]="first ? 'high' : 'low'"
+                 decoding="async">
+            <div class="hero-shade" aria-hidden="true"></div>
+
+            <div class="hero-content">
+              <a [routerLink]="['/category', b.categoryId]" class="hero-cat">{{ b.categoryName }}</a>
+              <h2 class="hero-title"><a [routerLink]="['/blog', b.id]">{{ b.mainTitle }}</a></h2>
+              <p class="hero-desc">{{ b.mainDescription }}</p>
+              <div class="hero-meta">
+                <span>{{ b.authorName }}</span>
+                <span aria-hidden="true">•</span>
+                <time [attr.datetime]="b.createdAt">{{ b.createdAt | date:'d MMMM yyyy':'':'tr' }}</time>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- Kontroller -->
+        <button type="button" class="hero-nav hero-prev"><i class="pi pi-chevron-left" aria-hidden="true"></i></button>
+        <button type="button" class="hero-nav hero-next"><i class="pi pi-chevron-right" aria-hidden="true"></i></button>
+        <div class="swiper-pagination hero-dots"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================== SON BLOGLAR + TRENDING ============================== -->
+  <section class="section latest fade-in" *ngIf="home.latest.length > 0">
+    <div class="site-container latest-grid">
+
+      <!-- 1 büyük -->
+      <article class="latest-feature" *ngIf="latestFeature as f">
+        <a [routerLink]="['/blog', f.id]" class="post-img post-img-tall">
+          <img [src]="f.coverImage" [alt]="f.mainTitle" loading="lazy" decoding="async">
+        </a>
+        <ng-container *ngTemplateOutlet="meta; context: { $implicit: f }"></ng-container>
+        <h2 class="post-title post-title-lg"><a [routerLink]="['/blog', f.id]">{{ f.mainTitle }}</a></h2>
+        <p class="post-excerpt clamp-4">{{ f.mainDescription }}</p>
+        <ng-container *ngTemplateOutlet="author; context: { $implicit: f }"></ng-container>
+      </article>
+
+      <!-- 2 sütun × 3 küçük (sütunlar home.ts'de bir kez hazırlanıyor) -->
+      <div class="latest-col" *ngFor="let column of latestColumns; trackBy: trackByIndex">
+        <article class="post-small" *ngFor="let b of column; trackBy: trackById">
+          <a [routerLink]="['/blog', b.id]" class="post-img">
+            <img [src]="b.coverImage" [alt]="b.mainTitle" loading="lazy" decoding="async">
+          </a>
+          <ng-container *ngTemplateOutlet="meta; context: { $implicit: b }"></ng-container>
+          <h3 class="post-title"><a [routerLink]="['/blog', b.id]">{{ b.mainTitle }}</a></h3>
+        </article>
+      </div>
+
+      <!-- TRENDING: en çok yorum alan 5 -->
+      <aside class="trending" *ngIf="home.trending.length > 0" aria-labelledby="trending-title">
+        <h3 id="trending-title" class="trending-title">Trending</h3>
+        <ol class="trending-list">
+          <li *ngFor="let b of home.trending; let i = index; trackBy: trackById">
+            <a [routerLink]="['/blog', b.id]">
+              <span class="trending-no">{{ i + 1 }}</span>
+              <span class="trending-text">
+                <span class="trending-name">{{ b.mainTitle }}</span>
+                <span class="trending-meta">
+                  {{ b.authorName }}
+                  <span class="trending-comments" *ngIf="b.commentCount > 0">
+                    <i class="pi pi-comments" aria-hidden="true"></i> {{ b.commentCount }}
+                  </span>
+                </span>
+              </span>
+            </a>
+          </li>
+        </ol>
+      </aside>
+
+    </div>
+  </section>
+
+
+  <!-- ============================== KATEGORİ BÖLÜMLERİ (her biri son 5) ============================== -->
+  <!-- "sections" home.ts'de bir kez hazırlanıyor: feature (öne çıkan) + rest (kalanlar) -->
+  <section class="section cat-section fade-in" *ngFor="let sec of sections; let odd = odd; trackBy: trackBySection"
+           [class.is-reversed]="odd" [attr.aria-labelledby]="'cat-' + sec.categoryId">
+    <div class="site-container">
+
+      <!-- Başlık: Kategori adı ........ Tümünü gör -->
+      <header class="section-head">
+        <h2 [id]="'cat-' + sec.categoryId">{{ sec.categoryName }}</h2>
+        <a [routerLink]="['/category', sec.categoryId]" class="see-all">
+          Tümünü gör <i class="pi pi-arrow-right" aria-hidden="true"></i>
+        </a>
+      </header>
+
+      <!-- 1) Öne çıkan: yatay (fotoğraf + metin); tek sıralı bölümlerde fotoğraf sağda -->
+      <article class="cat-feature">
+        <a [routerLink]="['/blog', sec.feature.id]" class="post-img cat-feature-img">
+          <img [src]="sec.feature.coverImage" [alt]="sec.feature.mainTitle" loading="lazy" decoding="async">
+        </a>
+        <div class="cat-feature-body">
+          <ng-container *ngTemplateOutlet="meta; context: { $implicit: sec.feature }"></ng-container>
+          <h3 class="post-title post-title-xl"><a [routerLink]="['/blog', sec.feature.id]">{{ sec.feature.mainTitle }}</a></h3>
+          <p class="post-excerpt clamp-4">{{ sec.feature.mainDescription }}</p>
+          <ng-container *ngTemplateOutlet="author; context: { $implicit: sec.feature }"></ng-container>
+        </div>
+      </article>
+
+      <!-- 2) Kalan bloglar: kartlar -->
+      <div class="cat-grid" *ngIf="sec.rest.length > 0">
+        <article class="post-card" *ngFor="let b of sec.rest; trackBy: trackById">
+          <a [routerLink]="['/blog', b.id]" class="post-img">
+            <img [src]="b.coverImage" [alt]="b.mainTitle" loading="lazy" decoding="async">
+          </a>
+          <ng-container *ngTemplateOutlet="meta; context: { $implicit: b }"></ng-container>
+          <h4 class="post-title"><a [routerLink]="['/blog', b.id]">{{ b.mainTitle }}</a></h4>
+          <span class="post-card-author">{{ b.authorName }}</span>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+</ng-container>

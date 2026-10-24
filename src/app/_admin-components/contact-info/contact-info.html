@@ -1,0 +1,135 @@
+<!-- =====================================================================
+     İLETİŞİM BİLGİLERİ
+     ===================================================================== -->
+<div class="zb-page-head">
+  <div>
+    <h1 class="zb-page-title">İletişim bilgileri</h1>
+    <p class="zb-page-sub">Sitenin İletişim sayfasında ve alt bilgisinde görünür.</p>
+  </div>
+  <span class="zb-state" [class.is-live]="contact" *ngIf="!isLoading">
+    <i class="pi" [class.pi-check-circle]="contact" [class.pi-info-circle]="!contact" aria-hidden="true"></i>
+    {{ contact ? 'Sitede yayında' : 'Henüz girilmemiş' }}
+  </span>
+</div>
+
+<div class="zb-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<p-skeleton *ngIf="isLoading" width="100%" height="26rem" borderRadius="1rem" />
+
+<form #contactForm="ngForm" (ngSubmit)="save(contactForm)" novalidate class="zb-layout" *ngIf="!isLoading && !errorMessage">
+
+  <!-- ===================== SOL: BİLGİLER ===================== -->
+  <section class="zb-panel">
+    <h2 class="zb-panel-title">Bilgiler</h2>
+
+    <div class="zb-field">
+      <label for="address" class="zb-label">Adres <span class="zb-req">*</span></label>
+      <p-iconfield>
+        <p-inputicon styleClass="pi pi-map-marker" />
+        <input pInputText id="address" name="address" class="zb-input" maxlength="250"
+               placeholder="Örn: Atatürk Cad. No:1, Kütahya"
+               [(ngModel)]="form.address" #addressModel="ngModel" required
+               [class.zb-invalid]="(addressModel.invalid && addressModel.touched) || fieldError('Address')">
+      </p-iconfield>
+      <small class="zb-error" *ngIf="(addressModel.invalid && addressModel.touched) || fieldError('Address')">
+        {{ fieldError('Address') || 'Adres zorunludur.' }}
+      </small>
+    </div>
+
+    <div class="zb-row-2">
+      <div class="zb-field">
+        <label for="phone" class="zb-label">Telefon <span class="zb-req">*</span></label>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-phone" />
+          <input pInputText type="tel" id="phone" name="phoneNumber" class="zb-input" maxlength="20"
+                 placeholder="+90 5XX XXX XX XX"
+                 [(ngModel)]="form.phoneNumber" #phoneModel="ngModel" required
+                 [class.zb-invalid]="(phoneModel.invalid && phoneModel.touched) || fieldError('PhoneNumber')">
+        </p-iconfield>
+        <small class="zb-error" *ngIf="(phoneModel.invalid && phoneModel.touched) || fieldError('PhoneNumber')">
+          {{ fieldError('PhoneNumber') || 'Telefon zorunludur.' }}
+        </small>
+      </div>
+
+      <div class="zb-field">
+        <label for="email" class="zb-label">E-posta <span class="zb-req">*</span></label>
+        <p-iconfield>
+          <p-inputicon styleClass="pi pi-envelope" />
+          <input pInputText type="email" id="email" name="email" class="zb-input"
+                 placeholder="iletisim@zenblog.com"
+                 [(ngModel)]="form.email" #emailModel="ngModel" required email
+                 [class.zb-invalid]="(emailModel.invalid && emailModel.touched) || fieldError('Email')">
+        </p-iconfield>
+        <small class="zb-error" *ngIf="(emailModel.invalid && emailModel.touched) || fieldError('Email')">
+          {{ fieldError('Email') || 'Geçerli bir e-posta gir.' }}
+        </small>
+      </div>
+    </div>
+
+    <!-- HARİTA ADRESİ -->
+    <div class="zb-field">
+      <label for="map" class="zb-label">Google Haritalar adresi <span class="zb-req">*</span></label>
+      <textarea pTextarea id="map" name="mapLocationUrl" rows="3" class="zb-textarea zb-mono"
+                placeholder="https://www.google.com/maps/embed?pb=..."
+                [ngModel]="form.mapLocationUrl" (ngModelChange)="onMapInput($event)" #mapModel="ngModel" required
+                [class.zb-invalid]="(mapModel.touched && !isMapValid) || fieldError('MapLocationUrl')"></textarea>
+      <small class="zb-error" *ngIf="(mapModel.touched && !isMapValid) || fieldError('MapLocationUrl')">
+        {{ fieldError('MapLocationUrl') || 'Adres https://www.google.com/maps/embed ile başlamalı.' }}
+      </small>
+
+      <!-- Nasıl alınır? -->
+      <details class="zb-help">
+        <summary><i class="pi pi-question-circle" aria-hidden="true"></i> Bu adresi nereden alırım?</summary>
+        <ol>
+          <li>Google Haritalar'da konumu aç.</li>
+          <li><strong>Paylaş</strong> → <strong>Haritayı yerleştir</strong> sekmesine geç.</li>
+          <li><strong>HTML'yi kopyala</strong>'ya bas ve buraya yapıştır. İçinden adresi kendimiz ayıklarız.</li>
+        </ol>
+      </details>
+    </div>
+
+    <!-- KAYDET -->
+    <div class="zb-actions">
+      <p-button type="button" label="Vazgeç" severity="secondary" [text]="true"
+                [disabled]="!hasChanges || isSaving" (onClick)="reset()" />
+      <p-button type="submit" icon="pi pi-check" [label]="contact ? 'Değişiklikleri kaydet' : 'Kaydet ve yayınla'"
+                [loading]="isSaving" [disabled]="isSaving || (contact && !hasChanges)" />
+    </div>
+  </section>
+
+  <!-- ===================== SAĞ: CANLI ÖNİZLEME ===================== -->
+  <aside class="zb-preview">
+    <span class="zb-preview-label"><i class="pi pi-eye" aria-hidden="true"></i> Sitede böyle görünecek</span>
+
+    <!-- Harita -->
+    <div class="zb-map">
+      <iframe *ngIf="mapPreview" [src]="mapPreview" title="Konum haritası" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"></iframe>
+      <div class="zb-map-empty" *ngIf="!mapPreview">
+        <i class="pi pi-map" aria-hidden="true"></i>
+        <span>Geçerli bir harita adresi girince burada görünecek</span>
+      </div>
+    </div>
+
+    <!-- Bilgi kartları -->
+    <ul class="zb-info">
+      <li>
+        <span class="zb-info-icon"><i class="pi pi-map-marker" aria-hidden="true"></i></span>
+        <span><small>Adres</small>{{ form.address || '—' }}</span>
+      </li>
+      <li>
+        <span class="zb-info-icon"><i class="pi pi-phone" aria-hidden="true"></i></span>
+        <span><small>Telefon</small>{{ form.phoneNumber || '—' }}</span>
+      </li>
+      <li>
+        <span class="zb-info-icon"><i class="pi pi-envelope" aria-hidden="true"></i></span>
+        <span><small>E-posta</small>{{ form.email || '—' }}</span>
+      </li>
+    </ul>
+  </aside>
+
+</form>

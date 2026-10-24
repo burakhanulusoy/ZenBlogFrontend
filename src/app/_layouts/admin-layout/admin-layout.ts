@@ -4,13 +4,14 @@ import { Subscription, filter } from 'rxjs';
 import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../_services/auth-service';
 import { WriterApplicationService } from '../../_services/writer-application-service';
+import { ContactMessageService } from '../../_services/contact-message-service';
 
 interface NavItem {
   label: string;
   icon: string;      // PrimeIcons sınıfı (pi pi-...)
   link: string;
   exact?: boolean;   // true → sadece tam bu adreste "seçili" görünsün
-  badge?: 'applications';   // YENİ: yanında sayı rozeti gösterilecek öğe
+    badge?: 'applications' | 'messages';   // DEĞİŞTİ: mesaj rozeti de eklendi
 }
 
 interface NavGroup {
@@ -33,13 +34,15 @@ export class AdminLayout implements OnInit, OnDestroy {
    constructor(public authService: AuthService,
               private applicationService: WriterApplicationService,   // YENİ
               private router: Router,
-              private route: ActivatedRoute) {}
+              private route: ActivatedRoute,
+              private messageService:ContactMessageService) {}
 
 
   fullName = '';
   email = '';
     imageUrl = '';   // YENİ: sağ üstteki avatar
       pendingApplications = 0;   // YENİ: okunmamış başvuru sayısı (menü rozeti)
+        pendingMessages = 0;   // YENİ: okunmamış mesaj sayısı
   pageTitle = '';
   todayText = '';
 
@@ -64,7 +67,9 @@ export class AdminLayout implements OnInit, OnDestroy {
         { label: 'Kategoriler', icon: 'pi pi-tags', link: '/admin/category' },
         { label: 'Kullanıcılar', icon: 'pi pi-users', link: '/admin/users' } ,  // YENİ
         { label: 'Roller', icon: 'pi pi-shield', link: '/admin/roles' },   // YENİ
-        { label: 'Yazarlık başvuruları', icon: 'pi pi-inbox', link: '/admin/writer-applications', badge: 'applications' }   // YENİ
+        { label: 'Yazarlık başvuruları', icon: 'pi pi-inbox', link: '/admin/writer-applications', badge: 'applications' } ,  // YENİ
+        { label: 'Gelen mesajlar', icon: 'pi pi-envelope', link: '/admin/contact-messages', badge: 'messages' }   // YENİ
+
       ]
     },
     // YENİ: ziyaretçi sitesinde görünen içerikler
@@ -73,7 +78,8 @@ export class AdminLayout implements OnInit, OnDestroy {
       items: [
         { label: 'Hakkımızda', icon: 'pi pi-info-circle', link: '/admin/abouts' },
         { label: 'Sosyal medya', icon: 'pi pi-share-alt', link: '/admin/social-medias' },
-      { label: 'Ekip', icon: 'pi pi-id-card', link: '/admin/teams' }   // YENİ
+        { label: 'Ekip', icon: 'pi pi-id-card', link: '/admin/teams' },   // YENİ
+        { label: 'İletişim bilgileri', icon: 'pi pi-map-marker', link: '/admin/contact-info' }   // YENİ
       ]
     },
 
@@ -167,6 +173,12 @@ export class AdminLayout implements OnInit, OnDestroy {
     this.applicationService.getPendingCount().subscribe({
       next: result => this.pendingApplications = result.data ?? 0,
       error: () => this.pendingApplications = 0
+    });
+
+        // YENİ: okunmamış mesajlar
+    this.messageService.getPending().subscribe({
+      next: result => this.pendingMessages = result.data?.length ?? 0,
+      error: () => this.pendingMessages = 0
     });
   }
 
