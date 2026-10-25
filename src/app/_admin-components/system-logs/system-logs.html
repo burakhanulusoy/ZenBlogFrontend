@@ -1,0 +1,367 @@
+<!-- =====================================================================
+     ADMİN: LOG KAYITLARI
+     ===================================================================== -->
+
+<!-- BAŞLIK + DÖNEM + YENİLE -->
+<header class="lg-head">
+  <div class="lg-head-text">
+    <span class="lg-icon"><i class="pi pi-server" aria-hidden="true"></i></span>
+    <div>
+      <h1 class="lg-title">Log kayıtları</h1>
+      <p class="lg-sub">Sistemde olan her şey: istekler, hatalar ve önemli olaylar.</p>
+    </div>
+  </div>
+
+  <div class="lg-head-actions">
+    <div class="seg" role="group" aria-label="Dönem">
+      <button type="button" *ngFor="let p of periods" [class.is-active]="filter.period === p.value"
+              (click)="setPeriod(p.value)">{{ p.label }}</button>
+    </div>
+    <p-button icon="pi pi-refresh" [rounded]="true" [outlined]="true" severity="secondary"
+              pTooltip="Yenile" tooltipPosition="bottom" ariaLabel="Yenile" (onClick)="loadAll()" />
+    <label class="switch-label">
+      <p-toggleswitch [(ngModel)]="autoRefresh" (onChange)="toggleAutoRefresh()" />
+      <span>Otomatik yenile</span>
+      <span class="live-dot" *ngIf="autoRefresh" aria-hidden="true"></span>
+    </label>
+  </div>
+</header>
+
+<!-- ELASTICSEARCH KAPALI -->
+<div class="lg-unavailable" *ngIf="unavailable">
+  <span class="lg-unavailable-icon"><i class="pi pi-wifi" aria-hidden="true"></i></span>
+  <div>
+    <strong>Log sistemine şu an ulaşılamıyor</strong>
+    <p>Elasticsearch çalışmıyor olabilir. Sitenin geri kalanı etkilenmez; sadece bu sayfa veri gösteremez.</p>
+    <code>docker compose up -d</code>
+  </div>
+  <p-button label="Tekrar dene" icon="pi pi-refresh" size="small" (onClick)="loadAll()" />
+</div>
+
+<!-- DİĞER HATA -->
+<div class="lg-alert" *ngIf="errorMessage && !unavailable">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+</div>
+
+<ng-container *ngIf="!unavailable">
+
+  <!-- ============================== KARTLAR ============================== -->
+  <section class="kpi-grid">
+    <ng-container *ngIf="isSummaryLoading">
+      <p-skeleton *ngFor="let s of [1, 2, 3, 4, 5, 6]" height="6.5rem" borderRadius="1rem" />
+    </ng-container>
+
+    <ng-container *ngIf="!isSummaryLoading">
+      <button type="button" class="kpi" *ngFor="let k of kpis" [class.is-clickable]="k.clickable"
+              [disabled]="!k.clickable" [attr.title]="k.hint || null" (click)="onKpiClick(k)">
+        <span class="kpi-top">
+          <span class="kpi-icon" [ngClass]="'tone-' + k.tone"><i [class]="k.icon" aria-hidden="true"></i></span>
+          <i class="pi pi-arrow-up-right kpi-go" *ngIf="k.clickable" aria-hidden="true"></i>
+        </span>
+        <span class="kpi-value">{{ k.value }}</span>
+        <span class="kpi-label">{{ k.label }}</span>
+      </button>
+    </ng-container>
+  </section>
+
+  <!-- ============================== ZAMAN GRAFİĞİ (tam genişlik) ============================== -->
+  <section class="card chart-card">
+    <header class="chart-head">
+      <div>
+        <h2 class="card-title">Zaman içinde loglar</h2>
+        <p class="card-sub">Son {{ periodText }}</p>
+      </div>
+
+      <div class="chart-legend" aria-hidden="true">
+        <span><i class="sw sw-info"></i> Bilgi</span>
+        <span><i class="sw sw-warn"></i> Uyarı</span>
+        <span><i class="sw sw-error"></i> Hata</span>
+      </div>
+
+      <div class="chart-stats" *ngIf="summary && !isSummaryLoading">
+        <span class="stat-pill"><i class="pi pi-globe" aria-hidden="true"></i> {{ summary.requests | number:'1.0-0':'tr' }} HTTP isteği</span>
+        <span class="stat-pill tone-warn">4xx · {{ summary.clientErrors | number:'1.0-0':'tr' }}</span>
+        <span class="stat-pill" [ngClass]="summary.serverErrors > 0 ? 'tone-danger' : 'tone-success'">5xx · {{ summary.serverErrors | number:'1.0-0':'tr' }}</span>
+      </div>
+    </header>
+
+    <div class="chart-box">
+      <p-skeleton *ngIf="isSummaryLoading" height="300px" borderRadius="0.75rem" />
+      <p-chart *ngIf="!isSummaryLoading && chartData" type="bar" [data]="chartData" [options]="chartOptions" height="300px" />
+    </div>
+  </section>
+
+  <!-- ============================== OLAYLAR + EN YAVAŞ UÇLAR (yan yana) ============================== -->
+  <div class="row-2">
+    <!-- Önemli olaylar -->
+    <section class="card">
+      <header class="card-head">
+        <div>
+          <h2 class="card-title">Önemli olaylar</h2>
+          <p class="card-sub">Tıklayınca listede o olay filtrelenir</p>
+        </div>
+      </header>
+
+      <div *ngIf="isSummaryLoading" class="stack">
+        <p-skeleton *ngFor="let s of [1, 2, 3, 4]" height="2.6rem" borderRadius="0.6rem" />
+      </div>
+
+      <div class="mini-empty" *ngIf="!isSummaryLoading && eventsView.length === 0">
+        <i class="pi pi-check-circle" aria-hidden="true"></i>
+        <span>Bu dönemde önemli olay yok.</span>
+      </div>
+
+      <ul class="event-list" *ngIf="!isSummaryLoading && eventsView.length > 0">
+        <li *ngFor="let e of eventsView; trackBy: trackByName">
+          <button type="button" class="event-row" (click)="onEventClick(e.name)" [class.is-active]="filter.eventType === e.name">
+            <span class="event-icon" [ngClass]="'tone-' + e.tone"><i [class]="e.icon" aria-hidden="true"></i></span>
+            <span class="event-body">
+              <span class="event-top">
+                <span class="event-name">{{ e.label }}</span>
+                <span class="event-count">{{ e.count | number:'1.0-0':'tr' }}</span>
+              </span>
+              <span class="bar"><span class="bar-fill" [ngClass]="'fill-' + e.tone" [style.width.%]="e.percent"></span></span>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </section>
+
+    <!-- En yavaş uç noktalar -->
+    <section class="card">
+      <header class="card-head">
+        <div>
+          <h2 class="card-title">En yavaş uç noktalar</h2>
+          <p class="card-sub">Ortalama yanıt süresine göre</p>
+        </div>
+      </header>
+
+      <div *ngIf="isSummaryLoading" class="stack">
+        <p-skeleton *ngFor="let s of [1, 2, 3, 4]" height="2.6rem" borderRadius="0.6rem" />
+      </div>
+
+      <div class="mini-empty" *ngIf="!isSummaryLoading && slowView.length === 0">
+        <i class="pi pi-bolt" aria-hidden="true"></i>
+        <span>Veri yok.</span>
+      </div>
+
+      <ul class="slow-list" *ngIf="!isSummaryLoading && slowView.length > 0">
+        <li *ngFor="let s of slowView; let i = index; trackBy: trackByPath">
+          <button type="button" class="slow-row" (click)="onSlowClick(s.path)" [title]="s.path">
+            <span class="slow-rank">{{ i + 1 }}</span>
+            <span class="slow-body">
+              <span class="slow-top">
+                <code class="slow-path">{{ s.display }}</code>
+                <span class="slow-ms" [ngClass]="'text-' + s.tone">{{ s.avgMs | number:'1.0-0':'tr' }} ms</span>
+              </span>
+              <span class="bar"><span class="bar-fill" [ngClass]="'fill-' + s.tone" [style.width.%]="s.percent"></span></span>
+              <small>{{ s.count | number:'1.0-0':'tr' }} istek</small>
+            </span>
+          </button>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ============================== FİLTRELER ============================== -->
+  <section class="card filters">
+    <!-- 1. satır: arama + olay türü + temizle -->
+    <div class="f-row">
+      <label class="f-search">
+        <i class="pi pi-search" aria-hidden="true"></i>
+        <input type="text" placeholder="Mesajda ara: bloke, /api/blogs, AssignRoleCommand..."
+               [ngModel]="searchText" (ngModelChange)="onSearchInput($event)" aria-label="Mesajda ara">
+        <button type="button" class="f-search-clear" *ngIf="searchText" (click)="clearSearch()" aria-label="Aramayı temizle">
+          <i class="pi pi-times" aria-hidden="true"></i>
+        </button>
+      </label>
+
+      <p-select [options]="eventOptions" optionLabel="label" optionValue="value" [(ngModel)]="filter.eventType"
+                placeholder="Bütün olay türleri" [showClear]="true" (onChange)="onEventTypeChange()"
+                [style]="{ minWidth: '240px' }" appendTo="body" />
+
+      <p-button *ngIf="hasFilters" label="Filtreleri temizle" icon="pi pi-filter-slash" [text]="true"
+                severity="secondary" (onClick)="clearFilters()" />
+    </div>
+
+    <!-- 2. satır: seviye + anahtar + aktif özel filtreler -->
+    <div class="f-row f-row-2">
+      <span class="f-label">Seviye</span>
+      <div class="level-chips" role="group" aria-label="Seviye">
+        <button type="button" *ngFor="let l of levelOptions" class="level-chip" [ngClass]="'chip-' + l.tone"
+                [class.is-on]="isLevelOn(l.value)" [attr.aria-pressed]="isLevelOn(l.value)" (click)="toggleLevel(l.value)">
+          <span class="dot"></span>{{ l.label }}
+        </button>
+      </div>
+
+      <span class="f-sep" aria-hidden="true"></span>
+
+      <label class="switch-label">
+        <p-toggleswitch [(ngModel)]="filter.onlyEvents" (onChange)="onOnlyEventsChange()" />
+        <span>Sadece önemli olaylar</span>
+      </label>
+
+      <span class="f-chip" *ngIf="filter.userId">
+        <i class="pi pi-user" aria-hidden="true"></i> {{ userFilterName }}
+        <button type="button" (click)="clearUser()" aria-label="Kullanıcı filtresini kaldır"><i class="pi pi-times"></i></button>
+      </span>
+      <span class="f-chip" *ngIf="filter.traceId">
+        <i class="pi pi-sitemap" aria-hidden="true"></i> Tek istek: {{ filter.traceId | slice:0:10 }}…
+        <button type="button" (click)="clearTrace()" aria-label="İstek filtresini kaldır"><i class="pi pi-times"></i></button>
+      </span>
+    </div>
+  </section>
+
+  <!-- ============================== LİSTE ============================== -->
+  <section class="card list-card">
+    <header class="card-head">
+      <h2 class="card-title">Kayıtlar <span class="count-badge">{{ total | number:'1.0-0':'tr' }}</span></h2>
+    </header>
+
+    <div *ngIf="isLogsLoading" class="stack">
+      <p-skeleton *ngFor="let s of [1, 2, 3, 4, 5, 6]" height="4.2rem" borderRadius="0.75rem" />
+    </div>
+
+    <div class="empty-state" *ngIf="!isLogsLoading && logs.length === 0">
+      <i class="pi pi-inbox" aria-hidden="true"></i>
+      <p>Bu filtrelere uygun log bulunamadı.</p>
+    </div>
+
+    <ol class="log-list" *ngIf="!isLogsLoading && logs.length > 0">
+      <li *ngFor="let log of logs; trackBy: trackById">
+        <button type="button" class="log-row" [ngClass]="'lvl-' + levelTone(log.level)" (click)="openDetail(log)">
+          <span class="log-time">
+            <strong>{{ log.timestamp | date:'HH:mm:ss' }}</strong>
+            <small>{{ log.timestamp | date:'dd.MM.yyyy' }}</small>
+          </span>
+
+          <span class="log-main">
+            <span class="log-badges">
+              <span class="badge" [ngClass]="'tone-' + levelTone(log.level)">{{ levelLabel(log.level) }}</span>
+              <span class="badge" *ngIf="log.eventType" [ngClass]="'tone-' + eventTone(log.eventType)">
+                <i [class]="eventIcon(log.eventType)" aria-hidden="true"></i> {{ eventLabel(log.eventType) }}
+              </span>
+              <span class="badge" *ngIf="log.statusCode" [ngClass]="'tone-' + statusTone(log.statusCode)">{{ log.statusCode }}</span>
+              <span class="badge badge-error" *ngIf="log.errorType">{{ log.errorType }}</span>
+            </span>
+
+            <span class="log-message">{{ log.message }}</span>
+
+            <span class="log-meta">
+              <span *ngIf="log.userId && log.userId !== 'anonim'" class="meta-user"
+                    (click)="filterByUser(log.userId, log.userName, $event)" title="Bu kişinin bütün logları">
+                <i class="pi pi-user" aria-hidden="true"></i> {{ log.userName || (log.userId | slice:0:8) }}
+              </span>
+              <span *ngIf="log.targetUserId" class="meta-user"
+                    (click)="filterByUser(log.targetUserId, log.targetUserName, $event)" title="Bu kişinin bütün logları">
+                <i class="pi pi-arrow-right" aria-hidden="true"></i> {{ log.targetUserName || (log.targetUserId | slice:0:8) }}
+              </span>
+              <span *ngIf="log.requestName"><i class="pi pi-cog" aria-hidden="true"></i> {{ log.requestName }}</span>
+              <span *ngIf="log.durationMs != null"><i class="pi pi-stopwatch" aria-hidden="true"></i> {{ log.durationMs | number:'1.0-0':'tr' }} ms</span>
+            </span>
+          </span>
+
+          <i class="pi pi-angle-right log-arrow" aria-hidden="true"></i>
+        </button>
+      </li>
+    </ol>
+
+    <p-paginator *ngIf="!isLogsLoading && total > filter.pageSize"
+                 [first]="(filter.page - 1) * filter.pageSize" [rows]="filter.pageSize"
+                 [totalRecords]="pageableTotal" [rowsPerPageOptions]="[25, 50, 100]"
+                 (onPageChange)="onPage($event)" />
+  </section>
+</ng-container>
+
+
+<!-- ============================== DETAY PANELİ ============================== -->
+<p-drawer [(visible)]="drawerVisible" position="right" [style]="{ width: 'min(680px, 100vw)' }">
+  <ng-template #header>
+    <div class="dr-head" *ngIf="detailEntry">
+      <span class="badge" [ngClass]="'tone-' + levelTone(detailEntry.level)">{{ levelLabel(detailEntry.level) }}</span>
+      <strong>{{ detailEntry.timestamp | date:'dd.MM.yyyy HH:mm:ss.SSS' }}</strong>
+    </div>
+  </ng-template>
+
+  <div *ngIf="detailEntry" class="dr-body">
+
+    <!-- MESAJ -->
+    <section class="dr-section">
+      <h3>Mesaj</h3>
+      <p class="dr-message">{{ detailEntry.message }}</p>
+      <span class="badge" *ngIf="detailEntry.eventType" [ngClass]="'tone-' + eventTone(detailEntry.eventType)">
+        <i [class]="eventIcon(detailEntry.eventType)" aria-hidden="true"></i> {{ eventLabel(detailEntry.eventType) }}
+      </span>
+    </section>
+
+    <!-- ÖZET -->
+    <section class="dr-section">
+      <h3>Özet</h3>
+      <dl class="dr-grid">
+        <ng-container *ngIf="detailEntry.userId && detailEntry.userId !== 'anonim'">
+          <dt>İşlemi yapan</dt>
+          <dd>
+            <a [routerLink]="['/admin/users', detailEntry.userId]">{{ detailEntry.userName || detailEntry.userId }}</a>
+            <button type="button" class="link-btn" (click)="filterByUser(detailEntry.userId, detailEntry.userName)">bütün logları</button>
+          </dd>
+        </ng-container>
+        <ng-container *ngIf="detailEntry.targetUserId">
+          <dt>Etkilenen</dt>
+          <dd>
+            <a [routerLink]="['/admin/users', detailEntry.targetUserId]">{{ detailEntry.targetUserName || detailEntry.targetUserId }}</a>
+            <button type="button" class="link-btn" (click)="filterByUser(detailEntry.targetUserId, detailEntry.targetUserName)">bütün logları</button>
+          </dd>
+        </ng-container>
+        <ng-container *ngIf="detailEntry.requestName"><dt>İşlem</dt><dd><code>{{ detailEntry.requestName }}</code></dd></ng-container>
+        <ng-container *ngIf="detailEntry.path"><dt>Adres</dt><dd><code>{{ detailEntry.path }}</code></dd></ng-container>
+        <ng-container *ngIf="detailEntry.statusCode"><dt>Durum kodu</dt><dd><span class="badge" [ngClass]="'tone-' + statusTone(detailEntry.statusCode)">{{ detailEntry.statusCode }}</span></dd></ng-container>
+        <ng-container *ngIf="detailEntry.durationMs != null"><dt>Süre</dt><dd>{{ detailEntry.durationMs | number:'1.0-1':'tr' }} ms</dd></ng-container>
+        <ng-container *ngIf="detailEntry.traceId">
+          <dt>Hata / izleme kodu</dt>
+          <dd>
+            <code>{{ detailEntry.traceId }}</code>
+            <button type="button" class="link-btn" (click)="copy(detailEntry.traceId)">kopyala</button>
+          </dd>
+        </ng-container>
+      </dl>
+
+      <p-button *ngIf="detailEntry.traceId" label="Bu isteğin bütün logları" icon="pi pi-sitemap" size="small"
+                [outlined]="true" (onClick)="filterByTrace(detailEntry.traceId)" styleClass="dr-trace-btn" />
+    </section>
+
+    <!-- HATA -->
+    <section class="dr-section dr-error" *ngIf="detailError">
+      <h3><i class="pi pi-times-circle" aria-hidden="true"></i> Hata</h3>
+      <p *ngIf="detailError.type"><strong>{{ detailError.type }}</strong></p>
+      <p *ngIf="detailError.message">{{ detailError.message }}</p>
+      <div class="dr-stack" *ngIf="detailError.stack">
+        <div class="dr-stack-head">
+          <span>Yığın izi (stack trace)</span>
+          <button type="button" class="link-btn" (click)="copy(detailError.stack, 'Yığın izi kopyalandı')">kopyala</button>
+        </div>
+        <pre>{{ detailError.stack }}</pre>
+      </div>
+    </section>
+
+    <!-- BÜTÜN ALANLAR -->
+    <section class="dr-section">
+      <div class="dr-section-head">
+        <h3>Bütün alanlar</h3>
+        <button type="button" class="link-btn" (click)="copyJson()" *ngIf="detail">JSON olarak kopyala</button>
+      </div>
+
+      <p-skeleton *ngIf="isDetailLoading" height="12rem" borderRadius="0.75rem" />
+
+      <table class="dr-fields" *ngIf="!isDetailLoading && detailFields.length > 0">
+        <tr *ngFor="let f of detailFields">
+          <th>{{ f.key }}</th>
+          <td>
+            <span class="dr-value">{{ f.value }}</span>
+            <span class="dr-user" *ngIf="f.userName">({{ f.userName }})</span>
+          </td>
+        </tr>
+      </table>
+    </section>
+  </div>
+</p-drawer>

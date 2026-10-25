@@ -47,6 +47,7 @@ import { SiteCategory } from './_main-components/site-category/site-category';
 import { SiteAbout } from './_main-components/site-about/site-about';
 import { SiteContact } from './_main-components/site-contact/site-contact';
 import { CommentsPage } from './_personal-components/comments-page/comments-page';
+import { SystemLogs } from './_admin-components/system-logs/system-logs';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -101,6 +102,7 @@ const routes: Routes = [
       { path: 'category', component: Category, data: { title: 'Kategoriler' } },
       { path: 'users', component: Users, data: { title: 'Kullanıcılar' } },
       { path: 'users/:id', component: UserDetail, data: { title: 'Kullanıcı detayı' } },
+            { path: 'logs', component: SystemLogs, data: { title: 'Log kayıtları' } },   // YENİ
             { path: 'roles', component: Roles, data: { title: 'Roller' } },   // YENİ
             { path: 'comments', component: CommentsPage, data: { title: 'Tüm yorumlar', mode: 'all' } },               // YENİ
       { path: 'writer-applications', component: WriterApplications, data: { title: 'Yazarlık başvuruları' } },        // YENİ

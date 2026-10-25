@@ -88,6 +88,10 @@ import { SiteCategory } from './_main-components/site-category/site-category';
 import { SiteAbout } from './_main-components/site-about/site-about';
 import { SiteContact } from './_main-components/site-contact/site-contact';
 import { CommentsPage } from './_personal-components/comments-page/comments-page';
+import { SystemLogs } from './_admin-components/system-logs/system-logs';
+
+import { PaginatorModule } from 'primeng/paginator';         // sayfalama
+import { ToggleSwitchModule } from 'primeng/toggleswitch';   // anahtarlar
 
 registerLocaleData(localeTr);
 
@@ -144,6 +148,7 @@ registerLocaleData(localeTr);
     SiteAbout,
     SiteContact,
     CommentsPage,
+    SystemLogs,
   ],
   imports: [
     BrowserModule,
@@ -168,7 +173,10 @@ registerLocaleData(localeTr);
     InputOtpModule,
     ChartModule,
         DialogModule,        // YENİ: <p-dialog>
-    TextareaModule      // YENİ: pTextarea
+    TextareaModule,      // YENİ: pTextarea
+        DrawerModule,
+    SelectModule,
+    PaginatorModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),
