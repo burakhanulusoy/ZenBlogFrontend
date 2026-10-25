@@ -1,0 +1,179 @@
+<!-- =====================================================================
+     SİTE: HAKKIMIZDA
+     ===================================================================== -->
+
+<!-- ============================== ÜST BANT ============================== -->
+<section class="page-hero">
+  <div class="site-container">
+    <nav class="crumbs" aria-label="Sayfa yolu">
+      <a routerLink="/">Ana sayfa</a>
+      <span aria-hidden="true">/</span>
+      <span class="crumbs-current" aria-current="page">Hakkımızda</span>
+    </nav>
+    <h1 class="page-title">Hakkımızda</h1>
+  </div>
+</section>
+
+<!-- YÜKLENİYOR -->
+<div class="site-container about-loading" *ngIf="isLoading" aria-busy="true">
+  <div class="sk-about">
+    <div>
+      <div class="sk sk-line-sm"></div>
+      <div class="sk sk-title"></div>
+      <div class="sk sk-text"></div>
+    </div>
+    <div class="sk sk-mosaic"></div>
+  </div>
+</div>
+
+<ng-container *ngIf="!isLoading">
+
+  <!-- ============================== HAKKIMIZDA ============================== -->
+  <section class="site-container about fade-in" *ngIf="about">
+    <div class="about-text">
+      <span class="eyebrow">Biz kimiz</span>
+      <h2 class="about-title">{{ about.mainTitle }}</h2>
+      <p class="about-desc">{{ about.description }}</p>
+
+      <ul class="checks">
+        <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ about.title1 }}</span></li>
+        <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ about.title2 }}</span></li>
+        <li><i class="pi pi-check-circle" aria-hidden="true"></i><span>{{ about.title3 }}</span></li>
+      </ul>
+    </div>
+
+    <!-- Mozaik: solda uzun görsel, sağda üst üste iki görsel -->
+    <div class="mosaic">
+      <img class="mosaic-main" [src]="about.image1" alt="" fetchpriority="high">
+      <img [src]="about.image2" alt="" loading="lazy" decoding="async">
+      <img [src]="about.image3" alt="" loading="lazy" decoding="async">
+    </div>
+  </section>
+
+  <!-- Hakkımızda içeriği henüz girilmemişse -->
+  <div class="site-container state" *ngIf="!about">
+    <p>Hakkımızda bilgileri yakında burada olacak.</p>
+  </div>
+
+
+  <!-- ============================== EKİBİMİZ ============================== -->
+  <section class="team-section fade-in" *ngIf="team.length > 0" aria-labelledby="team-title">
+    <div class="site-container">
+
+      <header class="section-head">
+        <div>
+          <span class="eyebrow">Ekibimiz</span>
+          <h2 id="team-title">ZenBlog'un arkasındaki insanlar</h2>
+        </div>
+      </header>
+
+      <div class="team-grid">
+        <article class="member" *ngFor="let m of team; trackBy: trackById">
+          <div class="member-photo">
+            <img [src]="m.image" [alt]="m.name + ' ' + m.surname" loading="lazy" decoding="async">
+          </div>
+
+          <div class="member-body">
+            <h3 class="member-name">{{ m.name }} {{ m.surname }}</h3>
+            <span class="member-title">{{ m.title }}</span>
+
+            <p class="member-desc" [class.is-open]="expanded.has(m.id)">{{ m.description }}</p>
+            <button type="button" class="member-more" *ngIf="isLong(m.description)"
+                    (click)="toggle(m.id)" [attr.aria-expanded]="expanded.has(m.id)">
+              {{ expanded.has(m.id) ? 'Daha az göster' : 'Devamını oku' }}
+            </button>
+
+            <div class="member-socials" *ngIf="m.teamSocialMedias.length > 0">
+              <a *ngFor="let s of m.teamSocialMedias; trackBy: trackById" [href]="s.url" target="_blank"
+                 rel="noopener noreferrer" [attr.aria-label]="m.name + ' - ' + platformLabel(s.socialMediaName)"
+                 [title]="platformLabel(s.socialMediaName)">
+                <i [class]="s.icon" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================== ÇAĞRI BANDI ============================== -->
+   <!-- ============================== ÇAĞRI ALANI ============================== -->
+  <section class="site-container cta" aria-labelledby="cta-title">
+    <div class="cta-box">
+
+      <!-- SOL: mesaj + adımlar + buton -->
+      <div class="cta-text">
+        <span class="cta-eyebrow"><i class="pi pi-pencil" aria-hidden="true"></i> Sen de yaz</span>
+        <h2 id="cta-title" class="cta-title">{{ ctaTitle }}</h2>
+        <p class="cta-lead">
+          Bildiklerini, deneyimlerini, hikâyelerini paylaş. ZenBlog'da yazdığın her şey
+          gerçek okurlarla buluşur, yorumlarla sohbete dönüşür.
+        </p>
+
+        <!-- 3 adımda yazar ol -->
+        <ol class="cta-steps">
+          <li [class.is-done]="stepDone >= 1">
+            <span class="step-dot">
+              <i class="pi" [class.pi-check]="stepDone >= 1" [class.pi-user-plus]="stepDone < 1" aria-hidden="true"></i>
+            </span>
+            <span><strong>Kayıt ol</strong><small>Ücretsiz, bir dakika</small></span>
+          </li>
+          <li [class.is-done]="stepDone >= 2">
+            <span class="step-dot">
+              <i class="pi" [class.pi-check]="stepDone >= 2" [class.pi-send]="stepDone < 2" aria-hidden="true"></i>
+            </span>
+            <span><strong>Başvur</strong><small>Neden yazmak istediğini anlat</small></span>
+          </li>
+          <li [class.is-done]="stepDone >= 3">
+            <span class="step-dot">
+              <i class="pi" [class.pi-check]="stepDone >= 3" [class.pi-megaphone]="stepDone < 3" aria-hidden="true"></i>
+            </span>
+            <span><strong>Yayınla</strong><small>Yazın okurlarla buluşsun</small></span>
+          </li>
+        </ol>
+
+        <div class="cta-actions">
+          <a [routerLink]="ctaLink" class="cta-btn">
+            {{ ctaLabel }} <i class="pi pi-arrow-right" aria-hidden="true"></i>
+          </a>
+          <span class="cta-note" *ngIf="!isLoggedIn">
+            Zaten hesabın var mı? <a routerLink="/login">Giriş yap</a>
+          </span>
+        </div>
+      </div>
+
+      <!-- SAĞ: "senin yazın böyle görünecek" önizleme kartı -->
+      <div class="cta-visual" aria-hidden="true">
+        <div class="preview-card">
+          <span class="preview-badge"><i class="pi pi-check-circle"></i> Yayında</span>
+
+          <div class="preview-cover">
+            <span class="preview-cover-text">Senin hikâyen</span>
+          </div>
+
+          <div class="preview-body">
+            <span class="preview-meta">KATEGORİN • BUGÜN</span>
+            <span class="preview-title">İlk yazın burada, binlerce satırın ilki olarak</span>
+            <span class="preview-line"></span>
+            <span class="preview-line short"></span>
+
+            <div class="preview-author">
+              <span class="preview-avatar">
+                <img *ngIf="previewImage" [src]="previewImage" alt="">
+                <ng-container *ngIf="!previewImage">{{ previewInitials }}</ng-container>
+              </span>
+              <span class="preview-author-name">{{ previewName }}</span>
+            </div>
+          </div>
+
+          <!-- Yüzen küçük bildirim -->
+          <span class="preview-toast">
+            <i class="pi pi-comments"></i> Yeni yorum: "Harika bir yazı!"
+          </span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</ng-container>

@@ -1,0 +1,281 @@
+/* =====================================================================
+   SİTE: İLETİŞİM · sade, resmi düzen
+   Renk ve fontlar: styles.css → .zb-site değişkenleri
+   ===================================================================== */
+
+/* ÜST BANT (diğer sayfalarla aynı) */
+.page-hero {
+  padding: 3rem 0 2.25rem;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.82rem;
+}
+
+.crumbs a:hover { color: var(--site-accent); }
+.crumbs-current { color: var(--site-ink); }
+
+.page-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(2.6rem, 6vw, 4rem);
+  line-height: 1.05;
+}
+
+.page-sub {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--site-muted);
+  font-size: 1.15rem;
+}
+
+/* ---------------------------------------------------------------
+   HARİTA (büyük)
+   --------------------------------------------------------------- */
+.map-section { padding-top: 2.5rem; }
+
+.map {
+  overflow: hidden;
+  height: clamp(320px, 50vh, 480px);
+  border: 1px solid var(--site-line);
+  border-radius: 0.5rem;
+  background-color: var(--site-soft-bg);
+}
+
+.map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------
+   BİLGİLER + FORM
+   --------------------------------------------------------------- */
+.contact {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  padding-top: 3.5rem;
+}
+
+@media (max-width: 991.98px) {
+  .contact { grid-template-columns: 1fr; }
+}
+
+.section-title {
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid var(--site-heading);
+  font-size: 1.75rem;
+}
+
+/* İLETİŞİM BİLGİLERİ: ince çizgilerle ayrılmış liste */
+.info-list { margin: 0; }
+
+.info-row {
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--site-line);
+}
+
+.info-row dt {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.info-row dt i { font-size: 0.8rem; }
+
+.info-row dd {
+  margin: 0;
+  color: var(--site-ink);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.info-row dd a:hover { color: var(--site-accent); text-decoration: underline; }
+
+.socials {
+  display: flex;
+  gap: 0.85rem;
+  padding-top: 0.2rem;
+}
+
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  opacity: 0.75;
+}
+
+.socials a:hover { opacity: 1; }
+.socials img { width: 100%; height: 100%; object-fit: contain; }
+
+.info-empty { color: var(--site-muted); }
+
+/* FORM */
+.row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 575.98px) {
+  .row-2 { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.field label {
+  margin-bottom: 0.45rem;
+  color: var(--site-ink);
+  font-family: var(--site-nav-font);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #cfcfcb;
+  border-radius: 0.35rem;
+  background-color: #fff;
+  color: var(--site-ink);
+  font-family: var(--site-nav-font);
+  font-size: 0.95rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field textarea {
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--site-accent);
+  box-shadow: 0 0 0 3px rgba(70, 83, 103, 0.12);
+}
+
+.field .is-invalid { border-color: #b91c1c; }
+
+.field-foot { display: flex; justify-content: space-between; gap: 0.75rem; }
+
+.error {
+  margin-top: 0.35rem;
+  color: #b91c1c;
+  font-family: var(--site-nav-font);
+  font-size: 0.78rem;
+}
+
+.counter {
+  margin-top: 0.35rem;
+  margin-left: auto;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.75rem;
+}
+
+.turnstile {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--site-line);
+}
+
+.btn-submit {
+  padding: 0.8rem 2rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background-color: var(--site-accent);
+  color: #fff;
+  font-family: var(--site-nav-font);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-submit:hover:not(:disabled) { background-color: var(--site-accent-dark); }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 575.98px) {
+  .btn-submit { width: 100%; }
+}
+
+.privacy {
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.78rem;
+}
+
+/* BİLDİRİMLER */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid;
+  border-radius: 0.35rem;
+  font-family: var(--site-nav-font);
+  font-size: 0.92rem;
+}
+
+.notice i { margin-top: 0.15rem; font-size: 1.05rem; }
+
+.notice-success {
+  border-color: #bbf7d0;
+  background-color: #f0fdf4;
+  color: #14532d;
+}
+
+.notice-success strong { display: block; margin-bottom: 0.25rem; font-size: 1rem; }
+.notice-success p { margin: 0 0 0.6rem; }
+.notice-success span { font-weight: 600; }
+
+.notice-error {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+  color: #991b1b;
+}
+
+.btn-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #14532d;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}

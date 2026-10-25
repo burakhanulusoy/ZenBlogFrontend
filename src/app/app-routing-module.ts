@@ -42,6 +42,10 @@ import { Teams } from './_admin-components/teams/teams';
 import { TeamForm } from './_admin-components/team-form/team-form';
 import { ContactInfo } from './_admin-components/contact-info/contact-info';
 import { ContactMessages } from './_admin-components/contact-messages/contact-messages';
+import { SiteBlogDetail } from './_main-components/site-blog-detail/site-blog-detail';   // YENİ
+import { SiteCategory } from './_main-components/site-category/site-category';
+import { SiteAbout } from './_main-components/site-about/site-about';
+import { SiteContact } from './_main-components/site-contact/site-contact';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -70,8 +74,12 @@ const routes: Routes = [
   // ZİYARETÇİ SİTESİ: navbar + içerik
   {
     path: '', component: MainLayout,
-    children: [
-      { path: '', component: Home }
+                 children: [
+      { path: '', component: Home },
+      { path: 'about', component: SiteAbout },
+      { path: 'contact', component: SiteContact },          // YENİ
+      { path: 'blog/:id', component: SiteBlogDetail },
+      { path: 'category/:id', component: SiteCategory }
     ]
   },
 

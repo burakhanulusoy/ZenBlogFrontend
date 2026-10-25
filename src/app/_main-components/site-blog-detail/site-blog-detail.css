@@ -1,0 +1,538 @@
+/* =====================================================================
+   SİTE: BLOG DETAYI · Renk ve fontlar: styles.css → .zb-site değişkenleri
+   ===================================================================== */
+
+/* Okumaya uygun dar sütun (~70 karakter) ve geniş kapak alanı */
+.narrow {
+  width: 100%;
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.wide {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+/* OKUMA İLERLEMESİ */
+.read-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 300;
+  height: 3px;
+  background: transparent;
+}
+
+.read-progress span {
+  display: block;
+  height: 100%;
+  background-color: var(--site-accent);
+  transition: width 0.1s linear;
+}
+
+/* YÜKLENİYOR / DURUMLAR */
+.loading { padding-top: 3.5rem; }
+
+.sk {
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #f0f0ef 25%, #e7e7e5 37%, #f0f0ef 63%);
+  background-size: 400% 100%;
+  animation: sk-shine 1.4s ease infinite;
+}
+
+@keyframes sk-shine {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.sk-line-sm { width: 25%; height: 1rem; }
+.sk-title { height: 2.6rem; }
+.sk-title.short { width: 60%; }
+.sk-cover { height: 380px; margin-top: 2rem; }
+
+.state { padding: 5rem 1.25rem; text-align: center; }
+.state h1 { margin: 0 0 0.5rem; font-size: 2.2rem; }
+.state p { color: var(--site-muted); }
+
+/* ---------------------------------------------------------------
+   BAŞLIK
+   --------------------------------------------------------------- */
+.blog-head {
+  padding-top: 3.5rem;
+  padding-bottom: 2.25rem;
+  text-align: center;
+}
+
+.blog-cat {
+  display: inline-block;
+  margin-bottom: 1.1rem;
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--site-line);
+  border-radius: 999px;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.blog-cat:hover { border-color: var(--site-accent); color: var(--site-accent); }
+
+.blog-title {
+  margin: 0 0 1.25rem;
+  color: var(--site-heading);
+  font-size: clamp(2.1rem, 5vw, 3.3rem);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.blog-lead {
+  margin: 0 0 2rem;
+  color: #555;
+  font-size: 1.3rem;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.blog-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  text-align: left;
+}
+
+.meta-text {
+  display: flex;
+  flex-direction: column;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.85rem;
+}
+
+.meta-text strong { color: var(--site-ink); font-size: 0.95rem; }
+.meta-link { text-decoration: underline !important; text-underline-offset: 3px; }
+
+/* AVATAR (her yerde ortak) */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--site-accent);
+  color: #fff;
+  font-family: var(--site-nav-font);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-sm { width: 34px; height: 34px; font-size: 0.72rem; }
+.avatar-lg { width: 64px; height: 64px; font-size: 1.1rem; }
+
+/* ---------------------------------------------------------------
+   KAPAK
+   --------------------------------------------------------------- */
+.cover { margin-top: 0; margin-bottom: 3rem; }
+
+.cover img {
+  display: block;
+  width: 100%;
+  max-height: 620px;
+  border-radius: 0.9rem;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------
+   YAZI
+   --------------------------------------------------------------- */
+.blog-body {
+  font-size: 1.28rem;
+  line-height: 1.8;
+}
+
+.blog-body h2 {
+  margin: 2.75rem 0 1rem;
+  font-size: 2rem;
+  line-height: 1.25;
+}
+
+.blog-body h2:first-child { margin-top: 0; }
+
+.blog-body p {
+  margin: 0 0 1.5rem;
+  color: #2b2b2b;
+  white-space: pre-line;   /* yazarın paragrafları korunsun */
+}
+
+/* İlk paragrafta büyük baş harf */
+.dropcap::first-letter {
+  float: left;
+  margin: 0.35rem 0.6rem 0 0;
+  color: var(--site-heading);
+  font-size: 4.4rem;
+  font-weight: 600;
+  line-height: 0.8;
+}
+
+.inline-figure { margin: 2.5rem -1rem; }
+
+.inline-figure img {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+  .inline-figure { margin: 2rem 0; }
+  .blog-body { font-size: 1.15rem; }
+}
+
+/* ---------------------------------------------------------------
+   YAZAR + PAYLAŞ
+   --------------------------------------------------------------- */
+.blog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid var(--site-line);
+  border-bottom: 1px solid var(--site-line);
+}
+
+.author-box { display: flex; align-items: center; gap: 1rem; }
+
+.author-label {
+  display: block;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.author-name { color: var(--site-heading); font-size: 1.35rem; font-weight: 500; }
+
+.share { display: flex; align-items: center; gap: 0.5rem; }
+
+.share-label {
+  margin-right: 0.25rem;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.8rem;
+}
+
+.share-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--site-line);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--site-ink);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.share-btn:hover { border-color: var(--site-accent); background-color: var(--site-accent); color: #fff; }
+
+/* ---------------------------------------------------------------
+   BUTONLAR
+   --------------------------------------------------------------- */
+.btn-primary,
+.btn-outline,
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-family: var(--site-nav-font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.btn-primary { border: 0; background-color: var(--site-accent); color: #fff !important; }
+.btn-primary:hover:not(:disabled) { background-color: var(--site-accent-dark); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-outline { border: 1px solid var(--site-accent); background: none; color: var(--site-accent) !important; }
+.btn-outline:hover { background-color: var(--site-accent); color: #fff !important; }
+
+.btn-text { border: 0; background: none; color: var(--site-muted); }
+.btn-text:hover { color: var(--site-ink); }
+
+/* ---------------------------------------------------------------
+   YORUMLAR
+   --------------------------------------------------------------- */
+.comments { padding-top: 3rem; }
+
+.comments-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0 0 1.75rem;
+  font-size: 2rem;
+}
+
+.comments-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.55rem;
+  border-radius: 999px;
+  background-color: var(--site-soft-bg);
+  color: var(--site-ink);
+  font-family: var(--site-nav-font);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Yorum kutusu */
+.composer {
+  display: flex;
+  gap: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.composer-main { flex-grow: 1; }
+
+.composer textarea,
+.c-edit textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--site-line);
+  border-radius: 0.75rem;
+  background-color: #fff;
+  color: var(--site-ink);
+  font-family: var(--site-font);
+  font-size: 1.05rem;
+  line-height: 1.55;
+  resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.composer textarea:focus,
+.c-edit textarea:focus {
+  outline: none;
+  border-color: var(--site-accent);
+  box-shadow: 0 0 0 3px rgba(70, 83, 103, 0.12);
+}
+
+.composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.composer-foot small {
+  margin-right: auto;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.75rem;
+}
+
+.composer-reply { margin: 0.5rem 0 0 3.6rem; }
+
+/* Giriş daveti */
+.login-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.4rem;
+  border: 1px dashed var(--site-line);
+  border-radius: 0.9rem;
+  background-color: var(--site-soft-bg);
+}
+
+.login-cta > i { color: var(--site-accent); font-size: 1.6rem; }
+.login-cta > div:nth-child(2) { flex-grow: 1; }
+.login-cta strong { color: var(--site-heading); font-size: 1.2rem; }
+.login-cta p { margin: 0; color: var(--site-muted); font-size: 1rem; }
+.login-cta-actions { display: flex; gap: 0.5rem; }
+
+.comments-empty { color: var(--site-muted); font-style: italic; }
+
+/* Liste */
+.comment-list,
+.reply-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.comment-thread {
+  padding: 1.4rem 0;
+  border-top: 1px solid var(--site-line);
+}
+
+/* Yanıtlar: sola girintili, ince dikey çizgiyle */
+.reply-list {
+  margin: 1rem 0 0 1.35rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--site-line);
+}
+
+.reply-list > li + li { margin-top: 1.1rem; }
+
+.c-item { display: flex; gap: 0.85rem; }
+.c-main { flex-grow: 1; min-width: 0; }
+
+.c-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.c-name { color: var(--site-heading); font-size: 1.1rem; font-weight: 600; }
+
+.c-badge {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background-color: var(--site-accent);
+  color: #fff;
+  font-family: var(--site-nav-font);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.c-date,
+.c-edited {
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.78rem;
+}
+
+.c-body {
+  margin: 0;
+  color: #2b2b2b;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.c-actions { display: flex; gap: 0.25rem; margin-top: 0.4rem; margin-left: -0.5rem; }
+
+.c-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: none;
+  color: var(--site-muted);
+  font-family: var(--site-nav-font);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.c-actions button:hover { background-color: var(--site-soft-bg); color: var(--site-ink); }
+.c-actions button.is-danger:hover { color: #b91c1c; }
+.c-actions i { font-size: 0.75rem; }
+
+@media (max-width: 575.98px) {
+  .reply-list { margin-left: 0.5rem; padding-left: 0.9rem; }
+  .composer-reply { margin-left: 0; }
+  .login-cta-actions { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk { animation: none; }
+  .read-progress span { transition: none; }
+}
+
+
+/* ---------------------------------------------------------------
+   İLGİLİ YAZILAR
+   --------------------------------------------------------------- */
+.related {
+  margin-top: 3.5rem;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+  border-top: 2px solid var(--site-heading);
+}
+
+.related-title {
+  margin: 0 0 2rem;
+  font-size: 2rem;
+}
+
+.related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+
+@media (max-width: 767.98px) {
+  .related-grid { grid-template-columns: 1fr; }
+}
+
+.related-img {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 0.9rem;
+  border-radius: 0.6rem;
+}
+
+.related-img img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.related-img:hover img { transform: scale(1.04); }
+
+.related-cat {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--site-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.related-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+.related-card h3 a:hover { color: var(--site-accent); }
+.related-author { color: var(--site-muted); font-size: 0.95rem; }

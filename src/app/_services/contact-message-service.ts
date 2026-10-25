@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Result } from '../_models/result';
 import { ContactMessageDto, MessageStatus } from '../_models/contact';
@@ -34,5 +34,12 @@ export class ContactMessageService {
 
   delete(id: string) {
     return this.http.delete<Result<any>>(this.baseUrl + id);
+  }
+
+    // YENİ: Sitedeki iletişim formu (herkese açık; Turnstile token'ı başlıkta)
+  send(dto: { name: string; email: string; subject: string; messageBody: string }, turnstileToken: string) {
+    return this.http.post<Result<any>>(this.baseUrl, dto, {
+      headers: new HttpHeaders({ 'X-Turnstile-Token': turnstileToken })
+    });
   }
 }

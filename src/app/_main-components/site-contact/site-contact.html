@@ -1,0 +1,141 @@
+<!-- =====================================================================
+     SİTE: İLETİŞİM
+     ===================================================================== -->
+
+<!-- ============================== ÜST BANT ============================== -->
+<section class="page-hero">
+  <div class="site-container">
+    <nav class="crumbs" aria-label="Sayfa yolu">
+      <a routerLink="/">Ana sayfa</a>
+      <span aria-hidden="true">/</span>
+      <span class="crumbs-current" aria-current="page">İletişim</span>
+    </nav>
+    <h1 class="page-title">İletişim</h1>
+    <p class="page-sub">Görüş, öneri ve iş birliği talepleriniz için bize aşağıdaki kanallardan ulaşabilirsiniz.</p>
+  </div>
+</section>
+
+<!-- ============================== HARİTA ============================== -->
+<section class="site-container map-section" *ngIf="mapUrl">
+  <div class="map">
+    <iframe [src]="mapUrl" title="ZenBlog konumu" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+</section>
+
+<!-- ============================== BİLGİLER + FORM ============================== -->
+<section class="site-container contact">
+
+  <!-- ===================== SOL: İLETİŞİM BİLGİLERİ ===================== -->
+  <aside class="info" aria-labelledby="info-title">
+    <h2 id="info-title" class="section-title">İletişim bilgileri</h2>
+
+    <dl class="info-list" *ngIf="contact">
+      <div class="info-row">
+        <dt><i class="pi pi-map-marker" aria-hidden="true"></i> Adres</dt>
+        <dd>{{ contact.address }}</dd>
+      </div>
+      <div class="info-row">
+        <dt><i class="pi pi-phone" aria-hidden="true"></i> Telefon</dt>
+        <dd><a [href]="'tel:' + contact.phoneNumber">{{ contact.phoneNumber }}</a></dd>
+      </div>
+      <div class="info-row">
+        <dt><i class="pi pi-envelope" aria-hidden="true"></i> E-posta</dt>
+        <dd><a [href]="'mailto:' + contact.email">{{ contact.email }}</a></dd>
+      </div>
+      <div class="info-row" *ngIf="socials.length > 0">
+        <dt><i class="pi pi-share-alt" aria-hidden="true"></i> Sosyal medya</dt>
+        <dd class="socials">
+          <a *ngFor="let s of socials" [href]="s.url" target="_blank" rel="noopener noreferrer"
+             [attr.aria-label]="s.title" [title]="s.title">
+            <img [src]="s.icon" alt="">
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <p class="info-empty" *ngIf="!contact">İletişim bilgileri yakında eklenecektir.</p>
+  </aside>
+
+  <!-- ===================== SAĞ: MESAJ FORMU ===================== -->
+  <section class="form" aria-labelledby="form-title">
+    <h2 id="form-title" class="section-title">Mesaj gönderin</h2>
+
+    <!-- GÖNDERİLDİ -->
+    <div class="notice notice-success" *ngIf="isSent" role="status">
+      <i class="pi pi-check-circle" aria-hidden="true"></i>
+      <div>
+        <strong>Mesajınız alınmıştır.</strong>
+        <p>En kısa sürede <span>{{ form.email }}</span> adresine dönüş yapılacaktır.</p>
+        <button type="button" class="btn-link" (click)="newMessage()">Yeni mesaj gönder</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!isSent">
+      <div class="notice notice-error" *ngIf="generalError" role="alert">
+        <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
+        <div>{{ generalError }}</div>
+      </div>
+
+      <form #contactForm="ngForm" (ngSubmit)="send(contactForm)" novalidate>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="cName">Ad soyad</label>
+            <input id="cName" name="name" type="text" autocomplete="name" [attr.maxlength]="limits.name"
+                   [(ngModel)]="form.name" #nameModel="ngModel" required
+                   [class.is-invalid]="(nameModel.invalid && (nameModel.touched || submitted)) || fieldError('Name')">
+            <small class="error" *ngIf="(nameModel.invalid && (nameModel.touched || submitted)) || fieldError('Name')">
+              {{ fieldError('Name') || 'Ad soyad zorunludur.' }}
+            </small>
+          </div>
+
+          <div class="field">
+            <label for="cEmail">E-posta</label>
+            <input id="cEmail" name="email" type="email" autocomplete="email"
+                   [(ngModel)]="form.email" #emailModel="ngModel" required email
+                   [class.is-invalid]="(emailModel.invalid && (emailModel.touched || submitted)) || fieldError('Email')">
+            <small class="error" *ngIf="(emailModel.invalid && (emailModel.touched || submitted)) || fieldError('Email')">
+              {{ fieldError('Email') || 'Geçerli bir e-posta adresi giriniz.' }}
+            </small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cSubject">Konu</label>
+          <input id="cSubject" name="subject" type="text" [attr.maxlength]="limits.subject"
+                 [(ngModel)]="form.subject" #subjectModel="ngModel" required
+                 [class.is-invalid]="(subjectModel.invalid && (subjectModel.touched || submitted)) || fieldError('Subject')">
+          <small class="error" *ngIf="(subjectModel.invalid && (subjectModel.touched || submitted)) || fieldError('Subject')">
+            {{ fieldError('Subject') || 'Konu zorunludur.' }}
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="cMessage">Mesajınız</label>
+          <textarea id="cMessage" name="messageBody" rows="7" [attr.maxlength]="limits.messageMax"
+                    [(ngModel)]="form.messageBody" #messageModel="ngModel" required
+                    [class.is-invalid]="(submitted && messageLength < limits.messageMin) || fieldError('MessageBody')"></textarea>
+          <div class="field-foot">
+            <small class="error" *ngIf="(submitted && messageLength < limits.messageMin) || fieldError('MessageBody')">
+              {{ fieldError('MessageBody') || 'Mesajınız en az ' + limits.messageMin + ' karakter olmalıdır.' }}
+            </small>
+            <small class="counter">{{ form.messageBody.length }} / {{ limits.messageMax }}</small>
+          </div>
+        </div>
+
+        <div class="turnstile">
+          <app-turnstile (tokenChange)="turnstileToken = $event"></app-turnstile>
+          <small class="error" *ngIf="submitted && !turnstileToken">Lütfen doğrulamayı tamamlayınız.</small>
+        </div>
+
+        <div class="form-foot">
+          <button type="submit" class="btn-submit" [disabled]="isSending">
+            {{ isSending ? 'Gönderiliyor...' : 'Mesajı gönder' }}
+          </button>
+          <small class="privacy">Bilgileriniz yalnızca size dönüş yapmak amacıyla kullanılır.</small>
+        </div>
+      </form>
+    </ng-container>
+  </section>
+
+</section>

@@ -1,0 +1,99 @@
+<!-- =====================================================================
+     SİTE: KATEGORİ SAYFASI
+     ===================================================================== -->
+
+<!-- ============================== ÜST BANT ============================== -->
+<section class="cat-hero">
+  <div class="site-container">
+
+    <!-- Sayfa yolu -->
+    <nav class="crumbs" aria-label="Sayfa yolu">
+      <a routerLink="/">Ana sayfa</a>
+      <span aria-hidden="true">/</span>
+      <span>Kategoriler</span>
+      <ng-container *ngIf="data">
+        <span aria-hidden="true">/</span>
+        <span class="crumbs-current" aria-current="page">{{ data.categoryName }}</span>
+      </ng-container>
+    </nav>
+
+    <h1 class="cat-title" *ngIf="data">{{ data.categoryName }}</h1>
+    <h1 class="cat-title" *ngIf="!data && isLoading">&nbsp;</h1>
+
+    <p class="cat-count" *ngIf="data">
+      {{ data.totalCount }} yazı
+      <ng-container *ngIf="data.totalPages > 1"> · Sayfa {{ data.page }} / {{ data.totalPages }}</ng-container>
+    </p>
+
+    <!-- Diğer kategoriler: hızlı geçiş -->
+    <div class="cat-chips" *ngIf="categories.length > 0">
+      <a *ngFor="let c of categories; trackBy: trackById" [routerLink]="['/category', c.id]"
+         routerLinkActive="is-active" class="chip">{{ c.name }}</a>
+    </div>
+  </div>
+</section>
+
+<div class="site-container cat-body">
+
+  <!-- YÜKLENİYOR -->
+  <div class="grid" *ngIf="isLoading" aria-busy="true">
+    <div class="sk-card" *ngFor="let s of [1, 2, 3, 4, 5, 6]">
+      <div class="sk sk-img"></div>
+      <div class="sk sk-line"></div>
+      <div class="sk sk-line short"></div>
+    </div>
+  </div>
+
+  <!-- BULUNAMADI -->
+  <div class="state" *ngIf="notFound">
+    <h2>Kategori bulunamadı</h2>
+    <p>Bu kategori kaldırılmış olabilir.</p>
+    <a routerLink="/" class="btn-outline">Ana sayfaya dön</a>
+  </div>
+
+  <!-- HATA -->
+  <div class="state" *ngIf="errorMessage"><p>{{ errorMessage }}</p></div>
+
+  <!-- BOŞ -->
+  <div class="state" *ngIf="data && !isLoading && data.totalCount === 0">
+    <h2>Bu kategoride henüz yazı yok</h2>
+    <p>Yakında burada yeni yazılar olacak.</p>
+  </div>
+
+  <!-- KARTLAR -->
+  <div class="grid fade-in" *ngIf="data && !isLoading && data.blogs.length > 0">
+    <article class="card" *ngFor="let b of data.blogs; trackBy: trackById">
+      <a [routerLink]="['/blog', b.id]" class="card-img">
+        <img [src]="b.coverImage" [alt]="b.mainTitle" loading="lazy" decoding="async">
+      </a>
+      <div class="card-meta">
+        <time [attr.datetime]="b.createdAt">{{ b.createdAt | date:'d MMMM yyyy':'':'tr' }}</time>
+        <span *ngIf="b.commentCount > 0" class="card-comments">
+          · <i class="pi pi-comments" aria-hidden="true"></i> {{ b.commentCount }}
+        </span>
+      </div>
+      <h2 class="card-title"><a [routerLink]="['/blog', b.id]">{{ b.mainTitle }}</a></h2>
+      <p class="card-excerpt">{{ b.mainDescription }}</p>
+      <span class="card-author">{{ b.authorName }}</span>
+    </article>
+  </div>
+
+  <!-- SAYFALAMA -->
+  <nav class="pager" *ngIf="data && !isLoading && data.totalPages > 1" aria-label="Sayfalar">
+    <button type="button" class="pager-btn" [disabled]="data.page === 1" (click)="goToPage(data.page - 1)" aria-label="Önceki sayfa">
+      <i class="pi pi-chevron-left" aria-hidden="true"></i>
+    </button>
+
+    <ng-container *ngFor="let p of pages">
+      <span class="pager-dots" *ngIf="!isPageNumber(p)">…</span>
+      <button type="button" class="pager-btn" *ngIf="isPageNumber(p)"
+              [class.is-active]="p === data.page" [attr.aria-current]="p === data.page ? 'page' : null"
+              (click)="goToPage(p)">{{ p }}</button>
+    </ng-container>
+
+    <button type="button" class="pager-btn" [disabled]="data.page === data.totalPages" (click)="goToPage(data.page + 1)" aria-label="Sonraki sayfa">
+      <i class="pi pi-chevron-right" aria-hidden="true"></i>
+    </button>
+  </nav>
+
+</div>

@@ -158,6 +158,8 @@ export class Login implements OnInit, AfterViewInit {
   // İki giriş türünün de ortak başarı adımı
    // İki giriş türünün de ortak başarı adımı
   // DEĞİŞTİ: reactivated → kişi "Hesabımı kapat" demişti, 30 gün dolmadan geri döndü
+    // İki giriş türünün de ortak başarı adımı
+  // reactivated → kişi "Hesabımı kapat" demişti, 30 gün dolmadan geri döndü
   private onLoginSuccess(token: string, reactivated = false) {
     localStorage.setItem("token", token);
 
@@ -167,6 +169,14 @@ export class Login implements OnInit, AfterViewInit {
       alertify.success("Giriş başarılı, hoş geldin!");
     }
 
-    this.router.navigate([this.authService.getHomeRoute()]);
+    // YENİ: Bir sayfadan "giriş yap"a gelindiyse oraya geri dön (örn. yorum yapmak için blog detayı)
+    // Güvenlik: sadece sitenin kendi adresleri ("/" ile başlayan, "//" ile başlamayan) kabul edilir;
+    // yoksa biri bağlantıya başka bir site adresi koyup kullanıcıyı oraya yönlendirebilirdi.
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate([this.authService.getHomeRoute()]);
+    }
   }
 }

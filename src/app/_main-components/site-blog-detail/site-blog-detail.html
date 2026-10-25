@@ -1,0 +1,247 @@
+<!-- =====================================================================
+     SİTE: BLOG DETAYI
+     ===================================================================== -->
+
+<!-- Okuma ilerleme çubuğu (sayfanın en üstünde) -->
+<div class="read-progress" aria-hidden="true">
+  <span [style.width.%]="readingProgress"></span>
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="narrow loading" *ngIf="isLoading" aria-busy="true">
+  <div class="sk sk-line-sm"></div>
+  <div class="sk sk-title"></div>
+  <div class="sk sk-title short"></div>
+  <div class="sk sk-cover"></div>
+</div>
+
+<!-- BULUNAMADI -->
+<div class="narrow state" *ngIf="notFound">
+  <h1>Yazı bulunamadı</h1>
+  <p>Bu yazı kaldırılmış ya da adres yanlış olabilir.</p>
+  <a routerLink="/" class="btn-outline">Ana sayfaya dön</a>
+</div>
+
+<!-- HATA -->
+<div class="narrow state" *ngIf="errorMessage">
+  <p>{{ errorMessage }}</p>
+</div>
+
+
+<article *ngIf="blog && !isLoading" class="blog fade-in">
+
+  <!-- ============================== BAŞLIK ============================== -->
+  <header class="narrow blog-head">
+    <a [routerLink]="['/category', blog.categoryId]" class="blog-cat">{{ blog.category?.name }}</a>
+    <h1 class="blog-title">{{ blog.mainTitle }}</h1>
+    <p class="blog-lead">{{ blog.mainDescription }}</p>
+
+    <div class="blog-meta">
+      <span class="avatar">
+        <img *ngIf="blog.appUser?.imageUrl" [src]="blog.appUser.imageUrl" alt="">
+        <ng-container *ngIf="!blog.appUser?.imageUrl">{{ initials(authorName) }}</ng-container>
+      </span>
+      <span class="meta-text">
+        <strong>{{ authorName }}</strong>
+        <span>
+          <time [attr.datetime]="blog.createdAt">{{ blog.createdAt | date:'d MMMM yyyy':'':'tr' }}</time>
+          · {{ readMinutes }} dk okuma
+          · <a href="#comments" class="meta-link">{{ totalComments }} yorum</a>
+        </span>
+      </span>
+    </div>
+  </header>
+
+  <!-- ============================== KAPAK ============================== -->
+  <figure class="wide cover">
+    <img [src]="blog.coverImage" [alt]="blog.mainTitle" fetchpriority="high">
+  </figure>
+
+  <!-- ============================== YAZI ============================== -->
+  <div class="narrow blog-body">
+    <h2>{{ blog.title1 }}</h2>
+    <p class="dropcap">{{ blog.description1 }}</p>
+    <p>{{ blog.description2 }}</p>
+
+    <figure class="inline-figure">
+      <img [src]="blog.blogImage1" [alt]="blog.title1" loading="lazy" decoding="async">
+    </figure>
+
+    <h2>{{ blog.title2 }}</h2>
+    <p>{{ blog.description3 }}</p>
+
+    <figure class="inline-figure">
+      <img [src]="blog.blogImage2" [alt]="blog.title2" loading="lazy" decoding="async">
+    </figure>
+
+    <h2>{{ blog.title3 }}</h2>
+    <p>{{ blog.description4 }}</p>
+  </div>
+
+  <!-- ============================== YAZAR + PAYLAŞ ============================== -->
+  <footer class="narrow blog-foot">
+    <div class="author-box">
+      <span class="avatar avatar-lg">
+        <img *ngIf="blog.appUser?.imageUrl" [src]="blog.appUser.imageUrl" alt="">
+        <ng-container *ngIf="!blog.appUser?.imageUrl">{{ initials(authorName) }}</ng-container>
+      </span>
+      <div>
+        <span class="author-label">Yazar</span>
+        <strong class="author-name">{{ authorName }}</strong>
+      </div>
+    </div>
+
+    <div class="share">
+      <span class="share-label">Paylaş</span>
+      <button type="button" class="share-btn" (click)="copyLink()" aria-label="Bağlantıyı kopyala" title="Bağlantıyı kopyala">
+        <i class="pi pi-link" aria-hidden="true"></i>
+      </button>
+      <a class="share-btn" [href]="shareLink('x')" target="_blank" rel="noopener noreferrer" aria-label="X'te paylaş">
+        <i class="pi pi-twitter" aria-hidden="true"></i>
+      </a>
+      <a class="share-btn" [href]="shareLink('linkedin')" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn'de paylaş">
+        <i class="pi pi-linkedin" aria-hidden="true"></i>
+      </a>
+      <a class="share-btn" [href]="shareLink('whatsapp')" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp'ta paylaş">
+        <i class="pi pi-whatsapp" aria-hidden="true"></i>
+      </a>
+    </div>
+  </footer>
+
+
+  <!-- ============================== İLGİLİ YAZILAR ============================== -->
+  <section class="wide related" *ngIf="related.length > 0" aria-labelledby="related-title">
+    <h2 id="related-title" class="related-title">Bunları da sevebilirsin</h2>
+    <div class="related-grid">
+      <article class="related-card" *ngFor="let r of related; trackBy: trackById">
+        <a [routerLink]="['/blog', r.id]" class="related-img">
+          <img [src]="r.coverImage" [alt]="r.mainTitle" loading="lazy" decoding="async">
+        </a>
+        <span class="related-cat">{{ r.categoryName }}</span>
+        <h3><a [routerLink]="['/blog', r.id]">{{ r.mainTitle }}</a></h3>
+        <span class="related-author">{{ r.authorName }}</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================== YORUMLAR ============================== -->
+  <section class="narrow comments" id="comments" aria-labelledby="comments-title">
+    <h2 id="comments-title" class="comments-title">
+      Yorumlar <span class="comments-count">{{ totalComments }}</span>
+    </h2>
+
+    <!-- Giriş yapmış: yorum kutusu -->
+    <form class="composer" *ngIf="isLoggedIn" (ngSubmit)="submitComment()">
+      <span class="avatar">
+        <img *ngIf="currentUserImage" [src]="currentUserImage" alt="">
+        <ng-container *ngIf="!currentUserImage">{{ currentUserInitials }}</ng-container>
+      </span>
+      <div class="composer-main">
+        <label for="newComment" class="sr-only">Yorumun</label>
+        <textarea id="newComment" name="newComment" rows="3" [(ngModel)]="newComment"
+                  [attr.maxlength]="maxLength" placeholder="Düşüncelerini paylaş..."></textarea>
+        <div class="composer-foot">
+          <small>{{ newComment.length }}/{{ maxLength }}</small>
+          <button type="submit" class="btn-primary" [disabled]="!newComment.trim() || isSending">
+            {{ isSending ? 'Gönderiliyor...' : 'Yorum yap' }}
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Giriş yapmamış: davet kartı -->
+    <div class="login-cta" *ngIf="!isLoggedIn">
+      <i class="pi pi-comments" aria-hidden="true"></i>
+      <div>
+        <strong>Sohbete katıl</strong>
+        <p>Yorum yapmak ve yanıt yazmak için giriş yapmalısın.</p>
+      </div>
+      <div class="login-cta-actions">
+        <a routerLink="/login" [queryParams]="returnUrlParams" class="btn-primary">Giriş yap</a>
+        <a routerLink="/register" class="btn-outline">Kayıt ol</a>
+      </div>
+    </div>
+
+    <p class="comments-empty" *ngIf="comments.length === 0">Henüz yorum yok. İlk yorumu sen yaz!</p>
+
+    <!-- YORUM LİSTESİ -->
+    <ol class="comment-list">
+      <li *ngFor="let c of comments; trackBy: trackById" class="comment-thread">
+
+        <!-- Yorum -->
+        <ng-container *ngTemplateOutlet="commentItem; context: { $implicit: c, isReply: false, parent: c }"></ng-container>
+
+        <!-- Yanıtlar -->
+        <ol class="reply-list" *ngIf="c.replies.length > 0">
+          <li *ngFor="let r of c.replies; trackBy: trackById">
+            <ng-container *ngTemplateOutlet="commentItem; context: { $implicit: r, isReply: true, parent: c }"></ng-container>
+          </li>
+        </ol>
+
+        <!-- Yanıt yazma kutusu (bu yorumun altında) -->
+        <form class="composer composer-reply" *ngIf="replyingTo === c.id" (ngSubmit)="submitReply(c)">
+          <div class="composer-main">
+            <label [for]="'reply-' + c.id" class="sr-only">Yanıtın</label>
+            <textarea [id]="'reply-' + c.id" name="replyText" rows="2" [(ngModel)]="replyText"
+                      [attr.maxlength]="maxLength" placeholder="Yanıtını yaz..."></textarea>
+            <div class="composer-foot">
+              <button type="button" class="btn-text" (click)="cancelReply()">Vazgeç</button>
+              <button type="submit" class="btn-primary" [disabled]="!replyText.trim() || isReplying">
+                {{ isReplying ? 'Gönderiliyor...' : 'Yanıtla' }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </li>
+    </ol>
+  </section>
+
+</article>
+
+
+<!-- =====================================================================
+     TEK YORUM / YANIT ŞABLONU
+     item: yorum ya da yanıt · isReply: yanıt mı · parent: bağlı olduğu yorum
+     ===================================================================== -->
+<ng-template #commentItem let-item let-isReply="isReply" let-parent="parent">
+  <div class="c-item" [class.is-reply]="isReply">
+    <span class="avatar" [class.avatar-sm]="isReply">
+      <img *ngIf="item.authorImage" [src]="item.authorImage" alt="">
+      <ng-container *ngIf="!item.authorImage">{{ initials(item.authorName) }}</ng-container>
+    </span>
+
+    <div class="c-main">
+      <div class="c-head">
+        <strong class="c-name">{{ item.authorName }}</strong>
+        <span class="c-badge" *ngIf="isBlogAuthor(item.authorId)">Yazar</span>
+        <time class="c-date" [attr.datetime]="item.createdAt">{{ item.createdAt | date:'d MMM yyyy, HH:mm':'':'tr' }}</time>
+        <span class="c-edited" *ngIf="isEdited(item)">(düzenlendi)</span>
+      </div>
+
+      <!-- Düzenleme modu -->
+      <div *ngIf="editingId === item.id" class="c-edit">
+        <label [for]="'edit-' + item.id" class="sr-only">Düzenle</label>
+        <textarea [id]="'edit-' + item.id" rows="3" [(ngModel)]="editText" [attr.maxlength]="maxLength"></textarea>
+        <div class="composer-foot">
+          <button type="button" class="btn-text" (click)="cancelEdit()">Vazgeç</button>
+          <button type="button" class="btn-primary" [disabled]="!editText.trim() || isSavingEdit" (click)="saveEdit()">Kaydet</button>
+        </div>
+      </div>
+
+      <!-- Normal görünüm -->
+      <p class="c-body" *ngIf="editingId !== item.id">{{ item.body }}</p>
+
+      <div class="c-actions" *ngIf="editingId !== item.id && isLoggedIn">
+        <button type="button" (click)="startReply(parent, isReply ? item : undefined)">
+          <i class="pi pi-reply" aria-hidden="true"></i> Yanıtla
+        </button>
+        <button type="button" *ngIf="isOwner(item.authorId)" (click)="startEdit(item, isReply)">
+          <i class="pi pi-pencil" aria-hidden="true"></i> Düzenle
+        </button>
+        <button type="button" class="is-danger" *ngIf="canDelete(item.authorId)" (click)="deleteItem(item, isReply)">
+          <i class="pi pi-trash" aria-hidden="true"></i> Sil
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-template>

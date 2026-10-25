@@ -83,6 +83,10 @@ import { ContactMessages } from './_admin-components/contact-messages/contact-me
 
 import { registerLocaleData } from '@angular/common';   // YENİ
 import localeTr from '@angular/common/locales/tr';
+import { SiteBlogDetail } from './_main-components/site-blog-detail/site-blog-detail';
+import { SiteCategory } from './_main-components/site-category/site-category';
+import { SiteAbout } from './_main-components/site-about/site-about';
+import { SiteContact } from './_main-components/site-contact/site-contact';
 
 registerLocaleData(localeTr);
 
@@ -134,6 +138,10 @@ registerLocaleData(localeTr);
     TeamForm,
     ContactInfo,
     ContactMessages,
+    SiteBlogDetail,
+    SiteCategory,
+    SiteAbout,
+    SiteContact,
   ],
   imports: [
     BrowserModule,
