@@ -1,0 +1,130 @@
+<!-- =====================================================================
+     YORUM SAYFALARI (Yorumlarım / Gelen yorumlar / Tüm yorumlar)
+     ===================================================================== -->
+
+<div class="cp-head">
+  <div class="cp-head-text">
+    <span class="cp-icon"><i [class]="texts.icon" aria-hidden="true"></i></span>
+    <div>
+      <h1 class="cp-title">{{ texts.title }}</h1>
+      <p class="cp-sub">{{ texts.sub }}</p>
+    </div>
+  </div>
+
+  <!-- Sayılar -->
+  <div class="cp-stats" *ngIf="!isLoading && !errorMessage">
+    <div class="cp-stat">
+      <span class="cp-stat-value">{{ commentCount }}</span>
+      <span class="cp-stat-label">Yorum</span>
+    </div>
+    <div class="cp-stat">
+      <span class="cp-stat-value">{{ replyCount }}</span>
+      <span class="cp-stat-label">Yanıt</span>
+    </div>
+  </div>
+</div>
+
+<!-- HATA -->
+<div class="cp-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- ARAÇ ÇUBUĞU -->
+<div class="cp-toolbar" *ngIf="!errorMessage">
+  <p-iconfield class="cp-search">
+    <p-inputicon styleClass="pi pi-search" />
+    <input pInputText type="text" class="cp-search-input"
+           [placeholder]="mode === 'mine' ? 'Yorum ya da blog ara' : 'Yorum, blog ya da kişi ara'"
+           [ngModel]="searchText" (ngModelChange)="onSearch($event)" />
+  </p-iconfield>
+
+  <div class="cp-filter" role="group" aria-label="Tür">
+    <button type="button" [class.is-active]="typeFilter === 'all'" (click)="setType('all')">Tümü</button>
+    <button type="button" [class.is-active]="typeFilter === 'comment'" (click)="setType('comment')">Yorumlar</button>
+    <button type="button" [class.is-active]="typeFilter === 'reply'" (click)="setType('reply')">Yanıtlar</button>
+  </div>
+</div>
+
+<!-- YÜKLENİYOR -->
+<div class="cp-list" *ngIf="isLoading">
+  <p-skeleton *ngFor="let s of [1, 2, 3, 4]" width="100%" height="8rem" borderRadius="1rem" styleClass="mb-3" />
+</div>
+
+<!-- BOŞ -->
+<div class="cp-empty" *ngIf="!isLoading && !errorMessage && items.length === 0">
+  <span class="cp-empty-icon"><i [class]="texts.icon" aria-hidden="true"></i></span>
+  <p>{{ texts.empty }}</p>
+</div>
+
+<!-- FİLTREYE UYAN YOK -->
+<div class="cp-empty" *ngIf="!isLoading && items.length > 0 && filtered.length === 0">
+  <p>Aramana uygun yorum bulunamadı.</p>
+</div>
+
+<!-- LİSTE -->
+<ol class="cp-list" *ngIf="!isLoading && visible.length > 0">
+  <li *ngFor="let item of visible; trackBy: trackById" class="cp-item" [class.is-reply]="item.isReply">
+
+    <!-- Üst satır: yazan + tür + tarih -->
+    <div class="cp-item-head">
+      <ng-container *ngIf="showAuthor">
+        <span class="cp-avatar">
+          <img *ngIf="item.authorImage" [src]="item.authorImage" alt="">
+          <ng-container *ngIf="!item.authorImage">{{ initials(item.authorName) }}</ng-container>
+        </span>
+        <strong class="cp-author">{{ item.authorName }}</strong>
+      </ng-container>
+
+      <span class="cp-type" [class.is-reply]="item.isReply">
+        <ng-container *ngIf="!item.isReply"><i class="pi pi-comment" aria-hidden="true"></i> Yorum</ng-container>
+        <ng-container *ngIf="item.isReply"><i class="pi pi-reply" aria-hidden="true"></i> {{ item.replyToName }} adlı kişiye yanıt</ng-container>
+      </span>
+
+      <time class="cp-date" [attr.datetime]="item.createdAt">{{ item.createdAt | date:'dd.MM.yyyy HH:mm' }}</time>
+      <span class="cp-edited" *ngIf="isEdited(item)">(düzenlendi)</span>
+    </div>
+
+    <!-- Metin ya da düzenleme -->
+    <p class="cp-body" *ngIf="editingId !== item.id">{{ item.body }}</p>
+
+    <div class="cp-edit" *ngIf="editingId === item.id">
+      <label [for]="'edit-' + item.id" class="cp-sr-only">Yorumu düzenle</label>
+      <textarea pTextarea [id]="'edit-' + item.id" rows="3" class="cp-textarea"
+                [attr.maxlength]="maxLength" [(ngModel)]="editText"></textarea>
+      <div class="cp-edit-foot">
+        <small>{{ editText.length }}/{{ maxLength }}</small>
+        <p-button label="Vazgeç" size="small" [text]="true" severity="secondary" (onClick)="cancelEdit()" />
+        <p-button label="Kaydet" size="small" icon="pi pi-check" [loading]="isSaving"
+                  [disabled]="!editText.trim() || isSaving" (onClick)="saveEdit(item)" />
+      </div>
+    </div>
+
+    <!-- Alt satır: blog + işlemler -->
+    <div class="cp-item-foot">
+      <a [routerLink]="['/blog', item.blogId]" fragment="comments" target="_blank" class="cp-blog" title="Sitede aç">
+        <i class="pi pi-file" aria-hidden="true"></i>
+        <span>{{ item.blogTitle }}</span>
+        <i class="pi pi-external-link cp-blog-ext" aria-hidden="true"></i>
+      </a>
+
+      <span class="cp-replies" *ngIf="!item.isReply && item.replyCount > 0">
+        <i class="pi pi-comments" aria-hidden="true"></i> {{ item.replyCount }} yanıt
+      </span>
+
+      <div class="cp-actions" *ngIf="editingId !== item.id">
+        <p-button *ngIf="canEdit" icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary"
+                  pTooltip="Düzenle" tooltipPosition="top" ariaLabel="Düzenle" (onClick)="startEdit(item)" />
+        <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
+                  pTooltip="Sil" tooltipPosition="top" ariaLabel="Sil" (onClick)="deleteItem(item)" />
+      </div>
+    </div>
+  </li>
+</ol>
+
+<!-- DAHA FAZLA -->
+<div class="cp-more" *ngIf="!isLoading && hasMore">
+  <p-button [label]="'Daha fazla göster (' + (filtered.length - visible.length) + ')'"
+            icon="pi pi-angle-down" [outlined]="true" severity="secondary" (onClick)="showMore()" />
+</div>

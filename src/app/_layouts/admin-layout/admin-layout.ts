@@ -66,6 +66,7 @@ export class AdminLayout implements OnInit, OnDestroy {
         { label: 'Tüm bloglar', icon: 'pi pi-book', link: '/admin/blogs' },
         { label: 'Kategoriler', icon: 'pi pi-tags', link: '/admin/category' },
         { label: 'Kullanıcılar', icon: 'pi pi-users', link: '/admin/users' } ,  // YENİ
+                { label: 'Tüm yorumlar', icon: 'pi pi-comments', link: '/admin/comments' },   // YENİ
         { label: 'Roller', icon: 'pi pi-shield', link: '/admin/roles' },   // YENİ
         { label: 'Yazarlık başvuruları', icon: 'pi pi-inbox', link: '/admin/writer-applications', badge: 'applications' } ,  // YENİ
         { label: 'Gelen mesajlar', icon: 'pi pi-envelope', link: '/admin/contact-messages', badge: 'messages' }   // YENİ
@@ -88,14 +89,15 @@ export class AdminLayout implements OnInit, OnDestroy {
     // ALTTAKİ MENÜ: admin'in kendi içerikleri
   // DEĞİŞTİ: "Yeni blog yaz" kaldırıldı (Bloglarım sayfasındaki butondan yazılıyor)
     // ALTTAKİ MENÜ: admin'in kendi içerikleri
-  personalGroup: NavGroup = {
+    personalGroup: NavGroup = {
     title: 'Size özel',
     items: [
       { label: 'Bloglarım', icon: 'pi pi-file-edit', link: '/admin/my-blogs' },
-      { label: 'Profilim', icon: 'pi pi-user', link: '/admin/profile' }   // YENİ
+      { label: 'Gelen yorumlar', icon: 'pi pi-inbox', link: '/admin/blog-comments' },   // YENİ
+      { label: 'Yorumlarım', icon: 'pi pi-comment', link: '/admin/my-comments' },       // YENİ
+      { label: 'Profilim', icon: 'pi pi-user', link: '/admin/profile' }
     ]
   };
-
   userMenuItems: MenuItem[] = [];
 
   private routerSubscription: Subscription;

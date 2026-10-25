@@ -87,6 +87,7 @@ import { SiteBlogDetail } from './_main-components/site-blog-detail/site-blog-de
 import { SiteCategory } from './_main-components/site-category/site-category';
 import { SiteAbout } from './_main-components/site-about/site-about';
 import { SiteContact } from './_main-components/site-contact/site-contact';
+import { CommentsPage } from './_personal-components/comments-page/comments-page';
 
 registerLocaleData(localeTr);
 
@@ -142,6 +143,7 @@ registerLocaleData(localeTr);
     SiteCategory,
     SiteAbout,
     SiteContact,
+    CommentsPage,
   ],
   imports: [
     BrowserModule,

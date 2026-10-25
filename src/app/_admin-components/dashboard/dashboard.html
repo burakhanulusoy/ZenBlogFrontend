@@ -1,41 +1,235 @@
 <!-- =====================================================================
-     GENEL BAKIŞ: yapım aşamasında
+     ADMİN GENEL BAKIŞ
      ===================================================================== -->
-<section class="zb-soon">
-  <img src="zenblog-icon.png" class="zb-soon-mark" alt="" aria-hidden="true">
 
-  <span class="zb-soon-badge">
-    <i class="pi pi-wrench" aria-hidden="true"></i> Yapım aşamasında
-  </span>
-
-  <h1 class="zb-soon-title">{{ greeting }}, {{ firstName }}</h1>
-  <p class="zb-soon-text">
-    Genel bakış sayfası hazırlanıyor. Yakında burada blog istatistiklerini,
-    aylık yayın grafiğini ve son hareketleri göreceksin.
-  </p>
-
-  <!-- Şimdilik kullanılabilen sayfalara kısayollar -->
-  <div class="zb-soon-links">
-    <a routerLink="/admin/blogs" class="zb-soon-link">
-      <span class="zb-soon-icon"><i class="pi pi-book" aria-hidden="true"></i></span>
-      <span>
-        <strong>Tüm bloglar</strong>
-        <small>Sitedeki yazıları incele</small>
-      </span>
-    </a>
-    <a routerLink="/admin/category" class="zb-soon-link">
-      <span class="zb-soon-icon"><i class="pi pi-tags" aria-hidden="true"></i></span>
-      <span>
-        <strong>Kategoriler</strong>
-        <small>Kategorileri yönet</small>
-      </span>
-    </a>
-    <a routerLink="/admin/my-blogs" class="zb-soon-link">
-      <span class="zb-soon-icon"><i class="pi pi-file-edit" aria-hidden="true"></i></span>
-      <span>
-        <strong>Bloglarım</strong>
-        <small>Kendi yazıların</small>
-      </span>
-    </a>
+<!-- BAŞLIK + DÖNEM -->
+<header class="db-head">
+  <div>
+    <p class="db-date">{{ today | date:'d MMMM yyyy, EEEE':'':'tr' }}</p>
+    <h1 class="db-title">{{ greeting }}, {{ firstName }}</h1>
+    <p class="db-sub">ZenBlog'un {{ periodText }} içindeki durumu.</p>
   </div>
-</section>
+
+  <div class="seg" role="group" aria-label="Dönem">
+    <button type="button" *ngFor="let p of periods" [class.is-active]="period === p.value"
+            [attr.aria-pressed]="period === p.value" (click)="setPeriod(p.value)">{{ p.label }}</button>
+  </div>
+</header>
+
+<!-- HATA -->
+<div class="db-alert" *ngIf="errorMessage">
+  <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
+  <span>{{ errorMessage }}</span>
+  <p-button label="Tekrar dene" size="small" [outlined]="true" severity="warn" (onClick)="load()" />
+</div>
+
+<!-- İLK YÜKLEME -->
+<div *ngIf="isLoading" class="db-skeleton">
+  <div class="kpi-grid">
+    <p-skeleton *ngFor="let s of [1, 2, 3, 4]" height="8.5rem" borderRadius="1rem" />
+  </div>
+  <div class="row-main">
+    <p-skeleton height="24rem" borderRadius="1rem" />
+    <p-skeleton height="24rem" borderRadius="1rem" />
+  </div>
+</div>
+
+<div class="db-body" *ngIf="data && !isLoading" [class.is-refreshing]="isRefreshing" [attr.aria-busy]="isRefreshing">
+
+  <!-- ============================== ANA KARTLAR ============================== -->
+  <section class="kpi-grid">
+    <ng-container *ngFor="let k of kpis">
+      <a class="kpi" [routerLink]="k.link" *ngIf="k.link">
+        <ng-container *ngTemplateOutlet="kpiBody; context: { $implicit: k }"></ng-container>
+      </a>
+      <div class="kpi" *ngIf="!k.link">
+        <ng-container *ngTemplateOutlet="kpiBody; context: { $implicit: k }"></ng-container>
+      </div>
+    </ng-container>
+  </section>
+
+  <ng-template #kpiBody let-k>
+    <div class="kpi-top">
+      <span class="kpi-icon" [ngClass]="k.tone"><i [class]="k.icon" aria-hidden="true"></i></span>
+      <span class="delta" [ngClass]="'is-' + k.delta.tone" [title]="'Önceki döneme göre (' + k.stat.previousPeriod + ')'">{{ k.delta.text }}</span>
+    </div>
+    <span class="kpi-value">{{ k.stat.inPeriod | number:'1.0-0':'tr' }}</span>
+    <span class="kpi-label">{{ k.label }} <small>· {{ periodText }}</small></span>
+    <span class="kpi-total">Toplam {{ k.stat.total | number:'1.0-0':'tr' }}</span>
+  </ng-template>
+
+  <!-- ============================== GRAFİK + BEKLEYENLER ============================== -->
+  <div class="row-main">
+    <section class="card">
+      <header class="card-head">
+        <div>
+          <h2 class="card-title">Trafik ve etkileşim</h2>
+          <p class="card-sub">{{ periodText | titlecase }} · okunma, yorum, yeni üye ve yeni blog</p>
+        </div>
+      </header>
+      <div class="chart-box">
+        <p-chart type="line" [data]="trendData" [options]="trendOptions" height="320px" />
+      </div>
+    </section>
+
+    <section class="card pending">
+      <header class="card-head">
+        <div>
+          <h2 class="card-title">Seni bekleyenler</h2>
+          <p class="card-sub">{{ pendingTotal > 0 ? pendingTotal + ' iş ilgini bekliyor' : 'Bekleyen iş yok' }}</p>
+        </div>
+      </header>
+
+      <div class="all-clear" *ngIf="pendingTotal === 0">
+        <span class="all-clear-icon"><i class="pi pi-check" aria-hidden="true"></i></span>
+        <strong>Her şey yolunda</strong>
+        <span>Bekleyen başvuru ya da okunmamış mesaj yok.</span>
+      </div>
+
+      <ul class="pending-list">
+        <li *ngFor="let row of pendingRows">
+          <a [routerLink]="row.link" class="pending-row" [class.is-zero]="row.count === 0">
+            <span class="pending-icon" [ngClass]="row.tone"><i [class]="row.icon" aria-hidden="true"></i></span>
+            <span class="pending-label">{{ row.label }}</span>
+            <span class="pending-count">{{ row.count }}</span>
+            <i class="pi pi-angle-right pending-arrow" aria-hidden="true"></i>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- ============================== DAĞILIMLAR + YAZARLAR ============================== -->
+  <div class="row-3">
+    <!-- Kategoriler -->
+    <section class="card">
+      <header class="card-head"><h2 class="card-title">Kategorilere göre bloglar</h2></header>
+      <div class="donut" *ngIf="categoryLegend.length > 0">
+        <div class="donut-chart">
+          <p-chart type="doughnut" [data]="categoryData" [options]="categoryOptions" height="180px" />
+          <span class="donut-center">
+            <strong>{{ data.blogs.total | number:'1.0-0':'tr' }}</strong>
+            <small>blog</small>
+          </span>
+        </div>
+        <ul class="legend">
+          <li *ngFor="let c of categoryLegend">
+            <span class="legend-dot" [style.background-color]="c.color"></span>
+            <span class="legend-name">{{ c.name }}</span>
+            <span class="legend-count">{{ c.count }}</span>
+          </li>
+        </ul>
+      </div>
+      <p class="empty" *ngIf="categoryLegend.length === 0">Henüz blog yok.</p>
+    </section>
+
+    <!-- Roller -->
+    <section class="card">
+      <header class="card-head"><h2 class="card-title">Topluluk</h2></header>
+      <ul class="bars">
+        <li *ngFor="let r of roleRows">
+          <div class="bar-top">
+            <span>{{ r.label }}</span>
+            <strong>{{ r.count | number:'1.0-0':'tr' }} <small>· %{{ r.percent }}</small></strong>
+          </div>
+          <div class="bar-track"><span class="bar-fill" [style.width.%]="r.percent"></span></div>
+        </li>
+      </ul>
+      <a routerLink="/admin/users" class="card-link">Kullanıcıları yönet <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+    </section>
+
+    <!-- En üretken yazarlar -->
+    <section class="card">
+      <header class="card-head"><h2 class="card-title">En üretken yazarlar</h2></header>
+      <ol class="rank" *ngIf="data.topAuthors.length > 0">
+        <li *ngFor="let a of data.topAuthors; let i = index; trackBy: trackById">
+          <a [routerLink]="['/admin/users', a.id]" class="rank-row">
+            <span class="rank-no">{{ i + 1 }}</span>
+            <span class="avatar">
+              <img *ngIf="a.imageUrl" [src]="a.imageUrl" alt="">
+              <ng-container *ngIf="!a.imageUrl">{{ initials(a.name) }}</ng-container>
+            </span>
+            <span class="rank-text">
+              <strong>{{ a.name }}</strong>
+              <small>{{ a.blogs }} blog · {{ a.views | number:'1.0-0':'tr' }} okunma</small>
+            </span>
+          </a>
+        </li>
+      </ol>
+      <p class="empty" *ngIf="data.topAuthors.length === 0">Henüz yazar yok.</p>
+    </section>
+  </div>
+
+  <!-- ============================== BLOGLAR + YORUMLAR ============================== -->
+  <div class="row-2">
+    <!-- En çok okunanlar -->
+    <section class="card">
+      <header class="card-head">
+        <h2 class="card-title">En çok okunan bloglar</h2>
+        <a routerLink="/admin/blogs" class="card-link">Tümü <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+      </header>
+      <ul class="blog-list" *ngIf="data.topBlogs.length > 0">
+        <li *ngFor="let b of data.topBlogs; let i = index; trackBy: trackById">
+          <a [routerLink]="['/admin/blogs', b.id]" class="blog-row">
+            <img [src]="b.coverImage" alt="" loading="lazy">
+            <span class="blog-text">
+              <strong>{{ b.title }}</strong>
+              <small>{{ b.authorName }} · {{ b.createdAt | date:'dd.MM.yyyy' }}</small>
+            </span>
+            <span class="blog-stats">
+              <span title="Okunma"><i class="pi pi-eye" aria-hidden="true"></i> {{ b.views | number:'1.0-0':'tr' }}</span>
+              <span title="Yorum"><i class="pi pi-comments" aria-hidden="true"></i> {{ b.comments }}</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+      <p class="empty" *ngIf="data.topBlogs.length === 0">Henüz blog yok.</p>
+    </section>
+
+    <!-- Son yorumlar -->
+    <section class="card">
+      <header class="card-head">
+        <h2 class="card-title">Son yorumlar</h2>
+        <a routerLink="/admin/comments" class="card-link">Tümü <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+      </header>
+      <ul class="comment-list" *ngIf="data.recentComments.length > 0">
+        <li *ngFor="let c of data.recentComments; trackBy: trackById" class="comment-row">
+          <span class="avatar">
+            <img *ngIf="c.authorImage" [src]="c.authorImage" alt="">
+            <ng-container *ngIf="!c.authorImage">{{ initials(c.authorName) }}</ng-container>
+          </span>
+          <div class="comment-text">
+            <div class="comment-top">
+              <strong>{{ c.authorName }}</strong>
+              <span class="tag" *ngIf="c.isReply">yanıt</span>
+              <time>{{ c.createdAt | date:'dd.MM HH:mm' }}</time>
+            </div>
+            <p>{{ c.body }}</p>
+            <small>{{ c.blogTitle }}</small>
+          </div>
+        </li>
+      </ul>
+      <p class="empty" *ngIf="data.recentComments.length === 0">Henüz yorum yok.</p>
+    </section>
+  </div>
+
+  <!-- ============================== YENİ ÜYELER ============================== -->
+  <section class="card">
+    <header class="card-head">
+      <h2 class="card-title">Aramıza yeni katılanlar</h2>
+      <a routerLink="/admin/users" class="card-link">Tüm kullanıcılar <i class="pi pi-arrow-right" aria-hidden="true"></i></a>
+    </header>
+    <div class="new-users">
+      <a *ngFor="let u of data.newUsers; trackBy: trackById" [routerLink]="['/admin/users', u.id]" class="new-user">
+        <span class="avatar avatar-lg">
+          <img *ngIf="u.imageUrl" [src]="u.imageUrl" alt="">
+          <ng-container *ngIf="!u.imageUrl">{{ initials(u.name) }}</ng-container>
+        </span>
+        <strong>{{ u.name }}</strong>
+        <small>&#64;{{ u.userName }}</small>
+        <small class="new-user-date">{{ u.createdAt | date:'d MMM':'':'tr' }}</small>
+      </a>
+    </div>
+  </section>
+
+</div>

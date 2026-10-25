@@ -88,6 +88,8 @@ export class SiteBlogDetail implements OnInit, OnDestroy {
         this.isLoading = false;
         this.loadComments();
                 this.loadRelated();   // YENİ
+                        // YENİ: okunmayı say. Sonucu beklemiyoruz; hata olsa bile okuyucu etkilenmesin.
+        this.siteBlogService.recordView(result.data.id).subscribe({ error: () => {} });
       },
       error: err => {
         this.isLoading = false;

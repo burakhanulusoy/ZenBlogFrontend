@@ -46,6 +46,7 @@ import { SiteBlogDetail } from './_main-components/site-blog-detail/site-blog-de
 import { SiteCategory } from './_main-components/site-category/site-category';
 import { SiteAbout } from './_main-components/site-about/site-about';
 import { SiteContact } from './_main-components/site-contact/site-contact';
+import { CommentsPage } from './_personal-components/comments-page/comments-page';
 
 // ---------------------------------------------------------------------
 // ROTA NOTLARI
@@ -101,6 +102,7 @@ const routes: Routes = [
       { path: 'users', component: Users, data: { title: 'Kullanıcılar' } },
       { path: 'users/:id', component: UserDetail, data: { title: 'Kullanıcı detayı' } },
             { path: 'roles', component: Roles, data: { title: 'Roller' } },   // YENİ
+            { path: 'comments', component: CommentsPage, data: { title: 'Tüm yorumlar', mode: 'all' } },               // YENİ
       { path: 'writer-applications', component: WriterApplications, data: { title: 'Yazarlık başvuruları' } },        // YENİ
       { path: 'writer-applications/:id', component: WriterApplicationDetail, data: { title: 'Başvuru detayı' } },
             // SİTE İÇERİĞİ (YENİ)
@@ -118,7 +120,9 @@ const routes: Routes = [
       { path: 'my-blogs/edit/:id', component: BlogForm, data: { title: 'Blogu düzenle' } },
       { path: 'my-blogs/:id', component: BlogDetail, data: { title: 'Blog detayı', canEdit: true, backLabel: 'Bloglarım' } },
       { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } },
-      { path: 'profile', component: Profile, data: { title: 'Profilim' } }
+            { path: 'my-comments', component: CommentsPage, data: { title: 'Yorumlarım', mode: 'mine' } },             // YENİ
+      { path: 'blog-comments', component: CommentsPage, data: { title: 'Gelen yorumlar', mode: 'onMyBlogs' } },  // YENİ
+      { path: 'profile', component: Profile, data: { title: 'Profilim' } },
     ]
   },
 
@@ -139,6 +143,8 @@ const routes: Routes = [
       { path: 'new-blog', component: BlogForm, data: { title: 'Yeni blog yaz' } },
 
       // HESABIM
+            { path: 'blog-comments', component: CommentsPage, data: { title: 'Gelen yorumlar', mode: 'onMyBlogs' } },  // YENİ
+      { path: 'my-comments', component: CommentsPage, data: { title: 'Yorumlarım', mode: 'mine' } },             // YENİ
       { path: 'profile', component: Profile, data: { title: 'Profilim' } }
     ]
   },
@@ -156,6 +162,7 @@ const routes: Routes = [
       // pathMatch 'full': sadece adres TAM OLARAK /account ise yönlendir
       { path: '', redirectTo: 'profile', pathMatch: 'full' },
       { path: 'profile', component: Profile, data: { title: 'Profilim' } },
+            { path: 'my-comments', component: CommentsPage, data: { title: 'Yorumlarım', mode: 'mine' } },             // YENİ
       { path: 'become-writer', component: BecomeWriter, data: { title: 'Yazar ol' } }   // YENİ
     ]
   },

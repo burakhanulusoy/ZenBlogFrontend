@@ -46,17 +46,18 @@ export class WriterLayout implements OnInit, OnDestroy {
         { label: 'Genel bakış', icon: 'pi pi-home', link: '/writer', exact: true }
       ]
     },
-    {
+       {
       title: 'Yazılarım',
       items: [
         { label: 'Bloglarım', icon: 'pi pi-book', link: '/writer/my-blogs' },
-        { label: 'Yeni blog yaz', icon: 'pi pi-pencil', link: '/writer/new-blog' }
+        { label: 'Yeni blog yaz', icon: 'pi pi-pencil', link: '/writer/new-blog' },
+        { label: 'Gelen yorumlar', icon: 'pi pi-inbox', link: '/writer/blog-comments' }   // YENİ
       ]
     },
-    // YENİ: hesap işlemleri
     {
       title: 'Hesabım',
       items: [
+        { label: 'Yorumlarım', icon: 'pi pi-comment', link: '/writer/my-comments' },      // YENİ
         { label: 'Profilim', icon: 'pi pi-user', link: '/writer/profile' }
       ]
     }

@@ -39,12 +39,13 @@ export class UserLayout implements OnInit, OnDestroy {
   pageTitle = '';
   imageUrl = '';   // YENİ: sağ üstteki avatar
   // Yorumlarım, yorum işleri yapılınca buraya eklenecek
-   menuGroups: NavGroup[] = [
+     menuGroups: NavGroup[] = [
     {
       title: 'Hesabım',
       items: [
         { label: 'Profilim', icon: 'pi pi-user', link: '/account/profile' },
-        { label: 'Yazar ol', icon: 'pi pi-star', link: '/account/become-writer' }   // YENİ
+        { label: 'Yorumlarım', icon: 'pi pi-comment', link: '/account/my-comments' },   // YENİ
+        { label: 'Yazar ol', icon: 'pi pi-star', link: '/account/become-writer' }
       ]
     }
   ];

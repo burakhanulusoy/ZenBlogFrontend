@@ -21,6 +21,12 @@ export class SiteBlogService {
   getById(id: string) {
     return this.http.get<Result<SiteBlogDto>>(`${this.api}blogs/${id}`);
   }
+
+    // YENİ: okunmayı say (günlük tekil; backend aynı kişiyi gün içinde bir kez sayar)
+  recordView(blogId: string) {
+    return this.http.post<void>(`${this.api}blogs/${blogId}/view`, {});
+  }
+
   // YENİ: ilgili yazılar (aynı kategoriden)
   getRelated(blogId: string, count = 3) {
     return this.http.get<Result<HomeBlogDto[]>>(`${this.api}blogs/${blogId}/related`, {
