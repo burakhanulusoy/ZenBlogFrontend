@@ -357,8 +357,17 @@
   gap: 0.5rem;
 }
 
+
+
+
+
+
+
+
+
 :host ::ng-deep .zb-savebar .p-button-text {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.8)
+  ;
 }
 
 .zb-sr-only {
