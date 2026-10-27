@@ -1,59 +1,57 @@
-# ZenBlogFrontend
+<div align="center">
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.40.
+# 🌿 ZenBlog · Frontend
 
-## Development server
+### Angular 20 + PrimeNG ile Çok Rollü Blog Platformu Arayüzü
 
-To start a local development server, run:
+![Angular 20](https://img.shields.io/badge/Angular-20-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![PrimeNG](https://img.shields.io/badge/UI-PrimeNG_20-DD0031?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Chart.js](https://img.shields.io/badge/Charts-Chart.js-FF6384?style=for-the-badge&logo=chartdotjs&logoColor=white)
 
-```bash
-ng serve
-```
+<p align="center">
+  <a href="https://github.com/KULLANICI_ADIN/ZenBlogBackend"><b>📘 Projenin tamamı, mimari ve ayrıntılı açıklama için → Backend deposu</b></a>
+</p>
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+</div>
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Bu depo, **ZenBlog** platformunun Angular arayüzüdür: bir ziyaretçi sitesi ve üç ayrı panel (Admin, Yazar, Okur). Backend .NET 9 Minimal API ile yazılmıştır. Mimari, güvenlik, iş akışları, diyagramlar ve bütün ekran görüntüleri **[backend deposundaki README](https://github.com/KULLANICI_ADIN/ZenBlogBackend)**'de yer alır.
 
-```bash
-ng generate component component-name
-```
+## ✨ Öne Çıkanlar
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- **Dört yerleşim:** Ziyaretçi sitesi, Admin paneli, piksel tasarımlı Yazar paneli ve Okur paneli.
+- **Rol bazlı yönlendirme:** `AuthGuard` ve rotalardaki `data: { roles }`; yetkisiz erişimde 403 sayfası.
+- **JWT:** Token interceptor ve `@auth0/angular-jwt` ile süre kontrolü, rol ve profil bilgisi okuma.
+- **Güvenli formlar:** Cloudflare Turnstile bileşeni, Google ile giriş, giriş sonrası güvenli `returnUrl` yönlendirmesi.
+- **Dashboard'lar:** Dönem seçici ve Chart.js grafikleriyle admin ve yazar genel bakışı; Elasticsearch tabanlı **Log kayıtları** ekranı.
+- **Tasarım:** Ziyaretçi sitesi `.zb-site` kapsamında; yazar ve okur panellerinde `:host-context(.zb-pixel)` ile ortak sayfalar piksel temaya bürünür.
+- **Performans:**
+  - `shareReplay` ile önbelleğe alınan ortak site verisi.
+  - `NgZone.runOutsideAngular` ile çalışan Swiper ve zamanlayıcılar.
+  - `trackBy` ve debounce'lu arama.
 
-```bash
-ng generate --help
-```
+## 📸 Ekran Görüntüleri
 
-## Building
 
-To build the project run:
+> Bütün ekran görüntüleri için: **[Backend README → Ekran Görüntüleri](https://github.com/KULLANICI_ADIN/ZenBlogBackend#-ekran-görüntüleri)**
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## ⚙️ Kurulum
 
 ```bash
-ng e2e
+npm install
+ng serve        # http://localhost:4200
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Uygulama, backend'in `https://localhost:7200` adresinde çalıştığını varsayar. Backend kurulumu için backend deposundaki kurulum bölümüne bakın.
 
-## Additional Resources
+---
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+<div align="center">
+
+<a href="https://www.linkedin.com/in/burakhanulusoy/">
+  <img src="https://img.shields.io/badge/LinkedIn-Burakhan%20Ulusoy-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="Burakhan Ulusoy LinkedIn" />
+</a>
+
+</div>
